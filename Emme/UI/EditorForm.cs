@@ -18,10 +18,8 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Emme.UI;
 using Emme.Models;
-using System.Runtime.InteropServices;
-using System.Collections.Generic;
+using static Emme.UI.Win32;
 
 namespace Emme.UI
 {
@@ -61,49 +59,6 @@ namespace Emme.UI
 
       caret = new Caret(textView.CaretPosition, fontMetrics);
     }
-
-    /// <summary>
-    /// Win32 function to create a caret.
-    /// </summary>
-    /// <param name="hWnd">Handle to the window to create the caret in</param>
-    /// <param name="hBitmap">Handle to the caret bitmap. 0 (NULL) means solid bitmap.</param>
-    /// <param name="nWidth">Height in logical units.</param>
-    /// <param name="nHeight">Width in logical units.</param>
-    /// <returns>True if succeeded, false otherwise.</returns>
-    [DllImport("User32.dll")]
-    static extern bool CreateCaret(IntPtr hWnd, int hBitmap, int nWidth, int nHeight);
-
-    /// <summary>
-    /// Win32 function to set the caret's position.
-    /// </summary>
-    /// <param name="x">Caret's x-coordinate</param>
-    /// <param name="y">Caret's y-coordinate</param>
-    /// <returns>True if succeeded, false otherwise.</returns>
-    [DllImport("User32.dll")]
-    static extern bool SetCaretPos(int x, int y);
-
-    /// <summary>
-    /// Win32 function to destroy caret's shape and remove it from screen.
-    /// </summary>
-    /// <returns>True if succeeded, false otherwise.</returns>
-    [DllImport("User32.dll")]
-    static extern bool DestroyCaret();
-
-    /// <summary>
-    /// Win32 function to make caret visible.
-    /// </summary>
-    /// <param name="hWnd">Handle to window caret is in.</param>
-    /// <returns>True if succeeded, false otherwise.</returns>
-    [DllImport("User32.dll")]
-    static extern bool ShowCaret(IntPtr hWnd);
-
-    /// <summary>
-    /// Win32 function to remove caret from screen.
-    /// </summary>
-    /// <param name="hWnd">Handle to window caret is in.</param>
-    /// <returns>True if succeeded, false otherwise.</returns>
-    [DllImport("User32.dll")]
-    static extern bool HideCaret(IntPtr hWnd);
 
     protected override void OnGotFocus(EventArgs e)
     {

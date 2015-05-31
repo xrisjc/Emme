@@ -54,10 +54,20 @@ namespace Emme.UI
       }
 
 
+
+
       Width = 80 * fontMetrics.FontSize.Width + 2 * fontMetrics.Padding; // display as 80 x 40 grid.
       Height = 40 * fontMetrics.FontSize.Height;
 
       caret = new Caret(textView.CaretPosition, fontMetrics);
+
+      // Flickering be gone. Got the method from here:
+      // http://stackoverflow.com/questions/8046560/how-to-stop-flickering-c-sharp-winforms
+      SetStyle(
+        flag: ControlStyles.UserPaint | 
+          ControlStyles.OptimizedDoubleBuffer |
+          ControlStyles.AllPaintingInWmPaint,
+        value: true);
     }
 
     protected override void OnGotFocus(EventArgs e)

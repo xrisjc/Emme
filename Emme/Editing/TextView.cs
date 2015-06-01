@@ -2,11 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Emme.Models;
 
-namespace Emme.Models
+namespace Emme.Editing
 {
   class TextView : IEnumerable<string>
   {
+    /// <summary>
+    /// Event fired when the caret's position changes.
+    /// </summary>
+    public event EventHandler<PositionEventArgs> CaretPositionChanged;
+
     readonly GapBuffer gapBuffer;
     readonly LinkedList<Span> lines = new LinkedList<Span>();
     LinkedListNode<Span> currentLine;
@@ -23,6 +29,15 @@ namespace Emme.Models
     public Position CaretPosition
     {
       get { return caretPosition; }
+      private set
+      {
+        bool caretPositionDidChange = (caretPosition != value);
+        caretPosition = value;
+        if (caretPositionDidChange && CaretPositionChanged != null)
+        {
+          CaretPositionChanged(this, new PositionEventArgs(caretPosition));
+        }
+      }
     }
 
     Span CurrentLineSpan
@@ -62,28 +77,28 @@ namespace Emme.Models
 
     public void Insert(char value)
     {
-      gapBuffer.Insert(CaretIndex(currentLine, caretPosition), value);
+      gapBuffer.Insert(CaretIndex(currentLine, CaretPosition), value);
       Shift(currentLine, 1);
-      caretPosition = caretPosition.MoveColumn(Direction.Next);
+      CaretPosition = CaretPosition.MoveColumn(Direction.Next);
     }
 
     public void InsertNewLine()
     {
-      int splitIndex = CaretIndex(currentLine, caretPosition);
+      int splitIndex = CaretIndex(currentLine, CaretPosition);
       var splitSpans = CurrentLineSpan.Split(splitIndex);
 
       CurrentLineSpan = splitSpans.Item1;
       lines.AddAfter(currentLine, splitSpans.Item2);
 
       currentLine = currentLine.Next;
-      caretPosition = caretPosition.MoveLine(Direction.Next).SetColumn(0);
+      CaretPosition = CaretPosition.MoveLine(Direction.Next).SetColumn(0);
     }
 
     public void Delete()
     {
-      if (caretPosition.Column < Length(currentLine))
+      if (CaretPosition.Column < Length(currentLine))
       {
-        gapBuffer.Delete(CaretIndex(currentLine, caretPosition));
+        gapBuffer.Delete(CaretIndex(currentLine, CaretPosition));
         Shift(currentLine, -1);
       }
       else if (IsLineAfter(currentLine))
@@ -95,7 +110,7 @@ namespace Emme.Models
 
     public void DeletePrevious()
     {
-      if (caretPosition != Position.BufferStart)
+      if (CaretPosition != Position.BufferStart)
       {
         MoveToPrevious();
         Delete();
@@ -104,14 +119,14 @@ namespace Emme.Models
 
     public void MoveToPrevious()
     {
-      if (caretPosition.Column > 0)
+      if (CaretPosition.Column > 0)
       {
-        caretPosition = caretPosition.MoveColumn(Direction.Previous);
+        CaretPosition = CaretPosition.MoveColumn(Direction.Previous);
       }
       else if (IsLineBefore(currentLine))
       {
         currentLine = currentLine.Previous;
-        caretPosition = caretPosition.MoveLine(Direction.Previous)
+        CaretPosition = CaretPosition.MoveLine(Direction.Previous)
                                      .SetColumn(Length(currentLine));
       }
     }
@@ -122,14 +137,14 @@ namespace Emme.Models
     /// <returns>Updated position after move.</returns>
     public void MoveToNext()
     {
-      if (caretPosition.Column < Length(currentLine))
+      if (CaretPosition.Column < Length(currentLine))
       {
-        caretPosition = caretPosition.MoveColumn(Direction.Next);
+        CaretPosition = CaretPosition.MoveColumn(Direction.Next);
       }
       else if (IsLineAfter(currentLine))
       {
         currentLine = currentLine.Next;
-        caretPosition = caretPosition.MoveLine(Direction.Next).SetColumn(0);
+        CaretPosition = CaretPosition.MoveLine(Direction.Next).SetColumn(0);
       }
     }
 
@@ -138,7 +153,7 @@ namespace Emme.Models
       if (IsLineBefore(currentLine))
       {
         currentLine = currentLine.Previous;
-        caretPosition = caretPosition.MoveLine(Direction.Previous)
+        CaretPosition = CaretPosition.MoveLine(Direction.Previous)
                                      .ClampColumn(Length(currentLine));
       }
     }
@@ -148,19 +163,19 @@ namespace Emme.Models
       if (IsLineAfter(currentLine))
       {
         currentLine = currentLine.Next;
-        caretPosition = caretPosition.MoveLine(Direction.Next)
+        CaretPosition = CaretPosition.MoveLine(Direction.Next)
                                      .ClampColumn(Length(currentLine));
       }
     }
 
     public void MoveToLineStart()
     {
-      caretPosition = caretPosition.SetColumn(0);
+      CaretPosition = CaretPosition.SetColumn(0);
     }
 
     public void MoveToLineEnd()
     {
-      caretPosition = caretPosition.SetColumn(Length(currentLine));
+      CaretPosition = CaretPosition.SetColumn(Length(currentLine));
     }
 
     public IEnumerator<string> GetEnumerator()

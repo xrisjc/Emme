@@ -38,6 +38,7 @@
 
 using System.Windows.Forms;
 using Emme.UI;
+using Emme.Editing;
 using Emme.Models;
 
 namespace Emme

@@ -18,7 +18,7 @@
 using System;
 using System.Drawing;
 using System.Windows.Forms;
-using Emme.Models;
+using Emme.Editing;
 using static Emme.UI.Win32;
 
 namespace Emme.UI
@@ -39,6 +39,7 @@ namespace Emme.UI
     public EditorForm(TextView textView)
     {
       this.textView = textView;
+      textView.CaretPositionChanged += TextView_CaretPositionChanged;
 
       Text = "Emme";
 
@@ -53,13 +54,13 @@ namespace Emme.UI
         fontMetrics = new FontMetrics(graphics, Font);
       }
 
+      caret = new Caret(textView.CaretPosition, fontMetrics);
 
 
 
       Width = 80 * fontMetrics.FontSize.Width + 2 * fontMetrics.Padding; // display as 80 x 40 grid.
       Height = 40 * fontMetrics.FontSize.Height;
 
-      caret = new Caret(textView.CaretPosition, fontMetrics);
 
       // Flickering be gone. Got the method from here:
       // http://stackoverflow.com/questions/8046560/how-to-stop-flickering-c-sharp-winforms
@@ -127,10 +128,13 @@ namespace Emme.UI
           break;
       }
 
-      caret = new Caret(textView.CaretPosition, fontMetrics);
-      SetCaretPos(caret.Position.X, caret.Position.Y);
-
       Invalidate();
+    }
+
+    private void TextView_CaretPositionChanged(object sender, PositionEventArgs e)
+    {
+      caret = new Caret(e.Position, fontMetrics);
+      SetCaretPos(caret.Position.X, caret.Position.Y);
     }
 
     protected override void OnKeyPress(KeyPressEventArgs e)
@@ -143,9 +147,6 @@ namespace Emme.UI
       }
 
       textView.Insert(e.KeyChar);
-      
-      caret = new Caret(textView.CaretPosition, fontMetrics);
-      SetCaretPos(caret.Position.X, caret.Position.Y);
       
       Invalidate();
     }

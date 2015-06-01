@@ -59,9 +59,11 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Editing\PositionEventArgs.cs" />
+    <Compile Include="Editing\ICommand.cs" />
     <Compile Include="Models\Direction.cs" />
     <Compile Include="Models\DirectionExtentions.cs" />
-    <Compile Include="Models\TextView.cs" />
+    <Compile Include="Editing\TextView.cs" />
     <Compile Include="Models\Span.cs" />
     <Compile Include="Models\SpanExtensions.cs" />
     <Compile Include="Models\Position.cs" />

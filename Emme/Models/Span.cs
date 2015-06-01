@@ -21,9 +21,6 @@ namespace Emme.Models
 {
   public struct Span
   {
-    readonly int start;
-    readonly int end;
-
     /// <summary>
     /// Constructor.
     /// </summary>
@@ -31,34 +28,25 @@ namespace Emme.Models
     /// <param name="end">Index in buffer where the gap ends and the rest of the content begins.</param>
     public Span(int start, int end)
     {
-      this.start = start;
-      this.end = end;
+      Start = start;
+      End = end;
     }
 
     /// <summary>
     /// Index in buffer where the gap starts and content ends.
     /// </summary>
-    public int Start
-    {
-      get { return start; }
-    }
+    public int Start { get; }
 
     /// <summary>
     /// Index in buffer where the gap ends and the rest of the content
     /// begins.
     /// </summary>
-    public int End
-    {
-      get { return end; }
-    }
+    public int End { get; }
 
     /// <summary>
     /// Length of the gap; the total available space left in buffer.
     /// </summary>
-    public int Length
-    {
-      get { return End - Start; }
-    }
+    public int Length => End - Start;
 
     /// <summary>
     /// Converts a index into a buffer's content -- which ignores the

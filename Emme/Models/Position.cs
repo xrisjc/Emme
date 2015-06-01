@@ -29,53 +29,32 @@ namespace Emme.Models
   /// </remarks>
   struct Position : IEquatable<Position>
   {
-    readonly int line;
-    readonly int column;
-
     public Position(int line, int column)
     {
       Debug.Assert(line >= 0);
       Debug.Assert(column >= 0);
 
-      this.line = line;
-      this.column = column;
+      Line = line;
+      Column = column;
     }
 
     /// <summary>
     /// Line number, starting from zero
     /// </summary>
-    public int Line
-    {
-      get { return line; }
-    }
+    public int Line { get; }
 
     /// <summary>
     /// Column number, starting from zero
     /// </summary>
-    public int Column
-    {
-      get { return column; }
-    }
+    public int Column { get; }
 
-    public Position SetColumn(int newColumn)
-    {
-      return new Position(Line, newColumn);
-    }
+    public Position SetColumn(int newColumn) => new Position(Line, newColumn);
 
-    public Position SetLine(int newLine)
-    {
-      return new Position(newLine, Column);
-    }
+    public Position SetLine(int newLine) => new Position(newLine, Column);
 
-    public Position MoveColumn(Direction direction)
-    {
-      return SetColumn(Column + direction.Delta());
-    }
+    public Position MoveColumn(Direction direction) => SetColumn(Column + direction.Delta());
 
-    public Position MoveLine(Direction direction)
-    {
-      return SetLine(Line + direction.Delta());
-    }
+    public Position MoveLine(Direction direction) => SetLine(Line + direction.Delta());
 
     public Position ClampColumn(int maxColumn)
     {
@@ -86,15 +65,9 @@ namespace Emme.Models
     /// <summary>
     /// Override ToString for debugging purposes.
     /// </summary>
-    public override string ToString()
-    {
-      return string.Format("Line = {1}, Column = {0}", Column, Line);
-    }
+    public override string ToString() => $"Line = {Line}, Column = {Column}";
 
-    public bool Equals(Position other)
-    {
-      return Line == other.Line && Column == other.Column;
-    }
+    public bool Equals(Position other) => Line == other.Line && Column == other.Column;
 
     public override bool Equals(object obj)
     {
@@ -105,24 +78,12 @@ namespace Emme.Models
       return base.Equals(obj);
     }
 
-    public override int GetHashCode()
-    {
-      return Line ^ Column;
-    }
+    public override int GetHashCode() => Line ^ Column;
 
-    public static bool operator ==(Position lhs, Position rhs)
-    {
-      return lhs.Equals(rhs);
-    }
+    public static bool operator ==(Position lhs, Position rhs) => lhs.Equals(rhs);
 
-    public static bool operator !=(Position lhs, Position rhs)
-    {
-      return !lhs.Equals(rhs);
-    }
+    public static bool operator !=(Position lhs, Position rhs) => !(lhs == rhs);
 
-    public static Position BufferStart
-    {
-      get { return new Position(0, 0); }
-    }
+    public static Position BufferStart => new Position(0, 0);
   }
 }

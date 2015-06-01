@@ -33,23 +33,13 @@ namespace Emme.UI
     const int WIDTH = 1;
 
     /// <summary>
-    /// Position of caret in pixels.
-    /// </summary>
-    readonly Point position;
-
-    /// <summary>
-    /// Caret's height in pixels.
-    /// </summary>
-    readonly Size size;
-
-    /// <summary>
     /// Default constructor.
     /// </summary>
     /// <param name="height">Height of caret (font height).</param>
     public Caret(int x, int y, int height)
     {
-      position = new Point(x, y);
-      size = new Size(WIDTH, height);
+      Position = new Point(x, y);
+      Size = new Size(WIDTH, height);
     }
 
     /// <summary>
@@ -71,11 +61,11 @@ namespace Emme.UI
     /// <summary>
     /// Caret's position in pixels.
     /// </summary>
-    public Point Position => position;
+    public Point Position { get; }
 
     /// <summary>
     /// Caret's size in pixels.
     /// </summary>
-    public Size Size => size;
+    public Size Size { get; }
   }
 }

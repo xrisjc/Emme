@@ -177,10 +177,6 @@ namespace Emme.Models
               sb.Append('·');
               break;
 
-            case '\n':
-              sb.Append('↵');
-              break;
-
             default:
               sb.Append(gapBuffer[i]);
               break;
@@ -190,6 +186,10 @@ namespace Emme.Models
         if (line.Next == null)
         {
           sb.Append('¤');
+        }
+        else
+        {
+          sb.Append('↵');
         }
         yield return sb.ToString();
       }

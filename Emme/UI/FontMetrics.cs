@@ -26,24 +26,15 @@ namespace Emme.UI
   /// </summary>
   struct FontMetrics
   {
-    readonly Size fontSize;
-    readonly int padding;
-
     /// <summary>
     /// Width and height, in pixels, of a character glyph.
     /// </summary>
-    public Size FontSize
-    {
-      get { return fontSize; }
-    }
+    public Size FontSize { get; }
 
     /// <summary>
     /// Amount of padding, in pixels, put before or after text when drawn.
     /// </summary>
-    public int Padding
-    {
-      get { return padding; }
-    }
+    public int Padding { get; }
 
     /// <summary>Constructor</summary>
     /// <param name="deviceContext">A device context</param>
@@ -53,16 +44,18 @@ namespace Emme.UI
       var purposedSize = new Size(short.MaxValue, short.MaxValue); // Bounding values
 
       // get a character's width without padding.
-      fontSize = TextRenderer.MeasureText(deviceContext, "a", font, purposedSize, TextFormatFlags.NoPadding);
+      var fontSize = TextRenderer.MeasureText(deviceContext, "a", font, purposedSize, TextFormatFlags.NoPadding);
 
       // going to use font.Height instead b/c Petzold says that better for
       // formatting lines of text.
       // TODO: I should use font.GetHeight(grfx)
       fontSize.Height = font.Height;
 
+      FontSize = fontSize;
+
       // Get how much we're padding the text.
       Size fontSizeWithPadding = TextRenderer.MeasureText(deviceContext, "a", font);
-      padding = (fontSizeWithPadding.Width - fontSize.Width) / 2;
+      Padding = (fontSizeWithPadding.Width - FontSize.Width) / 2;
     }
   }
 }

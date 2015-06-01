@@ -1,4 +1,6 @@
 ﻿//
+// File: Caret.cs
+//
 // Copyright (C) 2010  Christopher Cowan
 //
 // This program is free software: you can redistribute it and/or modify
@@ -15,10 +17,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System;
 using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Windows.Forms;
 using Emme.Models;
 
 namespace Emme.UI
@@ -44,9 +43,9 @@ namespace Emme.UI
     readonly Size size;
 
     /// <summary>
-    /// Constructor
+    /// Default constructor.
     /// </summary>
-    /// <param name="height">Height of caret (font height)</param>
+    /// <param name="height">Height of caret (font height).</param>
     public Caret(int x, int y, int height)
     {
       position = new Point(x, y);
@@ -62,26 +61,21 @@ namespace Emme.UI
     /// <param name="fontMetrics">Current font's metrics.</param>
     /// <remarks>Assumes monospaced font is being used.</remarks>
     public Caret(Position logicalCaretPosition, FontMetrics fontMetrics)
+      : this(
+          x: logicalCaretPosition.Column * fontMetrics.FontSize.Width + fontMetrics.Padding,
+          y: logicalCaretPosition.Line * fontMetrics.FontSize.Height,
+          height: fontMetrics.FontSize.Height)
     {
-      position = new Point(logicalCaretPosition.Column * fontMetrics.FontSize.Width + fontMetrics.Padding,
-                           logicalCaretPosition.Line * fontMetrics.FontSize.Height);
-      size = new Size(WIDTH, fontMetrics.FontSize.Height);
     }
 
     /// <summary>
     /// Caret's position in pixels.
     /// </summary>
-    public Point Position
-    {
-      get { return position; }
-    }
+    public Point Position => position;
 
     /// <summary>
     /// Caret's size in pixels.
     /// </summary>
-    public Size Size
-    {
-      get { return size; }
-    }
+    public Size Size => size;
   }
 }

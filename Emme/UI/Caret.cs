@@ -17,29 +17,45 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System.Drawing;
 using Emme.Models;
 
 namespace Emme.UI
 {
   /// <summary>
-  /// Caret's size and position.
+  /// Caret's size and position in pixels.
   /// </summary>
-  class Caret
+  struct Caret
   {
+    /// <summary>
+    /// Top-left x poision of the caret in pixels.
+    /// </summary>
+    public int X { get; }
+
+    /// <summary>
+    /// Caret's top-left y position in pixels.
+    /// </summary>
+    public int Y { get; }
+
     /// <summary>
     /// Caret's width in pixels.
     /// </summary>
-    const int WIDTH = 1;
+    public int Width { get; }
+
+    /// <summary>
+    /// Caret's height in pixels.
+    /// </summary>
+    public int Height { get; }
 
     /// <summary>
     /// Default constructor.
     /// </summary>
     /// <param name="height">Height of caret (font height).</param>
-    public Caret(int x, int y, int height)
+    public Caret(int x, int y, int width, int height)
     {
-      Position = new Point(x, y);
-      Size = new Size(WIDTH, height);
+      X = x;
+      Y = y;
+      Width = width;
+      Height = height;
     }
 
     /// <summary>
@@ -54,18 +70,9 @@ namespace Emme.UI
       : this(
           x: logicalCaretPosition.Column * fontMetrics.Width + fontMetrics.Padding,
           y: logicalCaretPosition.Line * fontMetrics.Height,
+          width: 1,
           height: fontMetrics.Height)
     {
     }
-
-    /// <summary>
-    /// Caret's position in pixels.
-    /// </summary>
-    public Point Position { get; }
-
-    /// <summary>
-    /// Caret's size in pixels.
-    /// </summary>
-    public Size Size { get; }
   }
 }

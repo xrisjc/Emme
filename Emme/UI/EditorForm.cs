@@ -89,8 +89,8 @@ namespace Emme.UI
     protected override void OnGotFocus(EventArgs e)
     {
       base.OnGotFocus(e);
-      CreateCaret(this.Handle, SOLID_BITMAP_HANDLE, caret.Size.Width, caret.Size.Height);
-      SetCaretPos(caret.Position.X, caret.Position.Y);
+      CreateCaret(this.Handle, SOLID_BITMAP_HANDLE, caret.Width, caret.Height);
+      SetCaretPos(caret.X, caret.Y);
       ShowCaret(this.Handle);
     }
 
@@ -103,7 +103,7 @@ namespace Emme.UI
     private void TextView_CaretPositionChanged(object sender, PositionEventArgs e)
     {
       caret = new Caret(e.Position, fontMetrics);
-      SetCaretPos(caret.Position.X, caret.Position.Y);
+      SetCaretPos(caret.X, caret.Y);
     }
 
     protected override void OnKeyDown(KeyEventArgs e)

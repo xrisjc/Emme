@@ -22,8 +22,16 @@ using System.Runtime.InteropServices;
 
 namespace Emme.UI
 {
+  /// <summary>
+  /// Win32 API interop functions.
+  /// </summary>
   static class Win32
   {
+    /// <summary>
+    /// Bitmap handle to create a solid color caret.
+    /// </summary>
+    public const int SOLID_BITMAP_HANDLE = 0;
+
     /// <summary>
     /// Win32 function to create a caret.
     /// </summary>

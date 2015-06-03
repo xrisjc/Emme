@@ -26,10 +26,6 @@ namespace Emme.UI
 {
   class EditorForm : Form
   {
-    /// <summary>
-    /// Bitmap handle to create a solid color caret.
-    /// </summary>
-    const int SOLID_BITMAP_HANDLE = 0;
 
     TextView textView;
 

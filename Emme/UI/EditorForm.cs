@@ -59,6 +59,9 @@ namespace Emme.UI
         value: true);
     }
 
+    /// <summary>
+    /// Creates an appropriate FontMetrics value for the currently set Font.
+    /// </summary>
     private FontMetrics CreateFontMetrics()
     {
       using (Graphics graphics = CreateGraphics())

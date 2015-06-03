@@ -52,9 +52,9 @@ namespace Emme.UI
     /// <remarks>Assumes monospaced font is being used.</remarks>
     public Caret(Position logicalCaretPosition, FontMetrics fontMetrics)
       : this(
-          x: logicalCaretPosition.Column * fontMetrics.FontSize.Width + fontMetrics.Padding,
-          y: logicalCaretPosition.Line * fontMetrics.FontSize.Height,
-          height: fontMetrics.FontSize.Height)
+          x: logicalCaretPosition.Column * fontMetrics.Width + fontMetrics.Padding,
+          y: logicalCaretPosition.Line * fontMetrics.Height,
+          height: fontMetrics.Height)
     {
     }
 

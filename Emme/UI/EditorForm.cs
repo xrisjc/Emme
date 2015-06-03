@@ -20,6 +20,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Emme.Editing;
 using static Emme.UI.Win32;
+using Emme.Models;
 
 namespace Emme.UI
 {
@@ -43,23 +44,14 @@ namespace Emme.UI
 
       Text = "Emme";
 
-      Font = new Font("Consolas", 10f);
-
       ForeColor = SystemColors.WindowText;
       BackColor = SystemColors.Window;
 
-
-      using (Graphics graphics = CreateGraphics())
-      {
-        fontMetrics = new FontMetrics(graphics, Font);
-      }
-
-      caret = new Caret(textView.CaretPosition, fontMetrics);
-
-
-
-      Width = 80 * fontMetrics.FontSize.Width + 2 * fontMetrics.Padding; // display as 80 x 40 grid.
-      Height = 40 * fontMetrics.FontSize.Height;
+      Font = new Font("Consolas", 10f);
+      fontMetrics = CreateFontMetrics();
+      caret = new Caret(Position.BufferStart, fontMetrics);
+      Width = 80 * fontMetrics.Width + 2 * fontMetrics.Padding; // display as 80 x 40 grid.
+      Height = 40 * fontMetrics.Height;
 
 
       // Flickering be gone. Got the method from here:
@@ -69,6 +61,29 @@ namespace Emme.UI
           ControlStyles.OptimizedDoubleBuffer |
           ControlStyles.AllPaintingInWmPaint,
         value: true);
+    }
+
+    private FontMetrics CreateFontMetrics()
+    {
+      using (Graphics graphics = CreateGraphics())
+      {
+        var purposedSize = new Size(short.MaxValue, short.MaxValue); // Bounding values
+
+        // get a character's width without padding.
+        Size fontSize = TextRenderer.MeasureText(graphics, "a", Font, purposedSize, TextFormatFlags.NoPadding);
+
+        // going to use font.Height instead b/c Petzold says that better for
+        // formatting lines of text.
+        // TODO: I should use font.GetHeight(grfx)
+        fontSize = new Size(fontSize.Width, Font.Height);
+
+
+        // Get how much we're padding the text.
+        Size fontSizeWithPadding = TextRenderer.MeasureText(graphics, "a", Font);
+        int padding = (fontSizeWithPadding.Width - fontSize.Width) / 2;
+
+        return new FontMetrics(fontSize.Width, fontSize.Height, padding);
+      }
     }
 
     protected override void OnGotFocus(EventArgs e)
@@ -83,6 +98,12 @@ namespace Emme.UI
     {
       base.OnLostFocus(e);
       DestroyCaret();
+    }
+
+    private void TextView_CaretPositionChanged(object sender, PositionEventArgs e)
+    {
+      caret = new Caret(e.Position, fontMetrics);
+      SetCaretPos(caret.Position.X, caret.Position.Y);
     }
 
     protected override void OnKeyDown(KeyEventArgs e)
@@ -131,12 +152,6 @@ namespace Emme.UI
       Invalidate();
     }
 
-    private void TextView_CaretPositionChanged(object sender, PositionEventArgs e)
-    {
-      caret = new Caret(e.Position, fontMetrics);
-      SetCaretPos(caret.Position.X, caret.Position.Y);
-    }
-
     protected override void OnKeyPress(KeyPressEventArgs e)
     {
       base.OnKeyPress(e);
@@ -167,7 +182,7 @@ namespace Emme.UI
             ForeColor,
             TextFormatFlags.NoPrefix); // No prefix, or ampersands won't show up.
 
-        point.Y += fontMetrics.FontSize.Height;
+        point.Y += fontMetrics.Height;
       }
     }
   }

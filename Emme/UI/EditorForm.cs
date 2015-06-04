@@ -132,11 +132,11 @@ namespace Emme.UI
           break;
 
         case Keys.Up:
-          textView.MoveToPreviousLine();
+          textView.MoveToLine(Direction.Previous);
           break;
 
         case Keys.Down:
-          textView.MoveToNextLine();
+          textView.MoveToLine(Direction.Next);
           break;
 
         case Keys.Home:

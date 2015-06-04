@@ -74,7 +74,7 @@ namespace Emme.Editing
       int insertIndex = CaretIndex(lines[CaretPosition.Line], CaretPosition);
       gapBuffer.Insert(insertIndex, value);
       Shift(1);
-      CaretPosition = CaretPosition.MoveColumn(Direction.Next);
+      CaretPosition = new Position(CaretPosition.Line, CaretPosition.NextColumn);
     }
 
     public void InsertNewLine()
@@ -82,7 +82,7 @@ namespace Emme.Editing
       int splitIndex = CaretIndex(lines[CaretPosition.Line], CaretPosition);
       Tuple<Span, Span> splitSpans = lines[CaretPosition.Line].Split(splitIndex);
       lines[CaretPosition.Line] = splitSpans.Item1;
-      CaretPosition = CaretPosition.MoveLine(Direction.Next).SetColumn(0);
+      CaretPosition = new Position(CaretPosition.NextLine, column: 0);
       lines.Insert(CaretPosition.Line, splitSpans.Item2);
     }
 
@@ -94,10 +94,11 @@ namespace Emme.Editing
         gapBuffer.Delete(deleteIndex);
         Shift(-1);
       }
-      else if (CaretPosition.Line < lines.Count - 1)
+      else if (CaretPosition.NextLine < lines.Count)
       {
-        lines[CaretPosition.Line] = lines[CaretPosition.Line].Join(lines[CaretPosition.Line + 1]);
-        lines.Delete(CaretPosition.Line + 1);
+        lines[CaretPosition.Line] =
+          lines[CaretPosition.Line].Join(lines[CaretPosition.NextLine]);
+        lines.Delete(CaretPosition.NextLine);
       }
     }
 
@@ -114,12 +115,12 @@ namespace Emme.Editing
     {
       if (CaretPosition.Column > 0)
       {
-        CaretPosition = CaretPosition.MoveColumn(Direction.Previous);
+        CaretPosition = new Position(CaretPosition.Line, CaretPosition.PreviousColumn);
       }
       else if (CaretPosition.Line > 0)
       {
-        CaretPosition = CaretPosition.MoveLine(Direction.Previous)
-                                     .SetColumn(lines[CaretPosition.Line - 1].Length);
+        MoveToLine(Direction.Previous);
+        MoveToLineEnd();
       }
     }
 
@@ -131,40 +132,35 @@ namespace Emme.Editing
     {
       if (CaretPosition.Column < lines[CaretPosition.Line].Length)
       {
-        CaretPosition = CaretPosition.MoveColumn(Direction.Next);
+        CaretPosition = new Position(CaretPosition.Line, CaretPosition.NextColumn);
       }
-      else if (CaretPosition.Line < lines.Count - 1)
+      else if (CaretPosition.NextLine < lines.Count)
       {
-        CaretPosition = CaretPosition.MoveLine(Direction.Next).SetColumn(0);
-      }
-    }
-
-    public void MoveToPreviousLine()
-    {
-      if (CaretPosition.Line > 0)
-      {
-        CaretPosition = CaretPosition.MoveLine(Direction.Previous)
-                                     .ClampColumn(lines[CaretPosition.Line - 1].Length);
+        MoveToLine(Direction.Next);
+        MoveToLineStart();
       }
     }
 
-    public void MoveToNextLine()
+    public void MoveToLine(Direction direction)
     {
-      if (CaretPosition.Line < lines.Count - 1)
+      int nextLine =
+        direction == Direction.Next ? CaretPosition.NextLine : CaretPosition.PreviousLine;
+
+      if (0 <= nextLine && nextLine < lines.Count)
       {
-        CaretPosition = CaretPosition.MoveLine(Direction.Next)
-                                     .ClampColumn(lines[CaretPosition.Line + 1].Length);
+        int nextColumn = Math.Min(lines[nextLine].Length, CaretPosition.Column);
+        CaretPosition = new Position(nextLine, nextColumn);
       }
     }
 
     public void MoveToLineStart()
     {
-      CaretPosition = CaretPosition.SetColumn(0);
+      CaretPosition = new Position(CaretPosition.Line, column: 0);
     }
 
     public void MoveToLineEnd()
     {
-      CaretPosition = CaretPosition.SetColumn(lines[CaretPosition.Line].Length);
+      CaretPosition = new Position(CaretPosition.Line, column: lines[CaretPosition.Line].Length);
     }
 
     public IEnumerator<string> GetEnumerator()

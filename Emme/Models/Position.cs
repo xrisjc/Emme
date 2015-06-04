@@ -29,14 +29,6 @@ namespace Emme.Models
   /// </remarks>
   struct Position : IEquatable<Position>
   {
-    public Position(int line, int column)
-    {
-      Debug.Assert(line >= 0);
-      Debug.Assert(column >= 0);
-
-      Line = line;
-      Column = column;
-    }
 
     /// <summary>
     /// Line number, starting from zero
@@ -48,19 +40,22 @@ namespace Emme.Models
     /// </summary>
     public int Column { get; }
 
-    public Position SetColumn(int newColumn) => new Position(Line, newColumn);
-
-    public Position SetLine(int newLine) => new Position(newLine, Column);
-
-    public Position MoveColumn(Direction direction) => SetColumn(Column + direction.Delta());
-
-    public Position MoveLine(Direction direction) => SetLine(Line + direction.Delta());
-
-    public Position ClampColumn(int maxColumn)
+    public Position(int line, int column)
     {
-      int newColumn = Math.Min(maxColumn, Column);
-      return new Position(Line, newColumn);
+      Debug.Assert(line >= 0);
+      Debug.Assert(column >= 0);
+
+      Line = line;
+      Column = column;
     }
+
+    public int PreviousLine => Line - 1;
+
+    public int NextLine => Line + 1;
+
+    public int PreviousColumn => Column - 1;
+
+    public int NextColumn => Column + 1;
 
     /// <summary>
     /// Override ToString for debugging purposes.

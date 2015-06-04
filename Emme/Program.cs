@@ -47,7 +47,7 @@ namespace Emme
   {
     public static void Main()
     {
-      var buffer = new GapBuffer();
+      var buffer = new GapBuffer<char>();
       var textView = new TextView(buffer);
 
       Application.EnableVisualStyles();

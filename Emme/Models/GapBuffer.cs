@@ -18,9 +18,6 @@
 //
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Emme.Models
 {
@@ -28,17 +25,17 @@ namespace Emme.Models
   /// Buffer to allow efficient inserting and deleting of content by keeping
   /// a gap of available space where insertions and deletions happen.
   /// </summary>
-  public class GapBuffer
+  public class GapBuffer<T> where T : struct
   {
     /// <summary>
-    /// Actual character buffer.
+    /// Actual value buffer.
     /// </summary>
-    char[] buffer;
+    private T[] buffer;
 
     /// <summary>
     /// Gap indices.
     /// </summary>
-    Span gap;
+    private Span gap;
 
     /// <summary>
     /// Constructor.
@@ -46,70 +43,50 @@ namespace Emme.Models
     /// <param name="initialCapacity">Initial capacity of buffer.</param>
     public GapBuffer(int initialCapacity = 256)
     {
-      buffer = new char[initialCapacity];
+      buffer = new T[initialCapacity];
 
       // Gap is initially fills the buffer.
       gap = new Span(0, buffer.Length);
     }
 
     /// <summary>
-    /// Constructor. Creates a buffer just large enough to hold the given
-    /// initial content. That is, the gap will be of length zero.
-    /// </summary>
-    /// <param name="initialContent">Initial buffer content.</param>
-    public GapBuffer(string initialContent)
-    {
-      buffer = initialContent.ToCharArray();
-      // Gap start and end default to zero.
-    }
-
-    /// <summary>
     /// Length of content before the gap.
     /// </summary>
-    int LeftContentLength
-    {
-      get { return gap.Start; }
-    }
+    private int LeftContentLength => gap.Start;
 
     /// <summary>
     /// Length of content after the gap.
     /// </summary>
-    int RightContentLength
-    {
-      get { return buffer.Length - gap.End; }
-    }
+    private int RightContentLength => buffer.Length - gap.End;
 
     /// <summary>
-    /// Total number of characters the internal buffer can hold before
-    /// resizing.
+    /// Total number of values the internal buffer can hold before resizing.
     /// </summary>
-    public int Capacity
-    {
-      get { return buffer.Length; }
-    }
+    private int Capacity => buffer.Length;
 
     /// <summary>
-    /// Total number of characters actually contained in the gap buffer.
+    /// Total number of values actually contained in the gap buffer.
     /// </summary>
-    public int Count
-    {
-      get { return Capacity - gap.Length; }
-    }
+    public int Count => Capacity - gap.Length;
 
     /// <summary>
-    /// Returns the character at the given content index. When 
-    /// index == Count, then '\0' is returned.
+    /// Returns the value at the given content index. When 
+    /// index == Count, then null is returned.
     /// </summary>
-    public char this[int index]
+    public T? this[int index]
     {
       get
       {
         int bufferIndex = gap.ToBufferIndex(index);
-        return bufferIndex == Count ? '\0' : buffer[bufferIndex];
+        if (bufferIndex == Count)
+        {
+          return null;
+        }
+        return buffer[bufferIndex];
       }
     }
 
-    public void Insert(int index, char value)
+    public void Insert(int index, T value)
     {
       MoveGapTo(index);
 
@@ -136,7 +113,7 @@ namespace Emme.Models
     /// elements or grows buffer by 50%, which ever is largest.
     /// </summary>
     /// <param name="minGapSize">Minimum amout of room required.</param>
-    void GrowBuffer(int minGapSize)
+    private void GrowBuffer(int minGapSize)
     {
       // Take max of 50% larger buffer or content size + minGapSize
       int newCapacity = Math.Max(
@@ -144,7 +121,7 @@ namespace Emme.Models
           Count + minGapSize);
 
 
-      var newBuffer = new char[newCapacity];
+      var newBuffer = new T[newCapacity];
       var newGap = new Span(gap.Start, gap.End + newBuffer.Length - buffer.Length);
 
       // Copy items before gap.
@@ -161,7 +138,7 @@ namespace Emme.Models
     /// index.
     /// </summary>
     /// <param name="index">Index in content.</param>
-    void MoveGapTo(int index)
+    private void MoveGapTo(int index)
     {
       // Index must be in [0, Count].
       if (index < 0 || index > Count)
@@ -172,15 +149,19 @@ namespace Emme.Models
 
       Span newGap = gap.Move(delta);
       int length = Math.Abs(delta);
-      
+
       if (delta < 0)
+      {
         // newGap.Start < gap.Start < newGap.End < gap.End
         // Move delta chars before old gap to after old gap
-        Copy(newGap.Start, newGap.End, length); 
+        Copy(newGap.Start, newGap.End, length);
+      }
       else if (delta > 0)
+      {
         // gap.Start < newGap.Start < gap.End < newGap.End
         // Move delta chars from end of old gap to before old gap
         Copy(gap.End, gap.Start, length);
+      }
 
       gap = newGap;
     }
@@ -191,7 +172,7 @@ namespace Emme.Models
     /// <param name="sourceIndex">Buffer index to copy from.</param>
     /// <param name="destinationIndex">Buffer index to copy to.</param>
     /// <param name="length">Number of items to copy.</param>
-    void Copy(int sourceIndex, int destinationIndex, int length)
+    private void Copy(int sourceIndex, int destinationIndex, int length)
     {
       Array.Copy(buffer, sourceIndex, buffer, destinationIndex, length);
     }

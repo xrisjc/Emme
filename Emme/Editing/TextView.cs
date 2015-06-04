@@ -13,12 +13,12 @@ namespace Emme.Editing
     /// </summary>
     public event EventHandler<PositionEventArgs> CaretPositionChanged;
 
-    readonly GapBuffer gapBuffer;
+    readonly GapBuffer<char> gapBuffer;
     readonly LinkedList<Span> lines = new LinkedList<Span>();
     LinkedListNode<Span> currentLine;
     Position caretPosition;
 
-    public TextView(GapBuffer gapBuffer)
+    public TextView(GapBuffer<char> gapBuffer)
     {
       this.gapBuffer = gapBuffer;
       caretPosition = Position.BufferStart;

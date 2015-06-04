@@ -14,16 +14,13 @@ namespace Emme.Editing
     public event EventHandler<PositionEventArgs> CaretPositionChanged;
 
     readonly GapBuffer<char> gapBuffer;
-    readonly LinkedList<Span> lines = new LinkedList<Span>();
-    LinkedListNode<Span> currentLine;
-    Position caretPosition;
+    readonly GapBuffer<Span> lines = new GapBuffer<Span>();
+    Position caretPosition = Position.BufferStart;
 
     public TextView(GapBuffer<char> gapBuffer)
     {
       this.gapBuffer = gapBuffer;
-      caretPosition = Position.BufferStart;
-      lines.AddFirst(new Span(0, 0));
-      currentLine = lines.First;
+      lines.Insert(0, new Span(0, 0));
     }
 
     public Position CaretPosition
@@ -40,18 +37,12 @@ namespace Emme.Editing
       }
     }
 
-    Span CurrentLineSpan
+    private void Shift(int delta)
     {
-      get { return currentLine.Value; }
-      set { currentLine.Value = value; }
-    }
-
-    static void Shift(LinkedListNode<Span> line, int delta)
-    {
-      line.Value = line.Value.MoveEnd(delta);
-      while ((line = line.Next) != null)
+      lines[CaretPosition.Line] = lines[CaretPosition.Line].MoveEnd(delta);
+      for (int i = CaretPosition.Line + 1; i < lines.Count; i++)
       {
-        line.Value = line.Value.Move(delta);
+        lines[i] = lines[i].Move(delta);
       }
     }
 
@@ -65,9 +56,9 @@ namespace Emme.Editing
       return line.Next != null;
     }
 
-    static int CaretIndex(LinkedListNode<Span> line, Position caretPosition)
+    static int CaretIndex(Span line, Position caretPosition)
     {
-      return line.Value.Start + caretPosition.Column;
+      return line.Start + caretPosition.Column;
     }
 
     static int Length(LinkedListNode<Span> line)
@@ -77,34 +68,33 @@ namespace Emme.Editing
 
     public void Insert(char value)
     {
-      gapBuffer.Insert(CaretIndex(currentLine, CaretPosition), value);
-      Shift(currentLine, 1);
+      int insertIndex = CaretIndex(lines[CaretPosition.Line], CaretPosition);
+      gapBuffer.Insert(insertIndex, value);
+      Shift(1);
       CaretPosition = CaretPosition.MoveColumn(Direction.Next);
     }
 
     public void InsertNewLine()
     {
-      int splitIndex = CaretIndex(currentLine, CaretPosition);
-      var splitSpans = CurrentLineSpan.Split(splitIndex);
-
-      CurrentLineSpan = splitSpans.Item1;
-      lines.AddAfter(currentLine, splitSpans.Item2);
-
-      currentLine = currentLine.Next;
+      int splitIndex = CaretIndex(lines[CaretPosition.Line], CaretPosition);
+      Tuple<Span, Span> splitSpans = lines[CaretPosition.Line].Split(splitIndex);
+      lines[CaretPosition.Line] = splitSpans.Item1;
       CaretPosition = CaretPosition.MoveLine(Direction.Next).SetColumn(0);
+      lines.Insert(CaretPosition.Line, splitSpans.Item2);
     }
 
     public void Delete()
     {
-      if (CaretPosition.Column < Length(currentLine))
+      if (CaretPosition.Column < lines[CaretPosition.Line].Length)
       {
-        gapBuffer.Delete(CaretIndex(currentLine, CaretPosition));
-        Shift(currentLine, -1);
+        int deleteIndex = CaretIndex(lines[CaretPosition.Line], CaretPosition);
+        gapBuffer.Delete(deleteIndex);
+        Shift(-1);
       }
-      else if (IsLineAfter(currentLine))
+      else if (CaretPosition.Line < lines.Count - 1)
       {
-        CurrentLineSpan = CurrentLineSpan.Join(currentLine.Next.Value);
-        lines.Remove(currentLine.Next);
+        lines[CaretPosition.Line] = lines[CaretPosition.Line].Join(lines[CaretPosition.Line + 1]);
+        lines.Delete(CaretPosition.Line + 1);
       }
     }
 
@@ -123,11 +113,10 @@ namespace Emme.Editing
       {
         CaretPosition = CaretPosition.MoveColumn(Direction.Previous);
       }
-      else if (IsLineBefore(currentLine))
+      else if (CaretPosition.Line > 0)
       {
-        currentLine = currentLine.Previous;
         CaretPosition = CaretPosition.MoveLine(Direction.Previous)
-                                     .SetColumn(Length(currentLine));
+                                     .SetColumn(lines[CaretPosition.Line - 1].Length);
       }
     }
 
@@ -137,34 +126,31 @@ namespace Emme.Editing
     /// <returns>Updated position after move.</returns>
     public void MoveToNext()
     {
-      if (CaretPosition.Column < Length(currentLine))
+      if (CaretPosition.Column < lines[CaretPosition.Line].Length)
       {
         CaretPosition = CaretPosition.MoveColumn(Direction.Next);
       }
-      else if (IsLineAfter(currentLine))
+      else if (CaretPosition.Line < lines.Count - 1)
       {
-        currentLine = currentLine.Next;
         CaretPosition = CaretPosition.MoveLine(Direction.Next).SetColumn(0);
       }
     }
 
     public void MoveToPreviousLine()
     {
-      if (IsLineBefore(currentLine))
+      if (CaretPosition.Line > 0)
       {
-        currentLine = currentLine.Previous;
         CaretPosition = CaretPosition.MoveLine(Direction.Previous)
-                                     .ClampColumn(Length(currentLine));
+                                     .ClampColumn(lines[CaretPosition.Line - 1].Length);
       }
     }
 
     public void MoveToNextLine()
     {
-      if (IsLineAfter(currentLine))
+      if (CaretPosition.Line < lines.Count - 1)
       {
-        currentLine = currentLine.Next;
         CaretPosition = CaretPosition.MoveLine(Direction.Next)
-                                     .ClampColumn(Length(currentLine));
+                                     .ClampColumn(lines[CaretPosition.Line + 1].Length);
       }
     }
 
@@ -175,16 +161,16 @@ namespace Emme.Editing
 
     public void MoveToLineEnd()
     {
-      CaretPosition = CaretPosition.SetColumn(Length(currentLine));
+      CaretPosition = CaretPosition.SetColumn(lines[CaretPosition.Line].Length);
     }
 
     public IEnumerator<string> GetEnumerator()
     {
       StringBuilder sb = new StringBuilder();
-      for (var line = lines.First; line != null; line = line.Next)
+      for (var line = 0; line < lines.Count; line++)
       {
         sb.Clear();
-        for (int i = line.Value.Start; i < line.Value.End; i++)
+        for (int i = lines[line].Start; i < lines[line].End; i++)
         {
           switch (gapBuffer[i])
           {
@@ -198,14 +184,7 @@ namespace Emme.Editing
           }
 
         }
-        if (line.Next == null)
-        {
-          sb.Append('¤');
-        }
-        else
-        {
-          sb.Append('↵');
-        }
+        sb.Append(line + 1 == lines.Count ? '¤' : '↵');
         yield return sb.ToString();
       }
     }

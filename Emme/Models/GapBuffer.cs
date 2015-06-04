@@ -73,17 +73,10 @@ namespace Emme.Models
     /// Returns the value at the given content index. When 
     /// index == Count, then null is returned.
     /// </summary>
-    public T? this[int index]
+    public T this[int index]
     {
-      get
-      {
-        int bufferIndex = gap.ToBufferIndex(index);
-        if (bufferIndex == Count)
-        {
-          return null;
-        }
-        return buffer[bufferIndex];
-      }
+      get { return buffer[gap.ToBufferIndex(index)]; }
+      set { buffer[gap.ToBufferIndex(index)] = value; }
     }
 
     public void Insert(int index, T value)

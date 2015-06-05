@@ -25,7 +25,7 @@ namespace Emme.UI
   /// <summary>
   /// Win32 API interop functions.
   /// </summary>
-  static class Win32
+  static class NativeMethods
   {
     /// <summary>
     /// Bitmap handle to create a solid color caret.

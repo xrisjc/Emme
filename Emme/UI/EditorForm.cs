@@ -19,7 +19,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using Emme.Editing;
-using static Emme.UI.Win32;
+using static Emme.UI.NativeMethods;
 using Emme.Models;
 
 namespace Emme.UI

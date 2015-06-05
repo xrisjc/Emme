@@ -59,6 +59,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Editing\PositionEventArgs.cs" />
     <Compile Include="Models\Direction.cs" />
     <Compile Include="Models\DirectionExtentions.cs" />
@@ -73,7 +74,7 @@
     </Compile>
     <Compile Include="UI\FontMetrics.cs" />
     <Compile Include="Models\GapBuffer.cs" />
-    <Compile Include="UI\Win32.cs" />
+    <Compile Include="UI\NativeMethod.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

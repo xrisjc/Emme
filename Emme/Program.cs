@@ -36,6 +36,7 @@
 //                                      -- Voltaire
 //
 
+using System;
 using System.Windows.Forms;
 using Emme.UI;
 using Emme.Editing;
@@ -45,6 +46,7 @@ namespace Emme
 {
   public class Program
   {
+    [STAThread]
     public static void Main()
     {
       var buffer = new GapBuffer<char>();

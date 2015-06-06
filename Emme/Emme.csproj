@@ -61,8 +61,6 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Editing\PositionEventArgs.cs" />
-    <Compile Include="Models\Direction.cs" />
-    <Compile Include="Models\DirectionExtentions.cs" />
     <Compile Include="Editing\TextView.cs" />
     <Compile Include="Models\Span.cs" />
     <Compile Include="Models\SpanExtensions.cs" />

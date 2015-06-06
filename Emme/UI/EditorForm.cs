@@ -116,7 +116,7 @@ namespace Emme.UI
           break;
 
         case Keys.Back:
-          textView.DeletePrevious();
+          textView.DeleteBackwards();
           break;
 
         case Keys.Delete:
@@ -124,19 +124,19 @@ namespace Emme.UI
           break;
 
         case Keys.Left:
-          textView.MoveToPrevious();
+          textView.CharLeft();
           break;
 
         case Keys.Right:
-          textView.MoveToNext();
+          textView.CharRight();
           break;
 
         case Keys.Up:
-          textView.MoveToLine(Direction.Previous);
+          textView.LineUp();
           break;
 
         case Keys.Down:
-          textView.MoveToLine(Direction.Next);
+          textView.LineDown();
           break;
 
         case Keys.Home:

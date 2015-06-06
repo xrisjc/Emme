@@ -34,6 +34,7 @@ namespace Emme.Editing
     readonly GapBuffer<char> gapBuffer;
     readonly GapBuffer<Span> lines = new GapBuffer<Span>();
     Position caretPosition = Position.BufferStart;
+    int? desiredColumn = null;
 
     public TextView(GapBuffer<char> gapBuffer)
     {
@@ -71,6 +72,7 @@ namespace Emme.Editing
 
     public void Insert(char value)
     {
+      desiredColumn = null;
       int insertIndex = CaretIndex(lines[CaretPosition.Line], CaretPosition);
       gapBuffer.Insert(insertIndex, value);
       Shift(1);
@@ -79,6 +81,7 @@ namespace Emme.Editing
 
     public void InsertNewLine()
     {
+      desiredColumn = null;
       int splitIndex = CaretIndex(lines[CaretPosition.Line], CaretPosition);
       Tuple<Span, Span> splitSpans = lines[CaretPosition.Line].Split(splitIndex);
       lines[CaretPosition.Line] = splitSpans.Item1;
@@ -102,24 +105,25 @@ namespace Emme.Editing
       }
     }
 
-    public void DeletePrevious()
+    public void DeleteBackwards()
     {
       if (CaretPosition != Position.BufferStart)
       {
-        MoveToPrevious();
+        CharLeft();
         Delete();
       }
     }
 
-    public void MoveToPrevious()
+    public void CharLeft()
     {
+      desiredColumn = null;
       if (CaretPosition.Column > 0)
       {
         CaretPosition = new Position(CaretPosition.Line, CaretPosition.PreviousColumn);
       }
       else if (CaretPosition.Line > 0)
       {
-        MoveToLine(Direction.Previous);
+        LineUp();
         MoveToLineEnd();
       }
     }
@@ -128,29 +132,38 @@ namespace Emme.Editing
     /// Moves current position to next character.
     /// </summary>
     /// <returns>Updated position after move.</returns>
-    public void MoveToNext()
+    public void CharRight()
     {
+      desiredColumn = null;
       if (CaretPosition.Column < lines[CaretPosition.Line].Length)
       {
         CaretPosition = new Position(CaretPosition.Line, CaretPosition.NextColumn);
       }
       else if (CaretPosition.NextLine < lines.Count)
       {
-        MoveToLine(Direction.Next);
+        LineDown();
         MoveToLineStart();
       }
     }
 
-    public void MoveToLine(Direction direction)
+    private void MoveToLine(int line)
     {
-      int nextLine =
-        direction == Direction.Next ? CaretPosition.NextLine : CaretPosition.PreviousLine;
-
-      if (0 <= nextLine && nextLine < lines.Count)
+      if (0 <= line && line < lines.Count)
       {
-        int nextColumn = Math.Min(lines[nextLine].Length, CaretPosition.Column);
-        CaretPosition = new Position(nextLine, nextColumn);
+        desiredColumn = desiredColumn ?? CaretPosition.Column;
+        int nextColumn = Math.Min(lines[line].Length, desiredColumn.Value);
+        CaretPosition = new Position(line, nextColumn);
       }
+    }
+
+    public void LineUp()
+    {
+      MoveToLine(CaretPosition.PreviousLine);
+    }
+
+    public void LineDown()
+    {
+      MoveToLine(CaretPosition.NextLine);
     }
 
     public void MoveToLineStart()

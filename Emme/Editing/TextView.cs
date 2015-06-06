@@ -174,27 +174,33 @@ namespace Emme.Editing
       CaretPosition = new Position(CaretPosition.Line, column: lines[CaretPosition.Line].Length);
     }
 
-    public IEnumerator<string> GetEnumerator()
+    public override string ToString()
     {
       StringBuilder sb = new StringBuilder();
+      for (var line = 0; line < lines.Count; line++)
+      {
+        for (int i = lines[line].Start; i < lines[line].End; i++)
+        {
+          sb.Append(gapBuffer[i]);
+        }
+        if (line + 1 < lines.Count)
+        {
+          sb.Append(Environment.NewLine);
+        }
+      }
+      return sb.ToString();
+    }
+
+    public IEnumerator<string> GetEnumerator()
+    {
+      var sb = new StringBuilder();
       for (var line = 0; line < lines.Count; line++)
       {
         sb.Clear();
         for (int i = lines[line].Start; i < lines[line].End; i++)
         {
-          switch (gapBuffer[i])
-          {
-            case ' ':
-              sb.Append('·');
-              break;
-
-            default:
-              sb.Append(gapBuffer[i]);
-              break;
-          }
-
+            sb.Append(gapBuffer[i]);
         }
-        sb.Append(line + 1 == lines.Count ? '¤' : '↵');
         yield return sb.ToString();
       }
     }

@@ -17,6 +17,7 @@
 
 using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using Emme.Editing;
 using static Emme.UI.NativeMethods;
@@ -109,7 +110,23 @@ namespace Emme.UI
     {
       base.OnKeyDown(e);
 
-      switch (e.KeyCode)
+      if (e.Control && (e.KeyCode == Keys.S))
+      {
+        using (var dialog = new SaveFileDialog())
+        {
+          if (dialog.ShowDialog() == DialogResult.OK)
+          {
+            using (var stream = dialog.OpenFile())
+            {
+              using (var writer = new StreamWriter(stream))
+              {
+                writer.Write(textView.ToString());
+              }
+            }
+          }
+        }
+      }
+      else switch (e.KeyCode)
       {
         case Keys.Enter:
           textView.InsertNewLine();

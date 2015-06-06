@@ -123,8 +123,7 @@ namespace Emme.Editing
       }
       else if (CaretPosition.Line > 0)
       {
-        LineUp();
-        MoveToLineEnd();
+        CaretPosition = new Position(CaretPosition.PreviousLine, column: lines[CaretPosition.PreviousLine].Length);
       }
     }
 
@@ -141,8 +140,7 @@ namespace Emme.Editing
       }
       else if (CaretPosition.NextLine < lines.Count)
       {
-        LineDown();
-        MoveToLineStart();
+        CaretPosition = new Position(CaretPosition.NextLine, column: 0);
       }
     }
 
@@ -166,12 +164,12 @@ namespace Emme.Editing
       MoveToLine(CaretPosition.NextLine);
     }
 
-    public void MoveToLineStart()
+    public void LineStart()
     {
       CaretPosition = new Position(CaretPosition.Line, column: 0);
     }
 
-    public void MoveToLineEnd()
+    public void LineEnd()
     {
       CaretPosition = new Position(CaretPosition.Line, column: lines[CaretPosition.Line].Length);
     }

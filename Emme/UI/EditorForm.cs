@@ -140,11 +140,11 @@ namespace Emme.UI
           break;
 
         case Keys.Home:
-          textView.MoveToLineStart();
+          textView.LineStart();
           break;
 
         case Keys.End:
-          textView.MoveToLineEnd();
+          textView.LineEnd();
           break;
       }
 

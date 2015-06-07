@@ -49,11 +49,8 @@ namespace Emme
     [STAThread]
     public static void Main()
     {
-      var buffer = new GapBuffer<char>();
-      var textView = new TextView(buffer);
-
       Application.EnableVisualStyles();
-      using (var editor = new EditorForm(textView))
+      using (var editor = new EditorForm())
       {
         Application.Run(editor);
       }

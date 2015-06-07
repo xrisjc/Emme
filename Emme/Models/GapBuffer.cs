@@ -18,6 +18,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 
 namespace Emme.Models
 {
@@ -25,7 +26,7 @@ namespace Emme.Models
   /// Buffer to allow efficient inserting and deleting of content by keeping
   /// a gap of available space where insertions and deletions happen.
   /// </summary>
-  public class GapBuffer<T> where T : struct
+  class GapBuffer<T> where T : struct
   {
     /// <summary>
     /// Actual value buffer.
@@ -88,6 +89,22 @@ namespace Emme.Models
 
       buffer[gap.Start] = value;
       gap = gap.MoveStart(1);
+    }
+
+    public void Insert(int index, IIndexable<T> values, Span valuesSlice)
+    {
+      MoveGapTo(index);
+
+      if (gap.Length < valuesSlice.Length)
+      {
+        GrowBuffer(valuesSlice.Length);
+      }
+
+      for (int i = 0; i < valuesSlice.Length; i++)
+      {
+        buffer[gap.Start + i] = values[valuesSlice.Start + i];
+      }
+      gap = gap.MoveStart(valuesSlice.Length);
     }
 
     /// <summary>

@@ -21,6 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Emme.Models;
+using static Emme.Models.GapBuffer<char>;
 
 namespace Emme.Editing
 {
@@ -36,10 +37,35 @@ namespace Emme.Editing
     Position caretPosition = Position.BufferStart;
     int? desiredColumn = null;
 
-    public TextView(GapBuffer<char> gapBuffer)
+    public TextView(string initialContent = null)
     {
-      this.gapBuffer = gapBuffer;
-      lines.Insert(0, new Span(0, 0));
+      if (string.IsNullOrEmpty(initialContent))
+      {
+        gapBuffer = new GapBuffer<char>();
+        lines.Insert(0, new Span(0, 0));
+      }
+      else
+      {
+        gapBuffer = new GapBuffer<char>(initialCapacity: initialContent.Length);
+
+        IIndexable<char> initialContentIndexable = new StringIndexable(initialContent);
+        string newLine = Environment.NewLine;
+        int lineStartIndex = 0;
+        int bufferIndex = 0;
+        int line = 0;
+        int newLineIndex;
+        do
+        {
+          newLineIndex = initialContent.IndexOf(newLine, startIndex: lineStartIndex);
+          var lineSlice = new Span(lineStartIndex, (newLineIndex >= 0) ? newLineIndex : initialContent.Length);
+          gapBuffer.Insert(bufferIndex, initialContentIndexable, lineSlice);
+          lines.Insert(line, new Span(bufferIndex, bufferIndex + lineSlice.Length));
+          lineStartIndex += lineSlice.Length + newLine.Length;
+          bufferIndex += lineSlice.Length;
+          line++;
+        }
+        while (newLineIndex >= 0);
+      }
     }
 
     public Position CaretPosition
@@ -166,11 +192,13 @@ namespace Emme.Editing
 
     public void LineStart()
     {
+      desiredColumn = null;
       CaretPosition = new Position(CaretPosition.Line, column: 0);
     }
 
     public void LineEnd()
     {
+      desiredColumn = null;
       CaretPosition = new Position(CaretPosition.Line, column: lines[CaretPosition.Line].Length);
     }
 

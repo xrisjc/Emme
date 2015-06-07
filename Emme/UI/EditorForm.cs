@@ -34,9 +34,9 @@ namespace Emme.UI
     Caret caret;
 
 
-    public EditorForm(TextView textView)
+    public EditorForm()
     {
-      this.textView = textView;
+      this.textView = new TextView();
       textView.CaretPositionChanged += TextView_CaretPositionChanged;
 
       Text = "Emme";
@@ -89,9 +89,9 @@ namespace Emme.UI
     protected override void OnGotFocus(EventArgs e)
     {
       base.OnGotFocus(e);
-      CreateCaret(this.Handle, SOLID_BITMAP_HANDLE, caret.Width, caret.Height);
+      CreateCaret(Handle, SOLID_BITMAP_HANDLE, caret.Width, caret.Height);
       SetCaretPos(caret.X, caret.Y);
-      ShowCaret(this.Handle);
+      ShowCaret(Handle);
     }
 
     protected override void OnLostFocus(EventArgs e)
@@ -100,10 +100,15 @@ namespace Emme.UI
       DestroyCaret();
     }
 
+    private void UpdateCaretPosition(Position position)
+    {
+      caret = new Caret(position, fontMetrics);
+      SetCaretPos(caret.X, caret.Y);
+    }
+
     private void TextView_CaretPositionChanged(object sender, PositionEventArgs e)
     {
-      caret = new Caret(e.Position, fontMetrics);
-      SetCaretPos(caret.X, caret.Y);
+      UpdateCaretPosition(e.Position);
     }
 
     protected override void OnKeyDown(KeyEventArgs e)
@@ -121,6 +126,26 @@ namespace Emme.UI
               using (var writer = new StreamWriter(stream))
               {
                 writer.Write(textView.ToString());
+              }
+            }
+          }
+        }
+      }
+      else if (e.Control && (e.KeyCode == Keys.O))
+      {
+        using (var dialog = new OpenFileDialog())
+        {
+          if (dialog.ShowDialog() == DialogResult.OK)
+          {
+            using (var stream = dialog.OpenFile())
+            {
+              using (var reader = new StreamReader(stream))
+              {
+                string fileContent = reader.ReadToEnd();
+                textView.CaretPositionChanged -= TextView_CaretPositionChanged;
+                textView = new TextView(fileContent);
+                textView.CaretPositionChanged += TextView_CaretPositionChanged;
+                UpdateCaretPosition(textView.CaretPosition);
               }
             }
           }

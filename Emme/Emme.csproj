@@ -75,6 +75,7 @@
     <Compile Include="UI\FontMetrics.cs" />
     <Compile Include="Models\GapBuffer.cs" />
     <Compile Include="UI\NativeMethod.cs" />
+    <Compile Include="UI\ScrollingMediator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

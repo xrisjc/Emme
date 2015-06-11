@@ -32,10 +32,13 @@ namespace Emme.UI
 
     readonly FontMetrics fontMetrics;
     Caret caret;
+    ScrollingMediator scrollingMediator;
 
 
     public EditorForm()
     {
+      scrollingMediator = new ScrollingMediator(this, new HScrollBar(), new VScrollBar());
+
       this.textView = new TextView();
       textView.CaretPositionChanged += TextView_CaretPositionChanged;
 

@@ -1,8 +1,11 @@
 # Emme
 
-Emme is a text edit with a minimalist user interface and an emphasis on using the keyboard.
+Emme is a text edit with a minimalist user interface and an emphasis on using
+the keyboard. Emme is written in C# 6.0 and targets .NET 4.6. Right now the GUI
+is WinForms, but this may change in the future.
 
-There are no official releases of Emme right now. The only way to get Emme is to clone this repository and build with Visual Studio 2010 or later (any edition should work).
+There are no official releases of Emme right now. The only way to get Emme is
+to clone this repository and build with Visual Studio 2015.
 
 Emme free software and is release under the GPL 3.0 license.
 

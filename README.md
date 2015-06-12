@@ -1,6 +1,6 @@
 # Emme
 
-Emme is a text edit with a minimalist user interface and an emphasis on using
+Emme is a text editor with a minimalist user interface and an emphasis on using
 the keyboard. Emme is written in C# 6.0 and targets .NET 4.6. Right now the GUI
 is WinForms, but this may change in the future.
 

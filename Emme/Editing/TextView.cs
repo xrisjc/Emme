@@ -25,13 +25,8 @@ using static Emme.Models.GapBuffer<char>;
 
 namespace Emme.Editing
 {
-  class TextView : IEnumerable<string>
+  class TextView
   {
-    /// <summary>
-    /// Event fired when the caret's position changes.
-    /// </summary>
-    public event EventHandler<PositionEventArgs> CaretPositionChanged;
-
     readonly GapBuffer<char> gapBuffer;
     readonly GapBuffer<Span> lines = new GapBuffer<Span>();
     Position caretPosition = Position.BufferStart;
@@ -71,15 +66,7 @@ namespace Emme.Editing
     public Position CaretPosition
     {
       get { return caretPosition; }
-      private set
-      {
-        bool caretPositionDidChange = (caretPosition != value);
-        caretPosition = value;
-        if (caretPositionDidChange && CaretPositionChanged != null)
-        {
-          CaretPositionChanged(this, new PositionEventArgs(caretPosition));
-        }
-      }
+      private set { caretPosition = value; }
     }
 
     private void Shift(int delta)
@@ -219,23 +206,18 @@ namespace Emme.Editing
       return sb.ToString();
     }
 
-    public IEnumerator<string> GetEnumerator()
+    public IEnumerable<string> EnumerateLines(int startingLine, int lineCount)
     {
       var sb = new StringBuilder();
-      for (var line = 0; line < lines.Count; line++)
+      for (var line = startingLine; (line - startingLine) < lineCount && line < lines.Count ; line++)
       {
         sb.Clear();
         for (int i = lines[line].Start; i < lines[line].End; i++)
         {
-            sb.Append(gapBuffer[i]);
+          sb.Append(gapBuffer[i]);
         }
         yield return sb.ToString();
       }
-    }
-
-    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-    {
-      return GetEnumerator();
     }
   }
 }

@@ -1,5 +1,5 @@
-﻿//
-// Copyright (C) 2010  Christopher Cowan
+//
+// Copyright (C) 2010 - 2015  Christopher Cowan
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -16,7 +16,6 @@
 //
 
 using System;
-using System.Diagnostics;
 
 namespace Emme.Models
 {
@@ -42,9 +41,6 @@ namespace Emme.Models
 
     public Position(int line, int column)
     {
-      Debug.Assert(line >= 0);
-      Debug.Assert(column >= 0);
-
       Line = line;
       Column = column;
     }

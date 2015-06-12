@@ -1,5 +1,5 @@
 ﻿//
-// Copyright (C) 2010  Christopher Cowan
+// Copyright (C) 2010 - 2015  Christopher Cowan
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -29,18 +29,15 @@ namespace Emme.UI
   {
 
     TextView textView;
+    ScrollView scrollView = new ScrollView(topLine: 0, leftColumn: 0, lines: 40, columns: 80);
 
     readonly FontMetrics fontMetrics;
     Caret caret;
-    ScrollingMediator scrollingMediator;
 
 
     public EditorForm()
     {
-      scrollingMediator = new ScrollingMediator(this, new HScrollBar(), new VScrollBar());
-
       this.textView = new TextView();
-      textView.CaretPositionChanged += TextView_CaretPositionChanged;
 
       Text = "Emme";
 
@@ -50,8 +47,11 @@ namespace Emme.UI
       Font = new Font("Consolas", 10f);
       fontMetrics = CreateFontMetrics();
       caret = new Caret(Position.BufferStart, fontMetrics);
-      Width = 80 * fontMetrics.Width + 2 * fontMetrics.Padding; // display as 80 x 40 grid.
-      Height = 40 * fontMetrics.Height;
+
+      ClientSize =
+        new Size(
+          scrollView.Columns * fontMetrics.Width + 2 * fontMetrics.Padding,
+          scrollView.Lines * fontMetrics.Height);
 
 
       // Flickering be gone. Got the method from here:
@@ -105,13 +105,8 @@ namespace Emme.UI
 
     private void UpdateCaretPosition(Position position)
     {
-      caret = new Caret(position, fontMetrics);
+      caret = new Caret(scrollView.PositionInView(position), fontMetrics);
       SetCaretPos(caret.X, caret.Y);
-    }
-
-    private void TextView_CaretPositionChanged(object sender, PositionEventArgs e)
-    {
-      UpdateCaretPosition(e.Position);
     }
 
     protected override void OnKeyDown(KeyEventArgs e)
@@ -145,52 +140,62 @@ namespace Emme.UI
               using (var reader = new StreamReader(stream))
               {
                 string fileContent = reader.ReadToEnd();
-                textView.CaretPositionChanged -= TextView_CaretPositionChanged;
                 textView = new TextView(fileContent);
-                textView.CaretPositionChanged += TextView_CaretPositionChanged;
                 UpdateCaretPosition(textView.CaretPosition);
               }
             }
           }
         }
       }
-      else switch (e.KeyCode)
+      else
       {
-        case Keys.Enter:
-          textView.InsertNewLine();
-          break;
+        switch (e.KeyCode)
+        {
+          case Keys.Enter:
+            textView.InsertNewLine();
+            break;
 
-        case Keys.Back:
-          textView.DeleteBackwards();
-          break;
+          case Keys.Back:
+            textView.DeleteBackwards();
+            break;
 
-        case Keys.Delete:
-          textView.Delete();
-          break;
+          case Keys.Delete:
+            textView.Delete();
+            break;
 
-        case Keys.Left:
-          textView.CharLeft();
-          break;
+          case Keys.Left:
+            textView.CharLeft();
+            break;
 
-        case Keys.Right:
-          textView.CharRight();
-          break;
+          case Keys.Right:
+            textView.CharRight();
+            break;
 
-        case Keys.Up:
-          textView.LineUp();
-          break;
+          case Keys.Up:
+            textView.LineUp();
+            break;
 
-        case Keys.Down:
-          textView.LineDown();
-          break;
+          case Keys.Down:
+            textView.LineDown();
+            break;
 
-        case Keys.Home:
-          textView.LineStart();
-          break;
+          case Keys.Home:
+            textView.LineStart();
+            break;
 
-        case Keys.End:
-          textView.LineEnd();
-          break;
+          case Keys.End:
+            textView.LineEnd();
+            break;
+        }
+        if (textView.CaretPosition.Line < scrollView.TopLine)
+        {
+          scrollView = scrollView.LineUp();
+        }
+        else if (textView.CaretPosition.Line >= scrollView.BottomLine)
+        {
+          scrollView = scrollView.LineDown();
+        }
+        UpdateCaretPosition(textView.CaretPosition);
       }
 
       Invalidate();
@@ -206,6 +211,7 @@ namespace Emme.UI
       }
 
       textView.Insert(e.KeyChar);
+      UpdateCaretPosition(textView.CaretPosition);
       
       Invalidate();
     }
@@ -216,7 +222,7 @@ namespace Emme.UI
 
       var point = new Point(0, 0);
 
-      foreach (string line in textView)
+      foreach (string line in textView.EnumerateLines(scrollView.TopLine, scrollView.Lines))
       {
         TextRenderer.DrawText(
             e.Graphics,

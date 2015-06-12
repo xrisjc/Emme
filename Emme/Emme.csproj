@@ -60,9 +60,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Editing\PositionEventArgs.cs" />
     <Compile Include="Editing\TextView.cs" />
     <Compile Include="Models\IIndexable.cs" />
+    <Compile Include="Models\ScrollView.cs" />
     <Compile Include="Models\Span.cs" />
     <Compile Include="Models\SpanExtensions.cs" />
     <Compile Include="Models\Position.cs" />
@@ -75,7 +75,6 @@
     <Compile Include="UI\FontMetrics.cs" />
     <Compile Include="Models\GapBuffer.cs" />
     <Compile Include="UI\NativeMethod.cs" />
-    <Compile Include="UI\ScrollingMediator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

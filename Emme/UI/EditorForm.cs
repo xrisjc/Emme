@@ -20,8 +20,9 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using Emme.Editing;
-using static Emme.UI.NativeMethods;
 using Emme.Models;
+using static System.Math;
+using static Emme.UI.NativeMethods;
 
 namespace Emme.UI
 {
@@ -29,7 +30,7 @@ namespace Emme.UI
   {
 
     TextView textView;
-    ScrollView scrollView = new ScrollView(topLine: 0, leftColumn: 0, lines: 40, columns: 80);
+    ScrollView scrollView = new ScrollView(lineStart: 0, leftColumn: 0, lines: 40, columns: 80);
 
     readonly FontMetrics fontMetrics;
     Caret caret;
@@ -153,10 +154,12 @@ namespace Emme.UI
         {
           case Keys.Enter:
             textView.InsertNewLine();
+            scrollView = scrollView.CheckLineDown(textView.CaretPosition);
             break;
 
           case Keys.Back:
             textView.DeleteBackwards();
+            scrollView = scrollView.CheckLineUp(textView.CaretPosition);
             break;
 
           case Keys.Delete:
@@ -165,18 +168,22 @@ namespace Emme.UI
 
           case Keys.Left:
             textView.CharLeft();
+            scrollView = scrollView.CheckLineUp(textView.CaretPosition);
             break;
 
           case Keys.Right:
             textView.CharRight();
+            scrollView = scrollView.CheckLineDown(textView.CaretPosition);
             break;
 
           case Keys.Up:
             textView.LineUp();
+            scrollView = scrollView.CheckLineUp(textView.CaretPosition);
             break;
 
           case Keys.Down:
             textView.LineDown();
+            scrollView = scrollView.CheckLineDown(textView.CaretPosition);
             break;
 
           case Keys.Home:
@@ -186,14 +193,16 @@ namespace Emme.UI
           case Keys.End:
             textView.LineEnd();
             break;
-        }
-        if (textView.CaretPosition.Line < scrollView.TopLine)
-        {
-          scrollView = scrollView.LineUp();
-        }
-        else if (textView.CaretPosition.Line >= scrollView.BottomLine)
-        {
-          scrollView = scrollView.LineDown();
+
+          case Keys.PageDown:
+            textView.LineDown(scrollView.Lines);
+            scrollView = scrollView.CheckPageDown(textView.CaretPosition);
+            break;
+
+          case Keys.PageUp:
+            textView.LineUp(scrollView.Lines);
+            scrollView = scrollView.CheckPageUp(textView.CaretPosition);
+            break;
         }
         UpdateCaretPosition(textView.CaretPosition);
       }
@@ -222,7 +231,7 @@ namespace Emme.UI
 
       var point = new Point(0, 0);
 
-      foreach (string line in textView.EnumerateLines(scrollView.TopLine, scrollView.Lines))
+      foreach (string line in textView.EnumerateLines(scrollView.LineStart, scrollView.Lines))
       {
         TextRenderer.DrawText(
             e.Graphics,

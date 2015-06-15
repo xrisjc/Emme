@@ -21,7 +21,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Emme.Models;
-using static Emme.Models.GapBuffer<char>;
+using static System.Math;
+using static Emme.Models.Util;
 
 namespace Emme.Editing
 {
@@ -63,11 +64,19 @@ namespace Emme.Editing
       }
     }
 
+    /// <summary>
+    /// Current caret position in this TextView.
+    /// </summary>
     public Position CaretPosition
     {
       get { return caretPosition; }
       private set { caretPosition = value; }
     }
+
+    /// <summary>
+    /// The number of lines this TextView contains.
+    /// </summary>
+    public int LastLine => lines.Count - 1;
 
     private void Shift(int delta)
     {
@@ -157,9 +166,9 @@ namespace Emme.Editing
       }
     }
 
-    private void MoveToLine(int line)
+    public void MoveToLine(int line)
     {
-      if (0 <= line && line < lines.Count)
+      if (line.IsInRange(0, lines.Count))
       {
         desiredColumn = desiredColumn ?? CaretPosition.Column;
         int nextColumn = Math.Min(lines[line].Length, desiredColumn.Value);
@@ -172,9 +181,29 @@ namespace Emme.Editing
       MoveToLine(CaretPosition.PreviousLine);
     }
 
+    /// <summary>
+    /// Go up no more than maxLines number of lines.
+    /// </summary>
+    /// <param name="maxLines">Number of lines to go up.</param>
+    public void LineUp(int maxLines)
+    {
+      int deltaTextView = Min(CaretPosition.Line, maxLines);
+      MoveToLine(CaretPosition.Line - deltaTextView);
+    }
+
     public void LineDown()
     {
       MoveToLine(CaretPosition.NextLine);
+    }
+
+    /// <summary>
+    /// Go down no more that maxLines number of lines.
+    /// </summary>
+    /// <param name="maxLines">Maximum number of lines to go down.</param>
+    public void LineDown(int maxLines)
+    {
+      int deltaTextView = Min(LastLine - CaretPosition.Line, maxLines);
+      MoveToLine(CaretPosition.Line + deltaTextView);
     }
 
     public void LineStart()

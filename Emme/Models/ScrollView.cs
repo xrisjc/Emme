@@ -17,35 +17,93 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using static System.Math;
+
 namespace Emme.Models
 {
+  /// <summary>
+  /// Scruct that defines where the scrolling page is.
+  /// </summary>
   struct ScrollView
   {
-    public ScrollView(int topLine, int leftColumn, int lines, int columns)
+    public ScrollView(int lineStart, int leftColumn, int lines, int columns)
     {
-      TopLine = topLine;
+      LineStart = lineStart;
       LeftColumn = leftColumn;
       Lines = lines;
       Columns = columns;
     }
 
-    public int TopLine { get; }
+    public int LineStart { get; }
 
     public int LeftColumn { get; }
 
+    /// <summary>
+    /// Total number of lines displayed in this ScrollView.
+    /// </summary>
     public int Lines { get; }
 
     public int Columns { get; }
 
-    public int BottomLine => TopLine + Lines;
+    /// <summary>
+    /// Ending line of this ScrollView. This is non-inclusive. That is this is
+    /// the first line below the ScrollView.
+    /// </summary>
+    public int LineEnd => LineStart + Lines;
 
-    public ScrollView LineUp() => new ScrollView(TopLine - 1, LeftColumn, Lines, Columns);
-
-    public ScrollView LineDown() => new ScrollView(TopLine + 1, LeftColumn, Lines, Columns);
-
-    public Position PositionInView(Position positionInFile)
+    public ScrollView CheckLineDown(Position caretPosition)
     {
-      return new Position(positionInFile.Line - TopLine, positionInFile.Column - LeftColumn);
+      if (caretPosition.Line >= LineEnd)
+      {
+        return HorizontalScroll(1);
+      }
+      else
+      {
+        return this;
+      }
     }
+
+    public ScrollView CheckLineUp(Position caretPosition)
+    {
+      if (caretPosition.Line < LineStart)
+      {
+        return HorizontalScroll(-1);
+      }
+      else
+      {
+        return this;
+      }
+    }
+
+    public ScrollView CheckPageDown(Position caretPosition)
+    {
+      if (caretPosition.Line.IsInRange(LineStart, LineEnd))
+      {
+        return this;
+      }
+      else
+      {
+        return HorizontalScroll(Lines);
+      }
+    }
+
+    public ScrollView CheckPageUp(Position caretPosition)
+    {
+      if (caretPosition.Line.IsInRange(LineStart, LineEnd))
+      {
+        return this;
+      }
+      else
+      {
+        int scrollLinesDelta = Min(LineStart, Lines);
+        return HorizontalScroll(-scrollLinesDelta);
+      }
+    }
+
+    public ScrollView HorizontalScroll(int delta) =>
+      new ScrollView(LineStart + delta, LeftColumn, Lines, Columns);
+
+    public Position PositionInView(Position positionInFile) =>
+      new Position(positionInFile.Line - LineStart, positionInFile.Column - LeftColumn);
   }
 }

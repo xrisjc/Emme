@@ -90,6 +90,18 @@ namespace Emme.UI
       }
     }
 
+    protected override void OnResize(EventArgs e)
+    {
+      base.OnResize(e);
+
+      int lines = ClientSize.Height / fontMetrics.Height;
+      int columns = (ClientSize.Width - 2 * fontMetrics.Padding) / fontMetrics.Width;
+
+      scrollView = new ScrollView(scrollView.LineStart, scrollView.LeftColumn, lines, columns);
+
+      Invalidate();
+    }
+
     protected override void OnGotFocus(EventArgs e)
     {
       base.OnGotFocus(e);

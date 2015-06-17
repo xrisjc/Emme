@@ -51,11 +51,16 @@ namespace Emme.Models
     /// </summary>
     public int LineEnd => LineStart + Lines;
 
+    /// <summary>
+    /// Handles any scrolling needed after a line down command.
+    /// </summary>
+    /// <param name="caretPosition">Caret position after a line down.</param>
+    /// <returns>Updated ScrollView.</returns>
     public ScrollView CheckLineDown(Position caretPosition)
     {
       if (caretPosition.Line >= LineEnd)
       {
-        return HorizontalScroll(1);
+        return MoveWithLastLineAt(caretPosition.Line);
       }
       else
       {
@@ -63,11 +68,20 @@ namespace Emme.Models
       }
     }
 
+    /// <summary>
+    /// Handles any scrolling needed after a line up command.
+    /// </summary>
+    /// <param name="caretPosition">Caret position after a line up.</param>
+    /// <returns>Update ScrollView.</returns>
     public ScrollView CheckLineUp(Position caretPosition)
     {
-      if (caretPosition.Line < LineStart)
+      if (caretPosition.Line >= LineEnd)
       {
-        return HorizontalScroll(-1);
+        return MoveWithLastLineAt(caretPosition.Line);
+      }
+      else if (caretPosition.Line < LineStart)
+      {
+        return MoveToLine(caretPosition.Line);
       }
       else
       {
@@ -75,33 +89,55 @@ namespace Emme.Models
       }
     }
 
+    /// <summary>
+    /// Handles any scrolling needed after a page down command.
+    /// </summary>
+    /// <param name="caretPosition">Caret position after page down.</param>
+    /// <returns>Updated ScrollView.</returns>
     public ScrollView CheckPageDown(Position caretPosition)
     {
-      if (caretPosition.Line.IsInRange(LineStart, LineEnd))
+      if (caretPosition.Line >= LineEnd + Lines)
       {
-        return this;
+        return MoveWithLastLineAt(caretPosition.Line);
+      }
+      else if (caretPosition.Line >= LineEnd)
+      {
+        return MoveToLine(LineEnd);
       }
       else
       {
-        return HorizontalScroll(Lines);
+        return this;
       }
     }
 
+    /// <summary>
+    /// Handles any scrolling needed after a page up command.
+    /// </summary>
+    /// <param name="caretPosition">Caret position after page up.</param>
+    /// <returns>Updated ScrollView.</returns>
     public ScrollView CheckPageUp(Position caretPosition)
     {
-      if (caretPosition.Line.IsInRange(LineStart, LineEnd))
+      if (caretPosition.Line >= LineEnd)
       {
-        return this;
+        return MoveWithLastLineAt(caretPosition.Line);
+      }
+      else if (caretPosition.Line < LineStart)
+      {
+        // I don't expect caretPosition to be more than a page above
+        // this PageView.
+        return MoveToLine(Max(LineStart - Lines, 0));
       }
       else
       {
-        int scrollLinesDelta = Min(LineStart, Lines);
-        return HorizontalScroll(-scrollLinesDelta);
+        return this;
       }
     }
 
-    public ScrollView HorizontalScroll(int delta) =>
-      new ScrollView(LineStart + delta, LeftColumn, Lines, Columns);
+    private ScrollView MoveToLine(int line) =>
+      new ScrollView(line, LeftColumn, Lines, Columns);
+
+    private ScrollView MoveWithLastLineAt(int line) =>
+      MoveToLine(line - Lines + 1);
 
     public Position PositionInView(Position positionInFile) =>
       new Position(positionInFile.Line - LineStart, positionInFile.Column - LeftColumn);

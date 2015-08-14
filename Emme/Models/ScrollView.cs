@@ -26,17 +26,17 @@ namespace Emme.Models
   /// </summary>
   struct ScrollView
   {
-    public ScrollView(int lineStart, int leftColumn, int lines, int columns)
+    public ScrollView(int lineStart, int columnStart, int lines, int columns)
     {
       LineStart = lineStart;
-      LeftColumn = leftColumn;
+      ColumnStart = columnStart;
       Lines = lines;
       Columns = columns;
     }
 
     public int LineStart { get; }
 
-    public int LeftColumn { get; }
+    public int ColumnStart { get; }
 
     /// <summary>
     /// Total number of lines displayed in this ScrollView.
@@ -51,6 +51,8 @@ namespace Emme.Models
     /// </summary>
     public int LineEnd => LineStart + Lines;
 
+    public int ColumnEnd => ColumnStart + Columns;
+
     /// <summary>
     /// Handles any scrolling needed after a line down command.
     /// </summary>
@@ -61,6 +63,31 @@ namespace Emme.Models
       if (caretPosition.Line >= LineEnd)
       {
         return MoveWithLastLineAt(caretPosition.Line);
+      }
+      else
+      {
+        return this;
+      }
+    }
+
+    public ScrollView CheckRightChar(Position caretPosition)
+    {
+      if (caretPosition.Column < ColumnStart || caretPosition.Column >= ColumnEnd)
+      {
+        int column = Max(0, caretPosition.Column - Columns);
+        return new ScrollView(LineStart, column, Lines, Columns);
+      }
+      else
+      {
+        return this;
+      }
+    }
+
+    public ScrollView CheckLeftChar(Position caretPosition)
+    {
+      if (caretPosition.Column < ColumnStart || caretPosition.Column >= ColumnEnd)
+      {
+        return new ScrollView(LineStart, caretPosition.Column, Lines, Columns);
       }
       else
       {
@@ -134,12 +161,12 @@ namespace Emme.Models
     }
 
     private ScrollView MoveToLine(int line) =>
-      new ScrollView(line, LeftColumn, Lines, Columns);
+      new ScrollView(line, ColumnStart, Lines, Columns);
 
     private ScrollView MoveWithLastLineAt(int line) =>
       MoveToLine(line - Lines + 1);
 
     public Position PositionInView(Position positionInFile) =>
-      new Position(positionInFile.Line - LineStart, positionInFile.Column - LeftColumn);
+      new Position(positionInFile.Line - LineStart, positionInFile.Column - ColumnStart);
   }
 }

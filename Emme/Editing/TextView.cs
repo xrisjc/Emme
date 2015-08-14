@@ -152,7 +152,6 @@ namespace Emme.Editing
     /// <summary>
     /// Moves current position to next character.
     /// </summary>
-    /// <returns>Updated position after move.</returns>
     public void CharRight()
     {
       desiredColumn = null;
@@ -235,13 +234,13 @@ namespace Emme.Editing
       return sb.ToString();
     }
 
-    public IEnumerable<string> EnumerateLines(int startingLine, int lineCount)
+    public IEnumerable<string> EnumerateLines(ScrollView scrollView)
     {
       var sb = new StringBuilder();
-      for (var line = startingLine; (line - startingLine) < lineCount && line < lines.Count ; line++)
+      for (var line = scrollView.LineStart; (line - scrollView.LineStart) < scrollView.Lines && line < lines.Count; line++)
       {
         sb.Clear();
-        for (int i = lines[line].Start; i < lines[line].End; i++)
+        for (int i = lines[line].Start + scrollView.ColumnStart; i < lines[line].End; i++)
         {
           sb.Append(gapBuffer[i]);
         }

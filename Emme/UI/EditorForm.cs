@@ -30,7 +30,7 @@ namespace Emme.UI
   {
 
     TextView textView;
-    ScrollView scrollView = new ScrollView(lineStart: 0, leftColumn: 0, lines: 40, columns: 80);
+    ScrollView scrollView = new ScrollView(lineStart: 0, columnStart: 0, lines: 24, columns: 80);
 
     readonly FontMetrics fontMetrics;
     Caret caret;
@@ -97,7 +97,7 @@ namespace Emme.UI
       int lines = ClientSize.Height / fontMetrics.Height;
       int columns = (ClientSize.Width - 2 * fontMetrics.Padding) / fontMetrics.Width;
 
-      scrollView = new ScrollView(scrollView.LineStart, scrollView.LeftColumn, lines, columns);
+      scrollView = new ScrollView(scrollView.LineStart, scrollView.ColumnStart, lines, columns);
 
       Invalidate();
     }
@@ -171,7 +171,8 @@ namespace Emme.UI
 
           case Keys.Back:
             textView.DeleteBackwards();
-            scrollView = scrollView.CheckLineUp(textView.CaretPosition);
+            scrollView = scrollView.CheckLineUp(textView.CaretPosition)
+                                   .CheckLeftChar(textView.CaretPosition);
             break;
 
           case Keys.Delete:
@@ -180,12 +181,14 @@ namespace Emme.UI
 
           case Keys.Left:
             textView.CharLeft();
-            scrollView = scrollView.CheckLineUp(textView.CaretPosition);
+            scrollView = scrollView.CheckLineUp(textView.CaretPosition)
+                                   .CheckLeftChar(textView.CaretPosition);
             break;
 
           case Keys.Right:
             textView.CharRight();
-            scrollView = scrollView.CheckLineDown(textView.CaretPosition);
+            scrollView = scrollView.CheckLineDown(textView.CaretPosition)
+                                   .CheckRightChar(textView.CaretPosition);
             break;
 
           case Keys.Up:
@@ -200,10 +203,13 @@ namespace Emme.UI
 
           case Keys.Home:
             textView.LineStart();
+            scrollView = scrollView.CheckLeftChar(textView.CaretPosition);
             break;
 
           case Keys.End:
             textView.LineEnd();
+            scrollView = scrollView.CheckLineDown(textView.CaretPosition)
+                                   .CheckRightChar(textView.CaretPosition);
             break;
 
           case Keys.PageDown:
@@ -233,6 +239,7 @@ namespace Emme.UI
 
       textView.Insert(e.KeyChar);
       UpdateCaretPosition(textView.CaretPosition);
+      scrollView = scrollView.CheckRightChar(textView.CaretPosition);
       
       Invalidate();
     }
@@ -243,7 +250,7 @@ namespace Emme.UI
 
       var point = new Point(0, 0);
 
-      foreach (string line in textView.EnumerateLines(scrollView.LineStart, scrollView.Lines))
+      foreach (string line in textView.EnumerateLines(scrollView))
       {
         TextRenderer.DrawText(
             e.Graphics,

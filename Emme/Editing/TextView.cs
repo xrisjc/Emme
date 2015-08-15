@@ -237,10 +237,14 @@ namespace Emme.Editing
     public IEnumerable<string> EnumerateLines(ScrollView scrollView)
     {
       var sb = new StringBuilder();
-      for (var line = scrollView.LineStart; (line - scrollView.LineStart) < scrollView.Lines && line < lines.Count; line++)
+      int lineStart = scrollView.LineStart;
+      int lineEnd = Min(lineStart + scrollView.Lines, lines.Count);
+      for (var line = lineStart; line < lineEnd; line++)
       {
         sb.Clear();
-        for (int i = lines[line].Start + scrollView.ColumnStart; i < lines[line].End; i++)
+        int iStart = lines[line].Start + scrollView.ColumnStart;
+        int iEnd = Min(iStart + scrollView.Columns, lines[line].End);
+        for (int i = iStart; i < iEnd; i++)
         {
           sb.Append(gapBuffer[i]);
         }

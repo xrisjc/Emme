@@ -70,24 +70,20 @@ namespace Emme.Models
       }
     }
 
-    public ScrollView CheckRightChar(Position caretPosition)
+    public ScrollView CheckHorizontalScroll(Position caret)
     {
-      if (caretPosition.Column < ColumnStart || caretPosition.Column >= ColumnEnd)
+      int horizontalScrollPad = Columns / 5;
+      if (caret.Column < ColumnStart)
       {
-        int column = Max(0, caretPosition.Column - Columns);
-        return new ScrollView(LineStart, column, Lines, Columns);
+        // Caret is to the left of the view.
+        int newColumnStart = Max(caret.Column - horizontalScrollPad, 0);
+        return new ScrollView(LineStart, newColumnStart, Lines, Columns);
       }
-      else
+      else if (caret.Column >= ColumnEnd)
       {
-        return this;
-      }
-    }
-
-    public ScrollView CheckLeftChar(Position caretPosition)
-    {
-      if (caretPosition.Column < ColumnStart || caretPosition.Column >= ColumnEnd)
-      {
-        return new ScrollView(LineStart, caretPosition.Column, Lines, Columns);
+        // Carte is to the right of the view.
+        int newColumnStart = Max(caret.Column - Columns + horizontalScrollPad, 0);
+        return new ScrollView(LineStart, newColumnStart, Lines, Columns);
       }
       else
       {

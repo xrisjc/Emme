@@ -165,6 +165,62 @@ namespace Emme.Editing
       }
     }
 
+    public void WordLeft()
+    {
+      desiredColumn = null;
+      if (CaretPosition.Column > 0)
+      {
+        int iStart = lines[CaretPosition.Line].Start + CaretPosition.Column;
+        int iMin = lines[CaretPosition.Line].Start;
+        int i = iStart;
+        while (i > iMin && char.IsWhiteSpace(gapBuffer[i-1]))
+        {
+          i--;
+        }
+        while (i > iMin && !char.IsWhiteSpace(gapBuffer[i-1]))
+        {
+          i--;
+        }
+        if (i < iStart)
+        {
+          CaretPosition = new Position(CaretPosition.Line, column: CaretPosition.Column - (iStart - i));
+        }
+      }
+      else if (CaretPosition.PreviousLine >= 0)
+      {
+        CaretPosition = new Position(CaretPosition.PreviousLine, column: lines[CaretPosition.PreviousLine].Length);
+      }
+    }
+
+    public void WordRight()
+    {
+      desiredColumn = null;
+      if (CaretPosition.Column < lines[CaretPosition.Line].Length)
+      {
+        // Caret is not at the end of the line.
+        int iStart = lines[CaretPosition.Line].Start + CaretPosition.Column;
+        int iMax = lines[CaretPosition.Line].End;
+        int i = iStart;
+        while (i < iMax && !char.IsWhiteSpace(gapBuffer[i]))
+        {
+          i++;
+        }
+        while (i < iMax && char.IsWhiteSpace(gapBuffer[i]))
+        {
+          i++;
+        }
+        if (i > iStart)
+        {
+          CaretPosition = new Position(CaretPosition.Line, column: CaretPosition.Column + i - iStart);
+        }
+      }
+      else if (CaretPosition.NextLine <= LastLine)
+      {
+        // At the end of the line, and it's not the last line.
+        CaretPosition = new Position(CaretPosition.NextLine, column: 0);
+      }
+    }
+
     public void MoveToLine(int line)
     {
       if (line.IsInRange(0, lines.Count))

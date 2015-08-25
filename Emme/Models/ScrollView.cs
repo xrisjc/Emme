@@ -56,13 +56,13 @@ namespace Emme.Models
     /// <summary>
     /// Handles any scrolling needed after a line down command.
     /// </summary>
-    /// <param name="caretPosition">Caret position after a line down.</param>
+    /// <param name="caret">Caret position after a line down.</param>
     /// <returns>Updated ScrollView.</returns>
-    public ScrollView CheckLineDown(Position caretPosition)
+    public ScrollView CheckLineDown(Position caret)
     {
-      if (caretPosition.Line >= LineEnd)
+      if (caret.Line >= LineEnd)
       {
-        return MoveWithLastLineAt(caretPosition.Line);
+        return MoveWithLastLineAt(caret.Line);
       }
       else
       {
@@ -94,17 +94,17 @@ namespace Emme.Models
     /// <summary>
     /// Handles any scrolling needed after a line up command.
     /// </summary>
-    /// <param name="caretPosition">Caret position after a line up.</param>
+    /// <param name="caret">Caret position after a line up.</param>
     /// <returns>Update ScrollView.</returns>
-    public ScrollView CheckLineUp(Position caretPosition)
+    public ScrollView CheckLineUp(Position caret)
     {
-      if (caretPosition.Line >= LineEnd)
+      if (caret.Line >= LineEnd)
       {
-        return MoveWithLastLineAt(caretPosition.Line);
+        return MoveWithLastLineAt(caret.Line);
       }
-      else if (caretPosition.Line < LineStart)
+      else if (caret.Line < LineStart)
       {
-        return MoveToLine(caretPosition.Line);
+        return MoveToLine(caret.Line);
       }
       else
       {
@@ -115,15 +115,15 @@ namespace Emme.Models
     /// <summary>
     /// Handles any scrolling needed after a page down command.
     /// </summary>
-    /// <param name="caretPosition">Caret position after page down.</param>
+    /// <param name="caret">Caret position after page down.</param>
     /// <returns>Updated ScrollView.</returns>
-    public ScrollView CheckPageDown(Position caretPosition)
+    public ScrollView CheckPageDown(Position caret)
     {
-      if (caretPosition.Line >= LineEnd + Lines)
+      if (caret.Line >= LineEnd + Lines)
       {
-        return MoveWithLastLineAt(caretPosition.Line);
+        return MoveWithLastLineAt(caret.Line);
       }
-      else if (caretPosition.Line >= LineEnd)
+      else if (caret.Line >= LineEnd)
       {
         return MoveToLine(LineEnd);
       }
@@ -136,15 +136,15 @@ namespace Emme.Models
     /// <summary>
     /// Handles any scrolling needed after a page up command.
     /// </summary>
-    /// <param name="caretPosition">Caret position after page up.</param>
+    /// <param name="caret">Caret position after page up.</param>
     /// <returns>Updated ScrollView.</returns>
-    public ScrollView CheckPageUp(Position caretPosition)
+    public ScrollView CheckPageUp(Position caret)
     {
-      if (caretPosition.Line >= LineEnd)
+      if (caret.Line >= LineEnd)
       {
-        return MoveWithLastLineAt(caretPosition.Line);
+        return MoveWithLastLineAt(caret.Line);
       }
-      else if (caretPosition.Line < LineStart)
+      else if (caret.Line < LineStart)
       {
         // I don't expect caretPosition to be more than a page above
         // this PageView.

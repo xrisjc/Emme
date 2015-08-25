@@ -31,6 +31,7 @@ namespace Emme.Editing
     readonly GapBuffer<char> gapBuffer;
     readonly GapBuffer<Span> lines = new GapBuffer<Span>();
     Position caretPosition = Position.BufferStart;
+    ScrollView scrollView = new ScrollView(lineStart: 0, columnStart: 0, lines: 24, columns: 80);
     int? desiredColumn = null;
 
     public TextView(string initialContent = null)
@@ -73,6 +74,11 @@ namespace Emme.Editing
       private set { caretPosition = value; }
     }
 
+    public ScrollView ScrollView
+    {
+      get { return scrollView; }
+    }
+
     /// <summary>
     /// The number of lines this TextView contains.
     /// </summary>
@@ -83,6 +89,11 @@ namespace Emme.Editing
     /// </summary>
     private int CaretBufferIndex =>
       lines[CaretPosition.Line].Start + CaretPosition.Column;
+
+    public void ResizeScrollView(int lines, int columns)
+    {
+      scrollView = scrollView.ResizedTo(lines, columns);
+    }
 
     private void Shift(int delta)
     {
@@ -99,6 +110,7 @@ namespace Emme.Editing
       gapBuffer.Insert(CaretBufferIndex, value);
       Shift(1);
       CaretPosition += Position.OneColumn;
+      scrollView = scrollView.CheckHorizontalScroll(CaretPosition);
     }
 
     public void InsertNewLine()
@@ -108,6 +120,7 @@ namespace Emme.Editing
       lines[CaretPosition.Line] = splitSpans.Item1;
       CaretPosition = new Position(CaretPosition.NextLine, column: 0);
       lines.Insert(CaretPosition.Line, splitSpans.Item2);
+      scrollView = scrollView.CheckLineDown(CaretPosition);
     }
 
     public void Delete()
@@ -131,6 +144,8 @@ namespace Emme.Editing
       {
         CharLeft();
         Delete();
+        scrollView = scrollView.CheckLineUp(CaretPosition)
+                               .CheckHorizontalScroll(CaretPosition);
       }
     }
 
@@ -145,6 +160,34 @@ namespace Emme.Editing
       {
         CaretPosition = new Position(CaretPosition.PreviousLine, column: lines[CaretPosition.PreviousLine].Length);
       }
+      scrollView = scrollView.CheckLineUp(CaretPosition)
+                             .CheckHorizontalScroll(CaretPosition);
+    }
+
+    public void WordLeft()
+    {
+      desiredColumn = null;
+      if (CaretPosition.Column > 0)
+      {
+        int iStart = CaretBufferIndex;
+        int iMin = lines[CaretPosition.Line].Start;
+        int i = iStart;
+        while (i > iMin && char.IsWhiteSpace(gapBuffer[i - 1]))
+        {
+          i--;
+        }
+        while (i > iMin && !char.IsWhiteSpace(gapBuffer[i - 1]))
+        {
+          i--;
+        }
+        CaretPosition -= new Position(0, iStart - i);
+      }
+      else if (CaretPosition.PreviousLine >= 0)
+      {
+        CaretPosition = new Position(CaretPosition.PreviousLine, column: lines[CaretPosition.PreviousLine].Length);
+      }
+      scrollView = scrollView.CheckLineUp(CaretPosition)
+                             .CheckHorizontalScroll(CaretPosition);
     }
 
     /// <summary>
@@ -161,30 +204,8 @@ namespace Emme.Editing
       {
         CaretPosition = new Position(CaretPosition.NextLine, column: 0);
       }
-    }
-
-    public void WordLeft()
-    {
-      desiredColumn = null;
-      if (CaretPosition.Column > 0)
-      {
-        int iStart = CaretBufferIndex;
-        int iMin = lines[CaretPosition.Line].Start;
-        int i = iStart;
-        while (i > iMin && char.IsWhiteSpace(gapBuffer[i-1]))
-        {
-          i--;
-        }
-        while (i > iMin && !char.IsWhiteSpace(gapBuffer[i-1]))
-        {
-          i--;
-        }
-        CaretPosition -= new Position(0, iStart - i);
-      }
-      else if (CaretPosition.PreviousLine >= 0)
-      {
-        CaretPosition = new Position(CaretPosition.PreviousLine, column: lines[CaretPosition.PreviousLine].Length);
-      }
+      scrollView = scrollView.CheckLineDown(CaretPosition)
+                             .CheckHorizontalScroll(CaretPosition);
     }
 
     public void WordRight()
@@ -211,6 +232,8 @@ namespace Emme.Editing
         // At the end of the line, and it's not the last line.
         CaretPosition = new Position(CaretPosition.NextLine, column: 0);
       }
+      scrollView = scrollView.CheckLineDown(CaretPosition)
+                             .CheckHorizontalScroll(CaretPosition);
     }
 
     public void MoveToLine(int line)
@@ -226,6 +249,7 @@ namespace Emme.Editing
     public void LineUp()
     {
       MoveToLine(CaretPosition.PreviousLine);
+      scrollView = scrollView.CheckLineUp(CaretPosition);
     }
 
     /// <summary>
@@ -236,11 +260,13 @@ namespace Emme.Editing
     {
       int deltaTextView = Min(CaretPosition.Line, maxLines);
       MoveToLine(CaretPosition.Line - deltaTextView);
+      scrollView = scrollView.CheckPageUp(CaretPosition);
     }
 
     public void LineDown()
     {
       MoveToLine(CaretPosition.NextLine);
+      scrollView = scrollView.CheckLineDown(CaretPosition);
     }
 
     /// <summary>
@@ -251,18 +277,22 @@ namespace Emme.Editing
     {
       int deltaTextView = Min(LastLine - CaretPosition.Line, maxLines);
       MoveToLine(CaretPosition.Line + deltaTextView);
+      scrollView = scrollView.CheckPageDown(CaretPosition);
     }
 
     public void LineStart()
     {
       desiredColumn = null;
       CaretPosition = new Position(CaretPosition.Line, column: 0);
+      scrollView = scrollView.CheckHorizontalScroll(CaretPosition);
     }
 
     public void LineEnd()
     {
       desiredColumn = null;
       CaretPosition = new Position(CaretPosition.Line, column: lines[CaretPosition.Line].Length);
+      scrollView = scrollView.CheckLineDown(CaretPosition)
+                             .CheckHorizontalScroll(CaretPosition);
     }
 
     public override string ToString()
@@ -282,7 +312,7 @@ namespace Emme.Editing
       return sb.ToString();
     }
 
-    public IEnumerable<string> EnumerateLines(ScrollView scrollView)
+    public IEnumerable<string> EnumerateLines()
     {
       var sb = new StringBuilder();
       int lineStart = scrollView.LineStart;

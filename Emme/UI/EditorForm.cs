@@ -30,7 +30,6 @@ namespace Emme.UI
   {
 
     TextView textView;
-    ScrollView scrollView = new ScrollView(lineStart: 0, columnStart: 0, lines: 24, columns: 80);
 
     readonly FontMetrics fontMetrics;
     Caret caret;
@@ -51,8 +50,8 @@ namespace Emme.UI
 
       ClientSize =
         new Size(
-          scrollView.Columns * fontMetrics.Width + 2 * fontMetrics.Padding,
-          scrollView.Lines * fontMetrics.Height);
+          textView.ScrollView.Columns * fontMetrics.Width + 2 * fontMetrics.Padding,
+          textView.ScrollView.Lines * fontMetrics.Height);
 
 
       // Flickering be gone. Got the method from here:
@@ -97,7 +96,7 @@ namespace Emme.UI
       int lines = ClientSize.Height / fontMetrics.Height;
       int columns = (ClientSize.Width - 2 * fontMetrics.Padding) / fontMetrics.Width;
 
-      scrollView = new ScrollView(scrollView.LineStart, scrollView.ColumnStart, lines, columns);
+      textView.ResizeScrollView(lines, columns);
 
       Invalidate();
     }
@@ -118,7 +117,7 @@ namespace Emme.UI
 
     private void UpdateCaretPosition(Position position)
     {
-      caret = new Caret(scrollView.PositionInView(position), fontMetrics);
+      caret = new Caret(textView.ScrollView.PositionInView(position), fontMetrics);
       SetCaretPos(caret.X, caret.Y);
     }
 
@@ -166,13 +165,10 @@ namespace Emme.UI
         {
           case Keys.Enter:
             textView.InsertNewLine();
-            scrollView = scrollView.CheckLineDown(textView.CaretPosition);
             break;
 
           case Keys.Back:
             textView.DeleteBackwards();
-            scrollView = scrollView.CheckLineUp(textView.CaretPosition)
-                                   .CheckHorizontalScroll(textView.CaretPosition);
             break;
 
           case Keys.Delete:
@@ -188,8 +184,6 @@ namespace Emme.UI
             {
               textView.CharLeft();
             }
-            scrollView = scrollView.CheckLineUp(textView.CaretPosition)
-                                   .CheckHorizontalScroll(textView.CaretPosition);
             break;
 
           case Keys.Right:
@@ -201,39 +195,30 @@ namespace Emme.UI
             {
               textView.CharRight();
             }
-            scrollView = scrollView.CheckLineDown(textView.CaretPosition)
-                                   .CheckHorizontalScroll(textView.CaretPosition);
             break;
 
           case Keys.Up:
             textView.LineUp();
-            scrollView = scrollView.CheckLineUp(textView.CaretPosition);
             break;
 
           case Keys.Down:
             textView.LineDown();
-            scrollView = scrollView.CheckLineDown(textView.CaretPosition);
             break;
 
           case Keys.Home:
             textView.LineStart();
-            scrollView = scrollView.CheckHorizontalScroll(textView.CaretPosition);
             break;
 
           case Keys.End:
             textView.LineEnd();
-            scrollView = scrollView.CheckLineDown(textView.CaretPosition)
-                                   .CheckHorizontalScroll(textView.CaretPosition);
             break;
 
           case Keys.PageDown:
-            textView.LineDown(scrollView.Lines);
-            scrollView = scrollView.CheckPageDown(textView.CaretPosition);
+            textView.LineDown(textView.ScrollView.Lines);
             break;
 
           case Keys.PageUp:
-            textView.LineUp(scrollView.Lines);
-            scrollView = scrollView.CheckPageUp(textView.CaretPosition);
+            textView.LineUp(textView.ScrollView.Lines);
             break;
         }
         UpdateCaretPosition(textView.CaretPosition);
@@ -252,7 +237,6 @@ namespace Emme.UI
       }
 
       textView.Insert(e.KeyChar);
-      scrollView = scrollView.CheckHorizontalScroll(textView.CaretPosition);
       UpdateCaretPosition(textView.CaretPosition);
 
       Invalidate();
@@ -264,7 +248,7 @@ namespace Emme.UI
 
       var point = new Point(0, 0);
 
-      foreach (string line in textView.EnumerateLines(scrollView))
+      foreach (string line in textView.EnumerateLines())
       {
         TextRenderer.DrawText(
             e.Graphics,

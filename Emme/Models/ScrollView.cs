@@ -54,6 +54,15 @@ namespace Emme.Models
     public int ColumnEnd => ColumnStart + Columns;
 
     /// <summary>
+    /// Returns a new scroll view that is resized to the given dimensions.
+    /// </summary>
+    /// <param name="lines">Number of lines in new view.</param>
+    /// <param name="columns">Number of columns in new view.</param>
+    /// <returns>Scroll view resized to given dimensions.</returns>
+    public ScrollView ResizedTo(int lines, int columns) =>
+      new ScrollView(LineStart, ColumnStart, lines, columns);
+
+    /// <summary>
     /// Handles any scrolling needed after a line down command.
     /// </summary>
     /// <param name="caret">Caret position after a line down.</param>

@@ -31,10 +31,5 @@ namespace Emme.Models
     {
       return start <= value && value < end;
     }
-
-    public static bool IsInRange(this int value, Span span)
-    {
-      return IsInRange(value, span.Start, span.End);
-    }
   }
 }

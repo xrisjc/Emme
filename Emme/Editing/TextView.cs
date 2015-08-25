@@ -78,6 +78,12 @@ namespace Emme.Editing
     /// </summary>
     public int LastLine => lines.Count - 1;
 
+    /// <summary>
+    /// The index of the caret in the text buffer.
+    /// </summary>
+    private int CaretBufferIndex =>
+      lines[CaretPosition.Line].Start + CaretPosition.Column;
+
     private void Shift(int delta)
     {
       lines[CaretPosition.Line] = lines[CaretPosition.Line].MoveEnd(delta);
@@ -87,25 +93,18 @@ namespace Emme.Editing
       }
     }
 
-    static int CaretIndex(Span line, Position caretPosition)
-    {
-      return line.Start + caretPosition.Column;
-    }
-
     public void Insert(char value)
     {
       desiredColumn = null;
-      int insertIndex = CaretIndex(lines[CaretPosition.Line], CaretPosition);
-      gapBuffer.Insert(insertIndex, value);
+      gapBuffer.Insert(CaretBufferIndex, value);
       Shift(1);
-      CaretPosition = new Position(CaretPosition.Line, CaretPosition.NextColumn);
+      CaretPosition += Position.OneColumn;
     }
 
     public void InsertNewLine()
     {
       desiredColumn = null;
-      int splitIndex = CaretIndex(lines[CaretPosition.Line], CaretPosition);
-      Tuple<Span, Span> splitSpans = lines[CaretPosition.Line].Split(splitIndex);
+      Tuple<Span, Span> splitSpans = lines[CaretPosition.Line].Split(CaretBufferIndex);
       lines[CaretPosition.Line] = splitSpans.Item1;
       CaretPosition = new Position(CaretPosition.NextLine, column: 0);
       lines.Insert(CaretPosition.Line, splitSpans.Item2);
@@ -115,8 +114,7 @@ namespace Emme.Editing
     {
       if (CaretPosition.Column < lines[CaretPosition.Line].Length)
       {
-        int deleteIndex = CaretIndex(lines[CaretPosition.Line], CaretPosition);
-        gapBuffer.Delete(deleteIndex);
+        gapBuffer.Delete(CaretBufferIndex);
         Shift(-1);
       }
       else if (CaretPosition.NextLine < lines.Count)
@@ -141,7 +139,7 @@ namespace Emme.Editing
       desiredColumn = null;
       if (CaretPosition.Column > 0)
       {
-        CaretPosition = new Position(CaretPosition.Line, CaretPosition.PreviousColumn);
+        CaretPosition -= Position.OneColumn;
       }
       else if (CaretPosition.Line > 0)
       {
@@ -157,7 +155,7 @@ namespace Emme.Editing
       desiredColumn = null;
       if (CaretPosition.Column < lines[CaretPosition.Line].Length)
       {
-        CaretPosition = new Position(CaretPosition.Line, CaretPosition.NextColumn);
+        CaretPosition += Position.OneColumn;
       }
       else if (CaretPosition.NextLine < lines.Count)
       {
@@ -170,7 +168,7 @@ namespace Emme.Editing
       desiredColumn = null;
       if (CaretPosition.Column > 0)
       {
-        int iStart = lines[CaretPosition.Line].Start + CaretPosition.Column;
+        int iStart = CaretBufferIndex;
         int iMin = lines[CaretPosition.Line].Start;
         int i = iStart;
         while (i > iMin && char.IsWhiteSpace(gapBuffer[i-1]))
@@ -181,10 +179,7 @@ namespace Emme.Editing
         {
           i--;
         }
-        if (i < iStart)
-        {
-          CaretPosition = new Position(CaretPosition.Line, column: CaretPosition.Column - (iStart - i));
-        }
+        CaretPosition -= new Position(0, iStart - i);
       }
       else if (CaretPosition.PreviousLine >= 0)
       {
@@ -198,7 +193,7 @@ namespace Emme.Editing
       if (CaretPosition.Column < lines[CaretPosition.Line].Length)
       {
         // Caret is not at the end of the line.
-        int iStart = lines[CaretPosition.Line].Start + CaretPosition.Column;
+        int iStart = CaretBufferIndex;
         int iMax = lines[CaretPosition.Line].End;
         int i = iStart;
         while (i < iMax && !char.IsWhiteSpace(gapBuffer[i]))
@@ -209,10 +204,7 @@ namespace Emme.Editing
         {
           i++;
         }
-        if (i > iStart)
-        {
-          CaretPosition = new Position(CaretPosition.Line, column: CaretPosition.Column + i - iStart);
-        }
+        CaretPosition += new Position(0, i - iStart);
       }
       else if (CaretPosition.NextLine <= LastLine)
       {
@@ -275,7 +267,7 @@ namespace Emme.Editing
 
     public override string ToString()
     {
-      StringBuilder sb = new StringBuilder();
+      var sb = new StringBuilder();
       for (var line = 0; line < lines.Count; line++)
       {
         for (int i = lines[line].Start; i < lines[line].End; i++)

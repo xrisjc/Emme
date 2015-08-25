@@ -26,7 +26,7 @@ namespace Emme.Models
   /// Both Line and Column will start from zero to avoid subtracting one
   /// everywhere. But in the UI they may be shown to start at 1.
   /// </remarks>
-  struct Position : IEquatable<Position>
+  public struct Position : IEquatable<Position>
   {
 
     /// <summary>
@@ -75,6 +75,17 @@ namespace Emme.Models
 
     public static bool operator !=(Position lhs, Position rhs) => !(lhs == rhs);
 
-    public static Position BufferStart => new Position(0, 0);
+    public static Position operator +(Position lhs, Position rhs) =>
+      new Position(lhs.Line + rhs.Line, lhs.Column + rhs.Column);
+
+    public static Position operator -(Position lhs, Position rhs) =>
+      new Position(lhs.Line - rhs.Line, lhs.Column - rhs.Column);
+
+    public static readonly Position BufferStart = new Position(0, 0);
+
+    public static readonly Position OneLine = new Position(1, 0);
+
+    public static readonly Position OneColumn = new Position(0, 1);
+
   }
 }

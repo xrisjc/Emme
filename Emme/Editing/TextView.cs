@@ -263,6 +263,11 @@ namespace Emme.Editing
       scrollView = scrollView.CheckPageUp(CaretPosition);
     }
 
+    public void PageUp()
+    {
+      LineUp(ScrollView.Lines);
+    }
+
     public void LineDown()
     {
       MoveToLine(CaretPosition.NextLine);
@@ -278,6 +283,11 @@ namespace Emme.Editing
       int deltaTextView = Min(LastLine - CaretPosition.Line, maxLines);
       MoveToLine(CaretPosition.Line + deltaTextView);
       scrollView = scrollView.CheckPageDown(CaretPosition);
+    }
+
+    public void PageDown()
+    {
+      LineDown(ScrollView.Lines);
     }
 
     public void LineStart()

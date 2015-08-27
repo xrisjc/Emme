@@ -214,11 +214,11 @@ namespace Emme.UI
             break;
 
           case Keys.PageDown:
-            textView.LineDown(textView.ScrollView.Lines);
+            textView.PageDown();
             break;
 
           case Keys.PageUp:
-            textView.LineUp(textView.ScrollView.Lines);
+            textView.PageUp();
             break;
         }
         UpdateCaretPosition(textView.CaretPosition);

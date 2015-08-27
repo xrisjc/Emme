@@ -17,6 +17,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using static System.Math;
+
 namespace Emme.Models
 {
   /// <summary>
@@ -28,8 +30,9 @@ namespace Emme.Models
     /// Returns whether or not value is within the interval [start, end).
     /// </summary>
     public static bool IsInRange(this int value, int start, int end)
-    {
-      return start <= value && value < end;
-    }
+      => start <= value && value < end;
+
+    public static int Clamp(this int value, int min, int max)
+      => Max(min, Min(value, max));
   }
 }

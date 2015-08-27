@@ -1,7 +1,4 @@
-﻿//
-// File: IIndexable.cs
-//
-// Copyright (C) 2015  Christopher Cowan
+﻿// Copyright (C) 2010 - 2015  Christopher Cowan
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,10 +14,26 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-namespace Emme.Models
+using Emme.Models;
+
+namespace Emme.Editing
 {
-  public interface IIndexable<T>
+  public class EditCommandInsert : IEditCommand
   {
-    T this[int index] { get; }
+    public char CharToInsert { get; }
+
+    public EditCommandInsert(char charToInsert)
+    {
+      CharToInsert = charToInsert;
+    }
+
+    public void Execute(TextView textView)
+    {
+      textView.DesiredColumn = null;
+      textView.GapBuffer.Insert(textView.CaretBufferIndex, CharToInsert);
+      textView.Lines.Shift(start: textView.CaretPosition.Line, delta: 1);
+      textView.CaretPosition += Position.OneColumn;
+      textView.ScrollView = textView.ScrollView.CheckHorizontalScroll(textView.CaretPosition);
+    }
   }
 }

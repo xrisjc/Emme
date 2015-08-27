@@ -26,7 +26,7 @@ using static Emme.Models.Util;
 
 namespace Emme.Editing
 {
-  class TextView
+  public class TextView
   {
     public GapBuffer<char> GapBuffer { get; }
     public GapBuffer<Span> Lines { get; } = new GapBuffer<Span>();
@@ -73,40 +73,12 @@ namespace Emme.Editing
     /// <summary>
     /// The index of the caret in the text buffer.
     /// </summary>
-    private int CaretBufferIndex =>
-      Lines[CaretPosition.Line].Start + CaretPosition.Column;
+    public int CaretBufferIndex
+      => Lines[CaretPosition.Line].Start + CaretPosition.Column;
 
     public void ResizeScrollView(int lines, int columns)
     {
       ScrollView = ScrollView.ResizedTo(lines, columns);
-    }
-
-    private void Shift(int delta)
-    {
-      Lines[CaretPosition.Line] = Lines[CaretPosition.Line].MoveEnd(delta);
-      for (int i = CaretPosition.Line + 1; i < Lines.Count; i++)
-      {
-        Lines[i] = Lines[i].Move(delta);
-      }
-    }
-
-    public void Insert(char value)
-    {
-      DesiredColumn = null;
-      GapBuffer.Insert(CaretBufferIndex, value);
-      Shift(1);
-      CaretPosition += Position.OneColumn;
-      ScrollView = ScrollView.CheckHorizontalScroll(CaretPosition);
-    }
-
-    public void InsertNewLine()
-    {
-      DesiredColumn = null;
-      Tuple<Span, Span> splitSpans = Lines[CaretPosition.Line].Split(CaretBufferIndex);
-      Lines[CaretPosition.Line] = splitSpans.Item1;
-      CaretPosition = new Position(CaretPosition.NextLine, column: 0);
-      Lines.Insert(CaretPosition.Line, splitSpans.Item2);
-      ScrollView = ScrollView.CheckLineDown(CaretPosition);
     }
 
     public void Delete()
@@ -114,7 +86,7 @@ namespace Emme.Editing
       if (CaretPosition.Column < Lines[CaretPosition.Line].Length)
       {
         GapBuffer.Delete(CaretBufferIndex);
-        Shift(-1);
+        Lines.Shift(start: CaretPosition.Line, delta: -1);
       }
       else if (CaretPosition.NextLine < Lines.Count)
       {

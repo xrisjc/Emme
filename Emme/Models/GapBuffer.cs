@@ -25,7 +25,7 @@ namespace Emme.Models
   /// Buffer to allow efficient inserting and deleting of content by keeping
   /// a gap of available space where insertions and deletions happen.
   /// </summary>
-  class GapBuffer<T> where T : struct
+  public class GapBuffer<T> where T : struct
   {
     /// <summary>
     /// Actual value buffer.

@@ -24,7 +24,7 @@ namespace Emme.Models
   /// <summary>
   /// Scruct that defines where the scrolling page is.
   /// </summary>
-  struct ScrollView
+  public struct ScrollView
   {
     public ScrollView(int lineStart, int columnStart, int lines, int columns)
     {

@@ -32,9 +32,7 @@ namespace Emme.Models
     /// <param name="delta">Amount to move. May be negative.</param>
     /// <returns>New Gap object with new Start.</returns>
     public static Span MoveStart(this Span gap, int delta)
-    {
-      return new Span(gap.Start + delta, gap.End);
-    }
+      => new Span(gap.Start + delta, gap.End);
 
     /// <summary>
     /// Creates a new Gap by moving End a given amount.
@@ -42,9 +40,7 @@ namespace Emme.Models
     /// <param name="delta">Amount to move. May be negative.</param>
     /// <returns>New Gap object with new End.</returns>
     public static Span MoveEnd(this Span gap, int delta)
-    {
-      return new Span(gap.Start, gap.End + delta);
-    }
+      => new Span(gap.Start, gap.End + delta);
 
     /// <summary>
     /// Creates a new gap by moving Start and End by a given amount.
@@ -52,8 +48,15 @@ namespace Emme.Models
     /// <param name="delta">Amount to move. May be negative.</param>
     /// <returns>New Gap object with new Start and End.</returns>
     public static Span Move(this Span gap, int delta)
+      => new Span(gap.Start + delta, gap.End + delta);
+
+    public static void Shift(this GapBuffer<Span> spans, int start, int delta)
     {
-      return new Span(gap.Start + delta, gap.End + delta);
+      spans[start] = spans[start].MoveEnd(delta);
+      for (int i = start + 1; i < spans.Count; i++)
+      {
+        spans[i] = spans[i].Move(delta);
+      }
     }
 
     public static Span Join(this Span leftSpan, Span rightSpan)

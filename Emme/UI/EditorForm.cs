@@ -161,10 +161,11 @@ namespace Emme.UI
       }
       else
       {
+        IEditCommand editCommand = null;
         switch (e.KeyCode)
         {
           case Keys.Enter:
-            textView.InsertNewLine();
+            editCommand = new EditCommandInsertNewLine();
             break;
 
           case Keys.Back:
@@ -221,6 +222,7 @@ namespace Emme.UI
             textView.PageUp();
             break;
         }
+        editCommand?.Execute(textView);
         UpdateCaretPosition(textView.CaretPosition);
       }
 
@@ -236,9 +238,10 @@ namespace Emme.UI
         return;
       }
 
-      textView.Insert(e.KeyChar);
-      UpdateCaretPosition(textView.CaretPosition);
+      IEditCommand editCommand = new EditCommandInsert(e.KeyChar);
+      editCommand.Execute(textView);
 
+      UpdateCaretPosition(textView.CaretPosition);
       Invalidate();
     }
 

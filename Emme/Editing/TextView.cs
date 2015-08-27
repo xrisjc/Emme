@@ -71,7 +71,7 @@ namespace Emme.Editing
     public Position CaretPosition
     {
       get { return caretPosition; }
-      private set { caretPosition = value; }
+      set { caretPosition = value; }
     }
 
     public ScrollView ScrollView

@@ -78,7 +78,7 @@ namespace Emme.Editing
 
     public void ResizeScrollView(int lines, int columns)
     {
-      ScrollView = ScrollView.ResizedTo(lines, columns);
+      ScrollView.ResizedTo(lines, columns);
     }
 
     public void Delete()
@@ -102,8 +102,8 @@ namespace Emme.Editing
       {
         CharLeft();
         Delete();
-        ScrollView = ScrollView.CheckLineUp(CaretPosition)
-                               .CheckHorizontalScroll(CaretPosition);
+        ScrollView.CheckLineUp(CaretPosition)
+                  .CheckHorizontalScroll(CaretPosition);
       }
     }
 
@@ -118,8 +118,8 @@ namespace Emme.Editing
       {
         CaretPosition = new Position(CaretPosition.PreviousLine, column: Lines[CaretPosition.PreviousLine].Length);
       }
-      ScrollView = ScrollView.CheckLineUp(CaretPosition)
-                             .CheckHorizontalScroll(CaretPosition);
+      ScrollView.CheckLineUp(CaretPosition)
+                .CheckHorizontalScroll(CaretPosition);
     }
 
     public void WordLeft()
@@ -144,8 +144,8 @@ namespace Emme.Editing
       {
         CaretPosition = new Position(CaretPosition.PreviousLine, column: Lines[CaretPosition.PreviousLine].Length);
       }
-      ScrollView = ScrollView.CheckLineUp(CaretPosition)
-                             .CheckHorizontalScroll(CaretPosition);
+      ScrollView.CheckLineUp(CaretPosition)
+                .CheckHorizontalScroll(CaretPosition);
     }
 
     /// <summary>
@@ -162,8 +162,8 @@ namespace Emme.Editing
       {
         CaretPosition = new Position(CaretPosition.NextLine, column: 0);
       }
-      ScrollView = ScrollView.CheckLineDown(CaretPosition)
-                             .CheckHorizontalScroll(CaretPosition);
+      ScrollView.CheckLineDown(CaretPosition)
+                .CheckHorizontalScroll(CaretPosition);
     }
 
     public void WordRight()
@@ -190,8 +190,8 @@ namespace Emme.Editing
         // At the end of the line, and it's not the last line.
         CaretPosition = new Position(CaretPosition.NextLine, column: 0);
       }
-      ScrollView = ScrollView.CheckLineDown(CaretPosition)
-                             .CheckHorizontalScroll(CaretPosition);
+      ScrollView.CheckLineDown(CaretPosition)
+                .CheckHorizontalScroll(CaretPosition);
     }
 
     public void MoveToLine(int line)
@@ -207,7 +207,7 @@ namespace Emme.Editing
     public void LineUp()
     {
       MoveToLine(CaretPosition.PreviousLine);
-      ScrollView = ScrollView.CheckLineUp(CaretPosition);
+      ScrollView.CheckLineUp(CaretPosition);
     }
 
     /// <summary>
@@ -218,7 +218,7 @@ namespace Emme.Editing
     {
       int deltaTextView = Min(CaretPosition.Line, maxLines);
       MoveToLine(CaretPosition.Line - deltaTextView);
-      ScrollView = ScrollView.CheckPageUp(CaretPosition);
+      ScrollView.CheckPageUp(CaretPosition);
     }
 
     public void PageUp()
@@ -229,7 +229,7 @@ namespace Emme.Editing
     public void LineDown()
     {
       MoveToLine(CaretPosition.NextLine);
-      ScrollView = ScrollView.CheckLineDown(CaretPosition);
+      ScrollView.CheckLineDown(CaretPosition);
     }
 
     /// <summary>
@@ -240,7 +240,7 @@ namespace Emme.Editing
     {
       int deltaTextView = Min(LastLine - CaretPosition.Line, maxLines);
       MoveToLine(CaretPosition.Line + deltaTextView);
-      ScrollView = ScrollView.CheckPageDown(CaretPosition);
+      ScrollView.CheckPageDown(CaretPosition);
     }
 
     public void PageDown()
@@ -252,15 +252,15 @@ namespace Emme.Editing
     {
       DesiredColumn = null;
       CaretPosition = new Position(CaretPosition.Line, column: 0);
-      ScrollView = ScrollView.CheckHorizontalScroll(CaretPosition);
+      ScrollView.CheckHorizontalScroll(CaretPosition);
     }
 
     public void LineEnd()
     {
       DesiredColumn = null;
       CaretPosition = new Position(CaretPosition.Line, column: Lines[CaretPosition.Line].Length);
-      ScrollView = ScrollView.CheckLineDown(CaretPosition)
-                             .CheckHorizontalScroll(CaretPosition);
+      ScrollView.CheckLineDown(CaretPosition)
+                .CheckHorizontalScroll(CaretPosition);
     }
 
     public override string ToString()

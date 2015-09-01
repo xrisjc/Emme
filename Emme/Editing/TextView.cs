@@ -96,17 +96,6 @@ namespace Emme.Editing
       }
     }
 
-    public void DeleteBackwards()
-    {
-      if (CaretPosition != Position.BufferStart)
-      {
-        CharLeft();
-        Delete();
-        ScrollView.CheckLineUp(CaretPosition)
-                  .CheckHorizontalScroll(CaretPosition);
-      }
-    }
-
     public void CharLeft()
     {
       DesiredColumn = null;

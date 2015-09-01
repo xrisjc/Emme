@@ -169,7 +169,7 @@ namespace Emme.UI
             break;
 
           case Keys.Back:
-            textView.DeleteBackwards();
+            editCommand = new EditCommandDeleteBackwards();
             break;
 
           case Keys.Delete:

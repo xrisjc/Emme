@@ -19,12 +19,13 @@
 
 using static System.Math;
 
-namespace Emme.Models {
+namespace Emme.Models
+{
     /// <summary>
     /// Scruct that defines where the scrolling page is.
     /// </summary>
-    public class ScrollView {
-
+    public class ScrollView
+    {
         /// <summary>
         /// Line on which the ScrollView starts, inclusive.
         /// </summary>
@@ -52,7 +53,8 @@ namespace Emme.Models {
         /// <param name="columnStart">Column on which the ScrollView starts, inclusive.</param>
         /// <param name="lines">Total number of lines displayed in this ScrollView.</param>
         /// <param name="columns">Total number of columns displayed in this ScrollView.</param>
-        public ScrollView(int lineStart, int columnStart, int lines, int columns) {
+        public ScrollView(int lineStart, int columnStart, int lines, int columns)
+        {
             LineStart = lineStart;
             ColumnStart = columnStart;
             Lines = lines;
@@ -62,7 +64,8 @@ namespace Emme.Models {
         /// <summary>
         /// Line on which the scroll view ends, inclusive.
         /// </summary>
-        private int LineEnd {
+        private int LineEnd
+        {
             get { return LineStart + Lines - 1; }
             set { LineStart = value - Lines + 1; }
         }
@@ -79,7 +82,8 @@ namespace Emme.Models {
         /// <param name="lines">Number of lines in new view.</param>
         /// <param name="columns">Number of columns in new view.</param>
         /// <returns>Scroll view resized to given dimensions.</returns>
-        public void ResizedTo(int lines, int columns) {
+        public void ResizedTo(int lines, int columns)
+        {
             Lines = lines;
             Columns = columns;
         }
@@ -88,94 +92,89 @@ namespace Emme.Models {
         /// Handles any scrolling needed after a line down command.
         /// </summary>
         /// <param name="caret">Caret position after a line down.</param>
-        /// <returns>Updated ScrollView.</returns>
-        public ScrollView CheckLineDown(Position caret) {
-            if (caret.Line > LineEnd) {
+        /// <returns>This object to allow method chaining.</returns>
+        public ScrollView CheckLineDown(Position caret)
+        {
+            if (caret.Line > LineEnd)
+            {
                 LineEnd = caret.Line;
-                return this;
             }
-            else {
-                return this;
-            }
+            return this;
         }
 
-        public ScrollView CheckHorizontalScroll(Position caret) {
+        public ScrollView CheckHorizontalScroll(Position caret)
+        {
             int horizontalScrollPad = Columns / 5;
-            if (caret.Column < ColumnStart) {
+            if (caret.Column < ColumnStart)
+            {
                 // Caret is to the left of the view.
                 ColumnStart = Max(caret.Column - horizontalScrollPad, 0);
-                return this;
             }
-            else if (caret.Column >= ColumnEnd) {
+            else if (caret.Column >= ColumnEnd)
+            {
                 // Carte is to the right of the view.
                 ColumnStart = Max(caret.Column - Columns + horizontalScrollPad, 0);
-                return this;
             }
-            else {
-                return this;
-            }
+            return this;
         }
 
         /// <summary>
         /// Handles any scrolling needed after a line up command.
         /// </summary>
         /// <param name="caret">Caret position after a line up.</param>
-        /// <returns>Update ScrollView.</returns>
-        public ScrollView CheckLineUp(Position caret) {
-            if (caret.Line > LineEnd) {
+        /// <returns>This object to allow method chaining.</returns>
+        public ScrollView CheckLineUp(Position caret)
+        {
+            if (caret.Line > LineEnd)
+            {
                 LineEnd = caret.Line;
-                return this;
             }
-            else if (caret.Line < LineStart) {
+            else if (caret.Line < LineStart)
+            {
                 LineStart = caret.Line;
-                return this;
             }
-            else {
-                return this;
-            }
+            return this;
         }
 
         /// <summary>
         /// Handles any scrolling needed after a page down command.
         /// </summary>
         /// <param name="caret">Caret position after page down.</param>
-        /// <returns>Updated ScrollView.</returns>
-        public ScrollView CheckPageDown(Position caret) {
-            if (caret.Line > LineEnd + Lines) {
+        /// <returns>This object to allow method chaining.</returns>
+        public ScrollView CheckPageDown(Position caret)
+        {
+            if (caret.Line > LineEnd + Lines)
+            {
                 // If the caret is below the scroll view, and would still be
                 // below the scroll view after a page down. Could happen if
                 // you resize the window to be small enough.
                 LineEnd = caret.Line;
-                return this;
             }
-            else if (caret.Line > LineEnd) {
+            else if (caret.Line > LineEnd)
+            {
                 LineStart = LineEnd + 1;
-                return this;
             }
-            else {
-                return this;
-            }
+            return this;
         }
 
         /// <summary>
         /// Handles any scrolling needed after a page up command.
         /// </summary>
         /// <param name="caret">Caret position after page up.</param>
-        /// <returns>Updated ScrollView.</returns>
-        public ScrollView CheckPageUp(Position caret) {
-            if (caret.Line > LineEnd) {
+        /// <returns>This object to allow method chaining.</returns>
+        public ScrollView CheckPageUp(Position caret)
+        {
+            if (caret.Line > LineEnd)
+            {
                 LineEnd = caret.Line;
-                return this;
             }
-            else if (caret.Line < LineStart) {
+            else if (caret.Line < LineStart)
+            {
                 // I don't expect caretPosition to be more than a page above
                 // this PageView.
                 LineStart = Max(LineStart - Lines, 0);
-                return this;
             }
-            else {
-                return this;
-            }
+            return this;
         }
 
         public Position PositionInView(Position positionInFile)

@@ -28,7 +28,8 @@ namespace Emme.Editing
       textView.Lines[textView.CaretPosition.Line] = splitSpans.Item1;
       textView.CaretPosition = new Position(textView.CaretPosition.NextLine, column: 0);
       textView.Lines.Insert(textView.CaretPosition.Line, splitSpans.Item2);
-      textView.ScrollView.CheckLineDown(textView.CaretPosition);
+      textView.ScrollView.CheckLineDown(textView.CaretPosition)
+                .CheckHorizontalScroll(textView.CaretPosition);
     }
   }
 }

@@ -83,17 +83,6 @@ namespace Emme.Editing
 
     public void Delete()
     {
-      if (CaretPosition.Column < Lines[CaretPosition.Line].Length)
-      {
-        GapBuffer.Delete(CaretBufferIndex);
-        Lines.Shift(start: CaretPosition.Line, delta: -1);
-      }
-      else if (CaretPosition.NextLine < Lines.Count)
-      {
-        Lines[CaretPosition.Line] =
-          Lines[CaretPosition.Line].Join(Lines[CaretPosition.NextLine]);
-        Lines.Delete(CaretPosition.NextLine);
-      }
     }
 
     public void CharLeft()

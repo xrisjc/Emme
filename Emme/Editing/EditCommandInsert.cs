@@ -30,9 +30,13 @@ namespace Emme.Editing
     public void Execute(TextView textView)
     {
       textView.DesiredColumn = null;
+
       textView.GapBuffer.Insert(textView.CaretBufferIndex, CharToInsert);
+
       textView.Lines.Shift(start: textView.CaretPosition.Line, delta: 1);
+
       textView.CaretPosition += Position.OneColumn;
+
       textView.ScrollView.CheckHorizontalScroll(textView.CaretPosition);
     }
   }

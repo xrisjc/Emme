@@ -19,35 +19,21 @@ using Emme.Models;
 
 namespace Emme.Editing
 {
-  public class EditCommandDeleteBackwards : IEditCommand
+  public class EditCommandDelete : IEditCommand
   {
     public void Execute(TextView textView)
     {
-      if (textView.CaretPosition.Column > 0)
+      if (textView.CaretPosition.Column < textView.Lines[textView.CaretPosition.Line].Length)
       {
-        // In the middle of a line, and not at the start.
-        textView.CaretPosition -= Position.OneColumn;
-
         textView.GapBuffer.Delete(textView.CaretBufferIndex);
-
         textView.Lines.Shift(start: textView.CaretPosition.Line, delta: -1);
-
-        textView.ScrollView.CheckHorizontalScroll(textView.CaretPosition);
       }
-      else if (textView.CaretPosition.Line > 0)
+      else if (textView.CaretPosition.NextLine < textView.Lines.Count)
       {
-        // At the beginning of a line but not at first line.
-        textView.CaretPosition = new Position(textView.CaretPosition.PreviousLine, textView.Lines[textView.CaretPosition.PreviousLine].Length);
-
         textView.Lines[textView.CaretPosition.Line] =
-          textView.Lines[textView.CaretPosition.Line].Join(
-            textView.Lines[textView.CaretPosition.NextLine]);
+          textView.Lines[textView.CaretPosition.Line].Join(textView.Lines[textView.CaretPosition.NextLine]);
         textView.Lines.Delete(textView.CaretPosition.NextLine);
-
-        textView.ScrollView.CheckLineUp(textView.CaretPosition)
-                  .CheckHorizontalScroll(textView.CaretPosition);
       }
     }
   }
 }
-

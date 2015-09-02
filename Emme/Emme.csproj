@@ -63,6 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Editing\EditCommandDelete.cs" />
     <Compile Include="Editing\EditCommandDeleteBackwards.cs" />
     <Compile Include="Editing\IEditCommand.cs" />
     <Compile Include="Editing\EditCommandInsert.cs" />

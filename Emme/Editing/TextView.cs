@@ -101,55 +101,6 @@ namespace Emme.Editing
       }
     }
 
-    public void LineUp()
-    {
-      MoveCaretToLine(Caret.PreviousLine);
-      ScrollView.CheckLineUp(Caret);
-    }
-
-    public void PageUp()
-    {
-      MoveCaretToLine(Caret.Line - Min(Caret.Line, ScrollView.Lines));
-      ScrollView.CheckPageUp(Caret);
-    }
-
-    public void LineDown()
-    {
-      MoveCaretToLine(Caret.NextLine);
-      ScrollView.CheckLineDown(Caret);
-    }
-
-    /// <summary>
-    /// Go down no more that maxLines number of lines.
-    /// </summary>
-    /// <param name="maxLines">Maximum number of lines to go down.</param>
-    public void LineDown(int maxLines)
-    {
-      int deltaTextView = Min(LastLine - Caret.Line, maxLines);
-      MoveCaretToLine(Caret.Line + deltaTextView);
-      ScrollView.CheckPageDown(Caret);
-    }
-
-    public void PageDown()
-    {
-      LineDown(ScrollView.Lines);
-    }
-
-    public void LineStart()
-    {
-      DesiredColumn = null;
-      Caret = new Position(Caret.Line, column: 0);
-      ScrollView.CheckHorizontalScroll(Caret);
-    }
-
-    public void LineEnd()
-    {
-      DesiredColumn = null;
-      Caret = new Position(Caret.Line, column: Lines[Caret.Line].Length);
-      ScrollView.CheckLineDown(Caret)
-                .CheckHorizontalScroll(Caret);
-    }
-
     public override string ToString()
     {
       var sb = new StringBuilder();

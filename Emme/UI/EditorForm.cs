@@ -199,27 +199,27 @@ namespace Emme.UI
             break;
 
           case Keys.Up:
-            textView.LineUp();
+            editCommand = new EditCommandLineUp();
             break;
 
           case Keys.Down:
-            textView.LineDown();
+            editCommand = new EditCommandDown();
             break;
 
           case Keys.Home:
-            textView.LineStart();
+            editCommand = new EditCommandLineStart();
             break;
 
           case Keys.End:
-            textView.LineEnd();
+            editCommand = new EditCommandLineEnd();
             break;
 
           case Keys.PageDown:
-            textView.PageDown();
+            editCommand = new EditCommandPageDown();
             break;
 
           case Keys.PageUp:
-            textView.PageUp();
+            editCommand = new EditCommandPageUp();
             break;
         }
         editCommand?.Execute(textView);

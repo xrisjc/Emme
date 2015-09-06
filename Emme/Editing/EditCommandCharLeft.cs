@@ -19,21 +19,20 @@ using Emme.Models;
 
 namespace Emme.Editing
 {
-  public class EditCommandDelete : IEditCommand
+  public class EditCommandCharLeft : IEditCommand
   {
     public void Execute(TextView textView)
     {
-      if (textView.Caret.Column < textView.Lines[textView.Caret.Line].Length)
+      textView.DesiredColumn = null;
+      if (textView.Caret.Column > 0)
       {
-        textView.GapBuffer.Delete(textView.CaretBufferIndex);
-        textView.ShiftLines(-1);
+        textView.Caret -= Position.OneColumn;
       }
-      else if (textView.Caret.NextLine < textView.Lines.Count)
+      else if (textView.Caret.Line > 0)
       {
-        textView.Lines[textView.Caret.Line] =
-          textView.Lines[textView.Caret.Line].Join(textView.Lines[textView.Caret.NextLine]);
-        textView.Lines.Delete(textView.Caret.NextLine);
+        textView.Caret = new Position(textView.Caret.PreviousLine, column: textView.Lines[textView.Caret.PreviousLine].Length);
       }
+      textView.ScrollView.CheckLineUp(textView.Caret).CheckHorizontalScroll(textView.Caret);
     }
   }
 }

@@ -63,8 +63,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Editing\EditCommandCharLeft.cs" />
+    <Compile Include="Editing\EditCommandCharRight.cs" />
     <Compile Include="Editing\EditCommandDelete.cs" />
     <Compile Include="Editing\EditCommandDeleteBackwards.cs" />
+    <Compile Include="Editing\EditCommandWordLeft.cs" />
+    <Compile Include="Editing\EditCommandWordRight.cs" />
     <Compile Include="Editing\IEditCommand.cs" />
     <Compile Include="Editing\EditCommandInsert.cs" />
     <Compile Include="Editing\EditCommandInsertNewLine.cs" />

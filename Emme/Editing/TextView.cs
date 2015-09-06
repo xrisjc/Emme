@@ -30,7 +30,7 @@ namespace Emme.Editing
   {
     public GapBuffer<char> GapBuffer { get; }
     public GapBuffer<Span> Lines { get; } = new GapBuffer<Span>();
-    public Position CaretPosition { get; set; } = Position.BufferStart;
+    public Position Caret { get; set; } = Position.BufferStart;
     public ScrollView ScrollView { get; set; } = new ScrollView(lineStart: 0, columnStart: 0, lines: 24, columns: 80);
     public int? DesiredColumn { get; set; } = null;
 
@@ -74,140 +74,49 @@ namespace Emme.Editing
     /// The index of the caret in the text buffer.
     /// </summary>
     public int CaretBufferIndex
-      => Lines[CaretPosition.Line].Start + CaretPosition.Column;
+      => Lines[Caret.Line].Start + Caret.Column;
 
     public void ResizeScrollView(int lines, int columns)
     {
       ScrollView.ResizedTo(lines, columns);
     }
 
-    public void Delete()
+    public void ShiftLines(int delta)
     {
+      int start = Caret.Line;
+      Lines[start] = Lines[start].MoveEnd(delta);
+      for (int i = start + 1; i < Lines.Count; i++)
+      {
+        Lines[i] = Lines[i].Move(delta);
+      }
     }
 
-    public void CharLeft()
-    {
-      DesiredColumn = null;
-      if (CaretPosition.Column > 0)
-      {
-        CaretPosition -= Position.OneColumn;
-      }
-      else if (CaretPosition.Line > 0)
-      {
-        CaretPosition = new Position(CaretPosition.PreviousLine, column: Lines[CaretPosition.PreviousLine].Length);
-      }
-      ScrollView.CheckLineUp(CaretPosition)
-                .CheckHorizontalScroll(CaretPosition);
-    }
-
-    public void WordLeft()
-    {
-      DesiredColumn = null;
-      if (CaretPosition.Column > 0)
-      {
-        int iStart = CaretBufferIndex;
-        int iMin = Lines[CaretPosition.Line].Start;
-        int i = iStart;
-        while (i > iMin && char.IsWhiteSpace(GapBuffer[i - 1]))
-        {
-          i--;
-        }
-        while (i > iMin && !char.IsWhiteSpace(GapBuffer[i - 1]))
-        {
-          i--;
-        }
-        CaretPosition -= new Position(0, iStart - i);
-      }
-      else if (CaretPosition.PreviousLine >= 0)
-      {
-        CaretPosition = new Position(CaretPosition.PreviousLine, column: Lines[CaretPosition.PreviousLine].Length);
-      }
-      ScrollView.CheckLineUp(CaretPosition)
-                .CheckHorizontalScroll(CaretPosition);
-    }
-
-    /// <summary>
-    /// Moves current position to next character.
-    /// </summary>
-    public void CharRight()
-    {
-      DesiredColumn = null;
-      if (CaretPosition.Column < Lines[CaretPosition.Line].Length)
-      {
-        CaretPosition += Position.OneColumn;
-      }
-      else if (CaretPosition.NextLine < Lines.Count)
-      {
-        CaretPosition = new Position(CaretPosition.NextLine, column: 0);
-      }
-      ScrollView.CheckLineDown(CaretPosition)
-                .CheckHorizontalScroll(CaretPosition);
-    }
-
-    public void WordRight()
-    {
-      DesiredColumn = null;
-      if (CaretPosition.Column < Lines[CaretPosition.Line].Length)
-      {
-        // Caret is not at the end of the line.
-        int iStart = CaretBufferIndex;
-        int iMax = Lines[CaretPosition.Line].End;
-        int i = iStart;
-        while (i < iMax && !char.IsWhiteSpace(GapBuffer[i]))
-        {
-          i++;
-        }
-        while (i < iMax && char.IsWhiteSpace(GapBuffer[i]))
-        {
-          i++;
-        }
-        CaretPosition += new Position(0, i - iStart);
-      }
-      else if (CaretPosition.NextLine <= LastLine)
-      {
-        // At the end of the line, and it's not the last line.
-        CaretPosition = new Position(CaretPosition.NextLine, column: 0);
-      }
-      ScrollView.CheckLineDown(CaretPosition)
-                .CheckHorizontalScroll(CaretPosition);
-    }
-
-    public void MoveToLine(int line)
+    public void MoveCaretToLine(int line)
     {
       if (line.IsInRange(0, Lines.Count))
       {
-        DesiredColumn = DesiredColumn ?? CaretPosition.Column;
+        DesiredColumn = DesiredColumn ?? Caret.Column;
         int nextColumn = Math.Min(Lines[line].Length, DesiredColumn.Value);
-        CaretPosition = new Position(line, nextColumn);
+        Caret = new Position(line, nextColumn);
       }
     }
 
     public void LineUp()
     {
-      MoveToLine(CaretPosition.PreviousLine);
-      ScrollView.CheckLineUp(CaretPosition);
-    }
-
-    /// <summary>
-    /// Go up no more than maxLines number of lines.
-    /// </summary>
-    /// <param name="maxLines">Number of lines to go up.</param>
-    public void LineUp(int maxLines)
-    {
-      int deltaTextView = Min(CaretPosition.Line, maxLines);
-      MoveToLine(CaretPosition.Line - deltaTextView);
-      ScrollView.CheckPageUp(CaretPosition);
+      MoveCaretToLine(Caret.PreviousLine);
+      ScrollView.CheckLineUp(Caret);
     }
 
     public void PageUp()
     {
-      LineUp(ScrollView.Lines);
+      MoveCaretToLine(Caret.Line - Min(Caret.Line, ScrollView.Lines));
+      ScrollView.CheckPageUp(Caret);
     }
 
     public void LineDown()
     {
-      MoveToLine(CaretPosition.NextLine);
-      ScrollView.CheckLineDown(CaretPosition);
+      MoveCaretToLine(Caret.NextLine);
+      ScrollView.CheckLineDown(Caret);
     }
 
     /// <summary>
@@ -216,9 +125,9 @@ namespace Emme.Editing
     /// <param name="maxLines">Maximum number of lines to go down.</param>
     public void LineDown(int maxLines)
     {
-      int deltaTextView = Min(LastLine - CaretPosition.Line, maxLines);
-      MoveToLine(CaretPosition.Line + deltaTextView);
-      ScrollView.CheckPageDown(CaretPosition);
+      int deltaTextView = Min(LastLine - Caret.Line, maxLines);
+      MoveCaretToLine(Caret.Line + deltaTextView);
+      ScrollView.CheckPageDown(Caret);
     }
 
     public void PageDown()
@@ -229,16 +138,16 @@ namespace Emme.Editing
     public void LineStart()
     {
       DesiredColumn = null;
-      CaretPosition = new Position(CaretPosition.Line, column: 0);
-      ScrollView.CheckHorizontalScroll(CaretPosition);
+      Caret = new Position(Caret.Line, column: 0);
+      ScrollView.CheckHorizontalScroll(Caret);
     }
 
     public void LineEnd()
     {
       DesiredColumn = null;
-      CaretPosition = new Position(CaretPosition.Line, column: Lines[CaretPosition.Line].Length);
-      ScrollView.CheckLineDown(CaretPosition)
-                .CheckHorizontalScroll(CaretPosition);
+      Caret = new Position(Caret.Line, column: Lines[Caret.Line].Length);
+      ScrollView.CheckLineDown(Caret)
+                .CheckHorizontalScroll(Caret);
     }
 
     public override string ToString()

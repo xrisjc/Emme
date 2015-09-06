@@ -50,15 +50,6 @@ namespace Emme.Models
     public static Span Move(this Span gap, int delta)
       => new Span(gap.Start + delta, gap.End + delta);
 
-    public static void Shift(this GapBuffer<Span> spans, int start, int delta)
-    {
-      spans[start] = spans[start].MoveEnd(delta);
-      for (int i = start + 1; i < spans.Count; i++)
-      {
-        spans[i] = spans[i].Move(delta);
-      }
-    }
-
     public static Span Join(this Span leftSpan, Span rightSpan)
     {
       Debug.Assert(leftSpan.Start <= rightSpan.End, "joining spans are not in order");

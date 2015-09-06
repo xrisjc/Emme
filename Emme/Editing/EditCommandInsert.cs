@@ -33,11 +33,11 @@ namespace Emme.Editing
 
       textView.GapBuffer.Insert(textView.CaretBufferIndex, CharToInsert);
 
-      textView.Lines.Shift(start: textView.CaretPosition.Line, delta: 1);
+      textView.ShiftLines(1);
 
-      textView.CaretPosition += Position.OneColumn;
+      textView.Caret += Position.OneColumn;
 
-      textView.ScrollView.CheckHorizontalScroll(textView.CaretPosition);
+      textView.ScrollView.CheckHorizontalScroll(textView.Caret);
     }
   }
 }

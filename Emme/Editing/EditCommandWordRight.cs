@@ -19,21 +19,33 @@ using Emme.Models;
 
 namespace Emme.Editing
 {
-  public class EditCommandDelete : IEditCommand
+  public class EditCommandWordRight : IEditCommand
   {
     public void Execute(TextView textView)
     {
+      textView.DesiredColumn = null;
       if (textView.Caret.Column < textView.Lines[textView.Caret.Line].Length)
       {
-        textView.GapBuffer.Delete(textView.CaretBufferIndex);
-        textView.ShiftLines(-1);
+        // Caret is not at the end of the line.
+        int iStart = textView.CaretBufferIndex;
+        int iMax = textView.Lines[textView.Caret.Line].End;
+        int i = iStart;
+        while (i < iMax && !char.IsWhiteSpace(textView.GapBuffer[i]))
+        {
+          i++;
+        }
+        while (i < iMax && char.IsWhiteSpace(textView.GapBuffer[i]))
+        {
+          i++;
+        }
+        textView.Caret += new Position(0, i - iStart);
       }
-      else if (textView.Caret.NextLine < textView.Lines.Count)
+      else if (textView.Caret.NextLine <= textView.LastLine)
       {
-        textView.Lines[textView.Caret.Line] =
-          textView.Lines[textView.Caret.Line].Join(textView.Lines[textView.Caret.NextLine]);
-        textView.Lines.Delete(textView.Caret.NextLine);
+        // At the end of the line, and it's not the last line.
+        textView.Caret = new Position(textView.Caret.NextLine, column: 0);
       }
+      textView.ScrollView.CheckLineDown(textView.Caret).CheckHorizontalScroll(textView.Caret);
     }
   }
 }

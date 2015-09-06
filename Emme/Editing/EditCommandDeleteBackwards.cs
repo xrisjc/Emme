@@ -23,29 +23,29 @@ namespace Emme.Editing
   {
     public void Execute(TextView textView)
     {
-      if (textView.CaretPosition.Column > 0)
+      if (textView.Caret.Column > 0)
       {
         // In the middle of a line, and not at the start.
-        textView.CaretPosition -= Position.OneColumn;
+        textView.Caret -= Position.OneColumn;
 
         textView.GapBuffer.Delete(textView.CaretBufferIndex);
 
-        textView.Lines.Shift(start: textView.CaretPosition.Line, delta: -1);
+        textView.ShiftLines(-1);
 
-        textView.ScrollView.CheckHorizontalScroll(textView.CaretPosition);
+        textView.ScrollView.CheckHorizontalScroll(textView.Caret);
       }
-      else if (textView.CaretPosition.Line > 0)
+      else if (textView.Caret.Line > 0)
       {
         // At the beginning of a line but not at first line.
-        textView.CaretPosition = new Position(textView.CaretPosition.PreviousLine, textView.Lines[textView.CaretPosition.PreviousLine].Length);
+        textView.Caret = new Position(textView.Caret.PreviousLine, textView.Lines[textView.Caret.PreviousLine].Length);
 
-        textView.Lines[textView.CaretPosition.Line] =
-          textView.Lines[textView.CaretPosition.Line].Join(
-            textView.Lines[textView.CaretPosition.NextLine]);
-        textView.Lines.Delete(textView.CaretPosition.NextLine);
+        textView.Lines[textView.Caret.Line] =
+          textView.Lines[textView.Caret.Line].Join(
+            textView.Lines[textView.Caret.NextLine]);
+        textView.Lines.Delete(textView.Caret.NextLine);
 
-        textView.ScrollView.CheckLineUp(textView.CaretPosition)
-                  .CheckHorizontalScroll(textView.CaretPosition);
+        textView.ScrollView.CheckLineUp(textView.Caret)
+                  .CheckHorizontalScroll(textView.Caret);
       }
     }
   }

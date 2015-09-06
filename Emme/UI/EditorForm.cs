@@ -153,7 +153,7 @@ namespace Emme.UI
               {
                 string fileContent = reader.ReadToEnd();
                 textView = new TextView(fileContent);
-                UpdateCaretPosition(textView.CaretPosition);
+                UpdateCaretPosition(textView.Caret);
               }
             }
           }
@@ -179,22 +179,22 @@ namespace Emme.UI
           case Keys.Left:
             if (e.Control)
             {
-              textView.WordLeft();
+              editCommand = new EditCommandWordLeft();
             }
             else
             {
-              textView.CharLeft();
+              editCommand = new EditCommandCharLeft();
             }
             break;
 
           case Keys.Right:
             if (e.Control)
             {
-              textView.WordRight();
+              editCommand = new EditCommandWordRight();
             }
             else
             {
-              textView.CharRight();
+              editCommand = new EditCommandCharRight();
             }
             break;
 
@@ -223,7 +223,7 @@ namespace Emme.UI
             break;
         }
         editCommand?.Execute(textView);
-        UpdateCaretPosition(textView.CaretPosition);
+        UpdateCaretPosition(textView.Caret);
       }
 
       Invalidate();
@@ -241,7 +241,7 @@ namespace Emme.UI
       IEditCommand editCommand = new EditCommandInsert(e.KeyChar);
       editCommand.Execute(textView);
 
-      UpdateCaretPosition(textView.CaretPosition);
+      UpdateCaretPosition(textView.Caret);
       Invalidate();
     }
 

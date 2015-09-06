@@ -25,15 +25,15 @@ namespace Emme.Editing
     {
       textView.DesiredColumn = null;
 
-      Tuple<Span, Span> splitSpans = textView.Lines[textView.CaretPosition.Line].Split(textView.CaretBufferIndex);
-      textView.Lines[textView.CaretPosition.Line] = splitSpans.Item1;
+      Tuple<Span, Span> splitSpans = textView.Lines[textView.Caret.Line].Split(textView.CaretBufferIndex);
+      textView.Lines[textView.Caret.Line] = splitSpans.Item1;
 
-      textView.CaretPosition = new Position(textView.CaretPosition.NextLine, column: 0);
+      textView.Caret = new Position(textView.Caret.NextLine, column: 0);
 
-      textView.Lines.Insert(textView.CaretPosition.Line, splitSpans.Item2);
+      textView.Lines.Insert(textView.Caret.Line, splitSpans.Item2);
 
-      textView.ScrollView.CheckLineDown(textView.CaretPosition)
-                .CheckHorizontalScroll(textView.CaretPosition);
+      textView.ScrollView.CheckLineDown(textView.Caret)
+                .CheckHorizontalScroll(textView.Caret);
     }
   }
 }

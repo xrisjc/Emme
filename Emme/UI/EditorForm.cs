@@ -23,6 +23,7 @@ using Emme.Editing;
 using Emme.Models;
 using static System.Math;
 using static Emme.UI.NativeMethods;
+using System.Collections.Generic;
 
 namespace Emme.UI
 {
@@ -30,6 +31,8 @@ namespace Emme.UI
   {
 
     TextView textView;
+    Stack<IEditCommand> undos = new Stack<IEditCommand>();
+    Stack<IEditCommand> redos = new Stack<IEditCommand>();
 
     readonly FontMetrics fontMetrics;
     Caret caret;
@@ -138,6 +141,8 @@ namespace Emme.UI
                 writer.Write(textView.ToString());
               }
             }
+            undos.Clear();
+            redos.Clear();
           }
         }
       }
@@ -156,8 +161,20 @@ namespace Emme.UI
                 UpdateCaretPosition(textView.Caret);
               }
             }
+            undos.Clear();
+            redos.Clear();
           }
         }
+      }
+      else if (e.Control && (e.KeyCode == Keys.Z))
+      {
+        undos.Undo(textView, redos);
+        UpdateCaretPosition(textView.Caret);
+      }
+      else if (e.Control && (e.KeyCode == Keys.Y))
+      {
+        redos.Undo(textView, undos);
+        UpdateCaretPosition(textView.Caret);
       }
       else
       {
@@ -222,7 +239,7 @@ namespace Emme.UI
             editCommand = new EditCommandPageUp();
             break;
         }
-        editCommand?.Execute(textView);
+        editCommand?.Execute(textView, undos, redos);
         UpdateCaretPosition(textView.Caret);
       }
 
@@ -238,8 +255,7 @@ namespace Emme.UI
         return;
       }
 
-      IEditCommand editCommand = new EditCommandInsert(e.KeyChar);
-      editCommand.Execute(textView);
+      new EditCommandInsert(e.KeyChar).Execute(textView, undos, redos);
 
       UpdateCaretPosition(textView.Caret);
       Invalidate();

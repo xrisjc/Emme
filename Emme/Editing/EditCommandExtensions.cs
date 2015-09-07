@@ -15,34 +15,34 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using Emme.Models;
+using System.Collections.Generic;
 
 namespace Emme.Editing
 {
-  public class EditCommandInsert : IEditCommand
+  public static class EditCommandExtensions
   {
-    public char CharToInsert { get; }
-
-    public EditCommandInsert(char charToInsert)
+    public static void Execute(this IEditCommand editCommand, TextView textView,Stack<IEditCommand> undo)
     {
-      CharToInsert = charToInsert;
+      IEditCommand undoCommand = editCommand.Execute(textView);
+      if (undoCommand is EditCommandNoOp == false)
+      {
+        undo.Push(undoCommand);
+      }
     }
 
-    public IEditCommand Execute(TextView textView)
+    public static void Execute(this IEditCommand editCommand, TextView textView,
+      Stack<IEditCommand> undo, Stack<IEditCommand> redo)
     {
-      Position undoCaret = textView.Caret;
+      editCommand.Execute(textView, undo);
+      redo.Clear();
+    }
 
-      textView.DesiredColumn = null;
-
-      textView.GapBuffer.Insert(textView.CaretBufferIndex, CharToInsert);
-
-      textView.ShiftLines(1);
-
-      textView.Caret += Position.OneColumn;
-
-      textView.ScrollView.CheckHorizontalScroll(textView.Caret);
-
-      return new EditCommandDoAt(undoCaret, new EditCommandDelete());
+    public static void Undo(this Stack<IEditCommand> undo, TextView textView, Stack<IEditCommand> redo)
+    {
+      if (undo.Count > 0)
+      {
+        undo.Pop().Execute(textView, redo);
+      }
     }
   }
 }

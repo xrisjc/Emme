@@ -21,10 +21,11 @@ namespace Emme.Editing
 {
   public class EditCommandPageUp : IEditCommand
   {
-    public void Execute(TextView textView)
+    public IEditCommand Execute(TextView textView)
     {
       textView.MoveCaretToLine(textView.Caret.Line - Min(textView.Caret.Line, textView.ScrollView.Lines));
       textView.ScrollView.CheckPageUp(textView.Caret);
+      return new EditCommandNoOp();
     }
   }
 }

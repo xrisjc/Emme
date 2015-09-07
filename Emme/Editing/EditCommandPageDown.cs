@@ -21,11 +21,12 @@ namespace Emme.Editing
 {
   public class EditCommandPageDown : IEditCommand
   {
-    public void Execute(TextView textView)
+    public IEditCommand Execute(TextView textView)
     {
       int deltaTextView = Min(textView.LastLine - textView.Caret.Line, textView.ScrollView.Lines);
       textView.MoveCaretToLine(textView.Caret.Line + deltaTextView);
       textView.ScrollView.CheckPageDown(textView.Caret);
+      return new EditCommandNoOp();
     }
   }
 }

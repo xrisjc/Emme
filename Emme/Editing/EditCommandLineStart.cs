@@ -21,11 +21,13 @@ namespace Emme.Editing
 {
   public class EditCommandLineStart : IEditCommand
   {
-    public void Execute(TextView textView)
+    public IEditCommand Execute(TextView textView)
     {
       textView.DesiredColumn = null;
       textView.Caret = new Position(textView.Caret.Line, column: 0);
       textView.ScrollView.CheckHorizontalScroll(textView.Caret);
+
+      return new EditCommandNoOp();
     }
   }
 }

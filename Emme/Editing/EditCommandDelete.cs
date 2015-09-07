@@ -21,18 +21,25 @@ namespace Emme.Editing
 {
   public class EditCommandDelete : IEditCommand
   {
-    public void Execute(TextView textView)
+    public IEditCommand Execute(TextView textView)
     {
       if (textView.Caret.Column < textView.Lines[textView.Caret.Line].Length)
       {
+        char charUndo = textView.GapBuffer[textView.CaretBufferIndex];
         textView.GapBuffer.Delete(textView.CaretBufferIndex);
         textView.ShiftLines(-1);
+        return new EditCommandDoAt(textView.Caret, new EditCommandInsert(charUndo));
       }
       else if (textView.Caret.NextLine < textView.Lines.Count)
       {
         textView.Lines[textView.Caret.Line] =
           textView.Lines[textView.Caret.Line].Join(textView.Lines[textView.Caret.NextLine]);
         textView.Lines.Delete(textView.Caret.NextLine);
+        return new EditCommandNoOp();
+      }
+      else
+      {
+        return new EditCommandNoOp();
       }
     }
   }

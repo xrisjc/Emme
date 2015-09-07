@@ -19,10 +19,11 @@ namespace Emme.Editing
 {
   public class EditCommandLineUp : IEditCommand
   {
-    public void Execute(TextView textView)
+    public IEditCommand Execute(TextView textView)
     {
       textView.MoveCaretToLine(textView.Caret.PreviousLine);
       textView.ScrollView.CheckLineUp(textView.Caret);
+      return new EditCommandNoOp();
     }
   }
 }

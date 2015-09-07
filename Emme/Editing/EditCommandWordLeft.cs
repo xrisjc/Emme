@@ -21,7 +21,7 @@ namespace Emme.Editing
 {
   public class EditCommandWordLeft : IEditCommand
   {
-    public void Execute(TextView textView)
+    public IEditCommand Execute(TextView textView)
     {
       textView.DesiredColumn = null;
       if (textView.Caret.Column > 0)
@@ -44,6 +44,7 @@ namespace Emme.Editing
         textView.Caret = new Position(textView.Caret.PreviousLine, column: textView.Lines[textView.Caret.PreviousLine].Length);
       }
       textView.ScrollView.CheckLineUp(textView.Caret).CheckHorizontalScroll(textView.Caret);
+      return new EditCommandNoOp();
     }
   }
 }

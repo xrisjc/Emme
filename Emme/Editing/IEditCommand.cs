@@ -19,6 +19,6 @@ namespace Emme.Editing
 {
   public interface IEditCommand
   {
-    void Execute(TextView textView);
+    IEditCommand Execute(TextView textView);
   }
 }

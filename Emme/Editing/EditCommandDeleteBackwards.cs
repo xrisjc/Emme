@@ -21,7 +21,7 @@ namespace Emme.Editing
 {
   public class EditCommandDeleteBackwards : IEditCommand
   {
-    public void Execute(TextView textView)
+    public IEditCommand Execute(TextView textView)
     {
       if (textView.Caret.Column > 0)
       {
@@ -47,6 +47,8 @@ namespace Emme.Editing
         textView.ScrollView.CheckLineUp(textView.Caret)
                   .CheckHorizontalScroll(textView.Caret);
       }
+
+      return new EditCommandNoOp();
     }
   }
 }

@@ -17,12 +17,10 @@
 
 namespace Emme.Editing
 {
-  public class EditCommandDown : IEditCommand
+  public class EditCommandNoOp : IEditCommand
   {
     public IEditCommand Execute(TextView textView)
     {
-      textView.MoveCaretToLine(textView.Caret.NextLine);
-      textView.ScrollView.CheckLineDown(textView.Caret);
       return new EditCommandNoOp();
     }
   }

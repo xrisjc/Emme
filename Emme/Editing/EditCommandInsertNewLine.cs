@@ -21,7 +21,7 @@ namespace Emme.Editing
 {
   public class EditCommandInsertNewLine : IEditCommand
   {
-    public void Execute(TextView textView)
+    public IEditCommand Execute(TextView textView)
     {
       textView.DesiredColumn = null;
 
@@ -34,6 +34,8 @@ namespace Emme.Editing
 
       textView.ScrollView.CheckLineDown(textView.Caret)
                 .CheckHorizontalScroll(textView.Caret);
+
+      return new EditCommandNoOp();
     }
   }
 }

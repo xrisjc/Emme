@@ -67,10 +67,13 @@
     <Compile Include="Editing\EditCommandCharRight.cs" />
     <Compile Include="Editing\EditCommandDelete.cs" />
     <Compile Include="Editing\EditCommandDeleteBackwards.cs" />
+    <Compile Include="Editing\EditCommandDoAt.cs" />
     <Compile Include="Editing\EditCommandDown.cs" />
+    <Compile Include="Editing\EditCommandExtensions.cs" />
     <Compile Include="Editing\EditCommandLineEnd.cs" />
     <Compile Include="Editing\EditCommandLineStart.cs" />
     <Compile Include="Editing\EditCommandLineUp.cs" />
+    <Compile Include="Editing\EditCommandNoOp.cs" />
     <Compile Include="Editing\EditCommandPageDown.cs" />
     <Compile Include="Editing\EditCommandPageUp.cs" />
     <Compile Include="Editing\EditCommandWordLeft.cs" />

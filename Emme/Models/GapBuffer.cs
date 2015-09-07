@@ -98,6 +98,16 @@ namespace Emme.Models
       return this;
     }
 
+    /// <summary>
+    /// Appends the value at the end of the buffer.
+    /// </summary>
+    /// <param name="value">Value to append.</param>
+    /// <returns>This buffer to enable method chaining.</returns>
+    public GapBuffer<T> Append(T value)
+    {
+      return Insert(Count, value);
+    }
+
     public void Insert(int index, IIndexable<T> values, Span valuesSlice)
     {
       MoveGapTo(index);

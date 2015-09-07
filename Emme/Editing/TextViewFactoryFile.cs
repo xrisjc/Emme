@@ -35,6 +35,8 @@ namespace Emme.Editing
 
     public TextView Create()
     {
+      // Note that new lines are not stored in the content buffer.
+
       var content = new GapBuffer<char>(initialCapacity: InitialContent.Length);
       var lines = new GapBuffer<Span>();
 
@@ -42,17 +44,15 @@ namespace Emme.Editing
       string newLine = Environment.NewLine;
       int lineStartIndex = 0;
       int bufferIndex = 0;
-      int line = 0;
       int newLineIndex;
       do
       {
         newLineIndex = InitialContent.IndexOf(newLine, startIndex: lineStartIndex);
         var lineSlice = new Span(lineStartIndex, (newLineIndex >= 0) ? newLineIndex : InitialContent.Length);
         content.Insert(bufferIndex, initialContentIndexable, lineSlice);
-        lines.Insert(line, new Span(bufferIndex, bufferIndex + lineSlice.Length));
+        lines.Append(new Span(bufferIndex, bufferIndex + lineSlice.Length));
         lineStartIndex += lineSlice.Length + newLine.Length;
         bufferIndex += lineSlice.Length;
-        line++;
       }
       while (newLineIndex >= 0);
 

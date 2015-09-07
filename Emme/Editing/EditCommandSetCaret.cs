@@ -19,23 +19,22 @@ using Emme.Models;
 
 namespace Emme.Editing
 {
-  public class EditCommandInsert : IEditCommand
+  public class EditCommandSetCaret : IEditCommand
   {
-    public char CharToInsert { get; }
+    public Position Caret { get; }
 
-    public EditCommandInsert(char charToInsert)
+    public EditCommandSetCaret(Position caret)
     {
-      CharToInsert = charToInsert;
+      Caret = caret;
     }
 
     public IEditCommand Execute(TextView textView)
     {
-      textView.DesiredColumn = null;
-      textView.GapBuffer.Insert(textView.CaretBufferIndex, CharToInsert);
-      textView.ShiftLines(1);
-      textView.Caret += Position.OneColumn;
-      textView.ScrollView.CheckHorizontalScroll(textView.Caret);
-      return textView.Caret.Set().Then<EditCommandDeleteBackwards>();
+      textView.Caret = Caret;
+      textView.ScrollView
+        .CheckVerticalScroll(textView.Caret)
+        .CheckHorizontalScroll(textView.Caret);
+      return new EditCommandNoOp();
     }
   }
 }

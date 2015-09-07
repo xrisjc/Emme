@@ -28,18 +28,20 @@ namespace Emme.Editing
         char charUndo = textView.GapBuffer[textView.CaretBufferIndex];
         textView.GapBuffer.Delete(textView.CaretBufferIndex);
         textView.ShiftLines(-1);
-        return new EditCommandDoAt(textView.Caret, new EditCommandInsert(charUndo));
+
+        return textView.Caret.Set().Then(charUndo.Insert()).Then<EditCommandCharLeft>();
       }
       else if (textView.Caret.NextLine < textView.Lines.Count)
       {
         textView.Lines[textView.Caret.Line] =
           textView.Lines[textView.Caret.Line].Join(textView.Lines[textView.Caret.NextLine]);
         textView.Lines.Delete(textView.Caret.NextLine);
-        return new EditCommandNoOp();
+
+        return EditCommand.NoOp();
       }
       else
       {
-        return new EditCommandNoOp();
+        return EditCommand.NoOp();
       }
     }
   }

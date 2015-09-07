@@ -15,29 +15,24 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using Emme.Models;
-
 namespace Emme.Editing
 {
-  public class EditCommandDoAt : IEditCommand
+  public class EditCommandChain : IEditCommand
   {
-    readonly Position caret;
-    readonly IEditCommand editCommand;
+    public IEditCommand FirstEditCommand { get; }
+    public IEditCommand SecondEditCommand { get; }
 
-    public EditCommandDoAt(Position caret, IEditCommand editCommand)
+    public EditCommandChain(IEditCommand firstEditCommand, IEditCommand secondEditCommand)
     {
-      this.caret = caret;
-      this.editCommand = editCommand;
+      FirstEditCommand = firstEditCommand;
+      SecondEditCommand = secondEditCommand;
     }
 
     public IEditCommand Execute(TextView textView)
     {
-      textView.Caret = caret;
-      textView.ScrollView
-        .CheckPageUp(textView.Caret)
-        .CheckPageDown(textView.Caret)
-        .CheckHorizontalScroll(textView.Caret);
-      return editCommand.Execute(textView);
+      IEditCommand firstUndoEditCommand = FirstEditCommand.Execute(textView);
+      IEditCommand secondUndoEditCommand = SecondEditCommand.Execute(textView);
+      return secondUndoEditCommand.Then(firstUndoEditCommand);
     }
   }
 }

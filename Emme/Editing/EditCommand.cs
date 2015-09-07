@@ -15,11 +15,12 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using Emme.Models;
 using System.Collections.Generic;
 
 namespace Emme.Editing
 {
-  public static class EditCommandExtensions
+  public static class EditCommand
   {
     public static void Execute(this IEditCommand editCommand, TextView textView,Stack<IEditCommand> undo)
     {
@@ -43,6 +44,39 @@ namespace Emme.Editing
       {
         undo.Pop().Execute(textView, redo);
       }
+    }
+
+    public static IEditCommand Then(this IEditCommand firstEditCommand, IEditCommand secondEditCommand)
+    {
+      if (firstEditCommand is EditCommandNoOp)
+      {
+        return secondEditCommand;
+      }
+      else
+      {
+        return new EditCommandChain(firstEditCommand, secondEditCommand);
+      }
+    }
+
+    public static IEditCommand Then<T>(this IEditCommand firstEditCommand)
+      where T : IEditCommand, new()
+    {
+      return firstEditCommand.Then(new T());
+    }
+
+    public static IEditCommand Insert(this char value)
+    {
+      return new EditCommandInsert(value);
+    }
+
+    public static IEditCommand Set(this Position caret)
+    {
+      return new EditCommandSetCaret(caret);
+    }
+
+    public static IEditCommand NoOp()
+    {
+      return new EditCommandNoOp();
     }
   }
 }

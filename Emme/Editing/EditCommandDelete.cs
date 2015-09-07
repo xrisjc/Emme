@@ -16,6 +16,7 @@
 //
 
 using Emme.Models;
+using static Emme.Editing.EditCommand;
 
 namespace Emme.Editing
 {
@@ -33,15 +34,13 @@ namespace Emme.Editing
       }
       else if (textView.Caret.NextLine < textView.Lines.Count)
       {
-        textView.Lines[textView.Caret.Line] =
-          textView.Lines[textView.Caret.Line].Join(textView.Lines[textView.Caret.NextLine]);
-        textView.Lines.Delete(textView.Caret.NextLine);
+        Execute<EditCommandJoinLines>(textView);
 
-        return EditCommand.NoOp();
+        return NoOp();
       }
       else
       {
-        return EditCommand.NoOp();
+        return NoOp();
       }
     }
   }

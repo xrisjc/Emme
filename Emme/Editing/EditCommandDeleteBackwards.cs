@@ -16,6 +16,7 @@
 //
 
 using Emme.Models;
+using static Emme.Editing.EditCommand;
 
 namespace Emme.Editing
 {
@@ -43,16 +44,13 @@ namespace Emme.Editing
         // At the beginning of a line but not at first line.
         textView.Caret = new Position(textView.Caret.PreviousLine, textView.Lines[textView.Caret.PreviousLine].Length);
 
-        textView.Lines[textView.Caret.Line] =
-          textView.Lines[textView.Caret.Line].Join(
-            textView.Lines[textView.Caret.NextLine]);
-        textView.Lines.Delete(textView.Caret.NextLine);
+        Execute<EditCommandJoinLines>(textView);
 
         textView.ScrollView.CheckLineUp(textView.Caret)
                   .CheckHorizontalScroll(textView.Caret);
       }
 
-      return EditCommand.NoOp();
+      return NoOp();
     }
   }
 }

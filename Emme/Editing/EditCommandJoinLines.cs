@@ -16,22 +16,21 @@
 //
 
 using Emme.Models;
-using System;
-using static Emme.Editing.EditCommand;
 
 namespace Emme.Editing
 {
-  public class EditCommandInsertNewLine : IEditCommand
+  public class EditCommandJoinLines : IEditCommand
   {
     public IEditCommand Execute(TextView textView)
     {
-      textView.DesiredColumn = null;
-      Execute<EditCommandSplitLines>(textView);
-      textView.Caret = new Position(textView.Caret.NextLine, column: 0);
-      textView.ScrollView.CheckLineDown(textView.Caret)
-                .CheckHorizontalScroll(textView.Caret);
+      var newLine = new Span(
+        textView.Lines[textView.Caret.Line].Start,
+        textView.Lines[textView.Caret.NextLine].End);
 
-      return NoOp();
+      textView.Lines[textView.Caret.Line] = newLine;
+      textView.Lines.Delete(textView.Caret.NextLine);
+
+      return EditCommand.NoOp();
     }
   }
 }

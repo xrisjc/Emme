@@ -22,7 +22,13 @@ namespace Emme.Editing
 {
   public static class EditCommand
   {
-    public static void Execute(this IEditCommand editCommand, TextView textView,Stack<IEditCommand> undo)
+    public static IEditCommand Execute<T>(TextView textView)
+      where T : IEditCommand, new()
+    {
+      return new T().Execute(textView);
+    }
+
+    public static void Execute(this IEditCommand editCommand, TextView textView, Stack<IEditCommand> undo)
     {
       IEditCommand undoCommand = editCommand.Execute(textView);
       if (undoCommand is EditCommandNoOp == false)

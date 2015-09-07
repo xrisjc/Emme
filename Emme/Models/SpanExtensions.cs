@@ -50,14 +50,6 @@ namespace Emme.Models
     public static Span Move(this Span gap, int delta)
       => new Span(gap.Start + delta, gap.End + delta);
 
-    public static Span Join(this Span leftSpan, Span rightSpan)
-    {
-      Debug.Assert(leftSpan.Start <= rightSpan.End, "joining spans are not in order");
-      Debug.Assert(leftSpan.End == rightSpan.Start, "joining span's ends don't meet");
-
-      return new Span(leftSpan.Start, rightSpan.End);
-    }
-
     public static Tuple<Span, Span> Split(this Span span, int index)
     {
       Debug.Assert(span.Start <= index, "split index is less than span start");

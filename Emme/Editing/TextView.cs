@@ -29,40 +29,18 @@ namespace Emme.Editing
   public class TextView
   {
     public GapBuffer<char> GapBuffer { get; }
-    public GapBuffer<Span> Lines { get; } = new GapBuffer<Span>();
+    public GapBuffer<Span> Lines { get; }
     public Position Caret { get; set; } = Position.BufferStart;
     public ScrollView ScrollView { get; set; } = new ScrollView(lineStart: 0, columnStart: 0, lines: 24, columns: 80);
     public int? DesiredColumn { get; set; } = null;
 
-    public TextView(string initialContent = null)
+    /// <summary>
+    /// Primary constructor
+    /// </summary>
+    public TextView(GapBuffer<char> gapBuffer, GapBuffer<Span> lines)
     {
-      if (string.IsNullOrEmpty(initialContent))
-      {
-        GapBuffer = new GapBuffer<char>();
-        Lines.Insert(0, new Span(0, 0));
-      }
-      else
-      {
-        GapBuffer = new GapBuffer<char>(initialCapacity: initialContent.Length);
-
-        IIndexable<char> initialContentIndexable = new StringIndexable(initialContent);
-        string newLine = Environment.NewLine;
-        int lineStartIndex = 0;
-        int bufferIndex = 0;
-        int line = 0;
-        int newLineIndex;
-        do
-        {
-          newLineIndex = initialContent.IndexOf(newLine, startIndex: lineStartIndex);
-          var lineSlice = new Span(lineStartIndex, (newLineIndex >= 0) ? newLineIndex : initialContent.Length);
-          GapBuffer.Insert(bufferIndex, initialContentIndexable, lineSlice);
-          Lines.Insert(line, new Span(bufferIndex, bufferIndex + lineSlice.Length));
-          lineStartIndex += lineSlice.Length + newLine.Length;
-          bufferIndex += lineSlice.Length;
-          line++;
-        }
-        while (newLineIndex >= 0);
-      }
+      GapBuffer = gapBuffer;
+      Lines = lines;
     }
 
     /// <summary>

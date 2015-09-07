@@ -40,7 +40,7 @@ namespace Emme.UI
 
     public EditorForm()
     {
-      this.textView = new TextView();
+      textView = new TextViewFactoryNew().Create();
 
       Text = "Emme";
 
@@ -157,7 +157,7 @@ namespace Emme.UI
               using (var reader = new StreamReader(stream))
               {
                 string fileContent = reader.ReadToEnd();
-                textView = new TextView(fileContent);
+                textView = new TextViewFactoryFile(fileContent).Create();
                 UpdateCaretPosition(textView.Caret);
               }
             }

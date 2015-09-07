@@ -81,7 +81,10 @@
     <Compile Include="Editing\IEditCommand.cs" />
     <Compile Include="Editing\EditCommandInsert.cs" />
     <Compile Include="Editing\EditCommandInsertNewLine.cs" />
+    <Compile Include="Editing\ITextViewFactory.cs" />
     <Compile Include="Editing\TextView.cs" />
+    <Compile Include="Editing\TextViewFactoryFile.cs" />
+    <Compile Include="Editing\TextViewFactoryNew.cs" />
     <Compile Include="Models\IIndexable.cs" />
     <Compile Include="Models\ScrollView.cs" />
     <Compile Include="Models\Span.cs" />

@@ -79,7 +79,13 @@ namespace Emme.Models
       set { buffer[gap.ToBufferIndex(index)] = value; }
     }
 
-    public void Insert(int index, T value)
+    /// <summary>
+    /// Insert a value at the given index.
+    /// </summary>
+    /// <param name="index">Index in buffer where the value will be inserted.</param>
+    /// <param name="value">Value to insert.</param>
+    /// <returns>This object to allow method chaining.</returns>
+    public GapBuffer<T> Insert(int index, T value)
     {
       MoveGapTo(index);
 
@@ -88,6 +94,8 @@ namespace Emme.Models
 
       buffer[gap.Start] = value;
       gap = gap.MoveStart(1);
+
+      return this;
     }
 
     public void Insert(int index, IIndexable<T> values, Span valuesSlice)

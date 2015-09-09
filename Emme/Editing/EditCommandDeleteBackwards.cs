@@ -37,7 +37,7 @@ namespace Emme.Editing
 
         textView.ScrollView.CheckHorizontalScroll(textView.Caret);
 
-        return textView.Caret.Set().Then(deletedChar.Insert());
+        return SetCaret(textView.Caret).Then(Insert(deletedChar));
       }
       else if (textView.Caret.Line > 0)
       {
@@ -48,9 +48,13 @@ namespace Emme.Editing
 
         textView.ScrollView.CheckLineUp(textView.Caret)
                   .CheckHorizontalScroll(textView.Caret);
-      }
 
-      return NoOp();
+        return SetCaret(textView.Caret).Then<EditCommandSplitLines>();
+      }
+      else
+      {
+        return NoOp();
+      }
     }
   }
 }

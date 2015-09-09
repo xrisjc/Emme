@@ -16,6 +16,7 @@
 //
 
 using Emme.Models;
+using static Emme.Editing.EditCommand;
 
 namespace Emme.Editing
 {
@@ -30,7 +31,7 @@ namespace Emme.Editing
       textView.Lines[textView.Caret.Line] = newLine;
       textView.Lines.Delete(textView.Caret.NextLine);
 
-      return EditCommand.NoOp();
+      return NoOp();
     }
   }
 }

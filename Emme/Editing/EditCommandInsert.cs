@@ -16,6 +16,7 @@
 //
 
 using Emme.Models;
+using static Emme.Editing.EditCommand;
 
 namespace Emme.Editing
 {
@@ -35,7 +36,7 @@ namespace Emme.Editing
       textView.ShiftLines(1);
       textView.Caret += Position.OneColumn;
       textView.ScrollView.CheckHorizontalScroll(textView.Caret);
-      return textView.Caret.Set().Then<EditCommandDeleteBackwards>();
+      return SetCaret(textView.Caret).Then<EditCommandDeleteBackwards>();
     }
   }
 }

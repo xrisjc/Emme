@@ -30,13 +30,12 @@ namespace Emme.Editing
         textView.GapBuffer.Delete(textView.CaretBufferIndex);
         textView.ShiftLines(-1);
 
-        return textView.Caret.Set().Then(charUndo.Insert()).Then<EditCommandCharLeft>();
+        return SetCaret(textView.Caret).Then(Insert(charUndo)).Then<EditCommandCharLeft>();
       }
       else if (textView.Caret.NextLine < textView.Lines.Count)
       {
         Execute<EditCommandJoinLines>(textView);
-
-        return NoOp();
+        return SetCaret(textView.Caret).Then<EditCommandSplitLines>();
       }
       else
       {

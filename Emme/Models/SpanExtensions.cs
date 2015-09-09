@@ -49,14 +49,5 @@ namespace Emme.Models
     /// <returns>New Gap object with new Start and End.</returns>
     public static Span Move(this Span gap, int delta)
       => new Span(gap.Start + delta, gap.End + delta);
-
-    public static Tuple<Span, Span> Split(this Span span, int index)
-    {
-      Debug.Assert(span.Start <= index, "split index is less than span start");
-      Debug.Assert(index <= span.End, "split index is greater than span end");
-
-      return Tuple.Create(new Span(span.Start, index),
-                          new Span(index, span.End));
-    }
   }
 }

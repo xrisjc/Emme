@@ -15,15 +15,15 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using Emme.Editing;
+using Emme.Models;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
-using Emme.Editing;
-using Emme.Models;
-using static System.Math;
+using static Emme.Editing.EditCommand;
 using static Emme.UI.NativeMethods;
-using System.Collections.Generic;
 
 namespace Emme.UI
 {
@@ -255,7 +255,7 @@ namespace Emme.UI
         return;
       }
 
-      new EditCommandInsert(e.KeyChar).Execute(textView, undos, redos);
+      Insert(e.KeyChar).Execute(textView, undos, redos);
 
       UpdateCaretPosition(textView.Caret);
       Invalidate();

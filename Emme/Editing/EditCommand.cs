@@ -70,12 +70,12 @@ namespace Emme.Editing
       return firstEditCommand.Then(new T());
     }
 
-    public static IEditCommand Insert(this char value)
+    public static IEditCommand Insert(char value)
     {
       return new EditCommandInsert(value);
     }
 
-    public static IEditCommand Set(this Position caret)
+    public static IEditCommand SetCaret(Position caret)
     {
       return new EditCommandSetCaret(caret);
     }

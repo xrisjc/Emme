@@ -23,7 +23,7 @@ namespace Emme.Editing
     {
       textView.MoveCaretToLine(textView.Caret.NextLine);
       textView.ScrollView.CheckLineDown(textView.Caret);
-      return new EditCommandNoOp();
+      return EditCommand.NoOp();
     }
   }
 }

@@ -21,7 +21,7 @@ namespace Emme.Editing
   {
     public IEditCommand Execute(TextView textView)
     {
-      return new EditCommandNoOp();
+      return this;
     }
   }
 }

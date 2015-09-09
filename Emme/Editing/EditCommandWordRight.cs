@@ -46,7 +46,7 @@ namespace Emme.Editing
         textView.Caret = new Position(textView.Caret.NextLine, column: 0);
       }
       textView.ScrollView.CheckLineDown(textView.Caret).CheckHorizontalScroll(textView.Caret);
-      return new EditCommandNoOp();
+      return EditCommand.NoOp();
     }
   }
 }

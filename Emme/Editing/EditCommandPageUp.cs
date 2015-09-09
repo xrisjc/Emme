@@ -25,7 +25,7 @@ namespace Emme.Editing
     {
       textView.MoveCaretToLine(textView.Caret.Line - Min(textView.Caret.Line, textView.ScrollView.Lines));
       textView.ScrollView.CheckPageUp(textView.Caret);
-      return new EditCommandNoOp();
+      return EditCommand.NoOp();
     }
   }
 }

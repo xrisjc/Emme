@@ -16,7 +16,6 @@
 //
 
 using Emme.Models;
-using System;
 using static Emme.Editing.EditCommand;
 
 namespace Emme.Editing
@@ -27,11 +26,12 @@ namespace Emme.Editing
     {
       textView.DesiredColumn = null;
       Execute<EditCommandSplitLines>(textView);
+      Position undoCaret = textView.Caret;
       textView.Caret = new Position(textView.Caret.NextLine, column: 0);
       textView.ScrollView.CheckLineDown(textView.Caret)
                 .CheckHorizontalScroll(textView.Caret);
 
-      return NoOp();
+      return SetCaret(undoCaret).Then<EditCommandJoinLines>();
     }
   }
 }

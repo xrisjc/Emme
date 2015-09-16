@@ -28,7 +28,7 @@ namespace Emme.Editing
       Execute<EditCommandSplitLines>(textView);
       Position undoCaret = textView.Caret;
       textView.Caret = new Position(textView.Caret.NextLine, column: 0);
-      textView.ScrollView.CheckLineDown(textView.Caret)
+      textView.ScrollView.CheckVerticalScroll(textView.Caret)
                 .CheckHorizontalScroll(textView.Caret);
 
       return SetCaret(undoCaret).Then<EditCommandJoinLines>();

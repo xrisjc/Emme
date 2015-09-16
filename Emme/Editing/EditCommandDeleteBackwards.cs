@@ -46,7 +46,7 @@ namespace Emme.Editing
 
         Execute<EditCommandJoinLines>(textView);
 
-        textView.ScrollView.CheckLineUp(textView.Caret)
+        textView.ScrollView.CheckVerticalScroll(textView.Caret)
                   .CheckHorizontalScroll(textView.Caret);
 
         return SetCaret(textView.Caret).Then<EditCommandSplitLines>();

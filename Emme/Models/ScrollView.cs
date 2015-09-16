@@ -62,7 +62,7 @@ namespace Emme.Models
     }
 
     /// <summary>
-    /// Line on which the scroll view ends, inclusive.
+    /// Line on which the ScrollView ends, inclusive.
     /// </summary>
     private int LineEnd
     {
@@ -71,18 +71,20 @@ namespace Emme.Models
     }
 
     /// <summary>
-    /// Ending column of this ScrollView. This is non-inclusive. That is
-    /// this is the first column right of the ScrollView.
+    /// Column on which the ScrollView ends, inclusive.
     /// </summary>
-    public int ColumnEnd => ColumnStart + Columns;
+    private int ColumnEnd
+    {
+      get { return ColumnStart + Columns - 1; }
+      set { ColumnStart = value - Columns + 1; }
+    }
 
     /// <summary>
-    /// Resizes the scroll view, while keeping the top left corner in place.
+    /// Resizes this ScrollView, while keeping the top left corner in place.
     /// </summary>
     /// <param name="lines">Number of lines in new view.</param>
     /// <param name="columns">Number of columns in new view.</param>
-    /// <returns>Scroll view resized to given dimensions.</returns>
-    public void ResizedTo(int lines, int columns)
+    public void Resize(int lines, int columns)
     {
       Lines = lines;
       Columns = columns;
@@ -96,10 +98,10 @@ namespace Emme.Models
         // Caret is to the left of the view.
         ColumnStart = Max(caret.Column - horizontalScrollPad, 0);
       }
-      else if (caret.Column >= ColumnEnd)
+      else if (caret.Column > ColumnEnd)
       {
-        // Carte is to the right of the view.
-        ColumnStart = Max(caret.Column - Columns + horizontalScrollPad, 0);
+        // Caret is to the right of the view.
+        ColumnEnd = caret.Column + horizontalScrollPad;
       }
       return this;
     }
@@ -113,38 +115,6 @@ namespace Emme.Models
       else if (caret.Line > LineEnd)
       {
         LineEnd = caret.Line;
-      }
-      return this;
-    }
-
-    /// <summary>
-    /// Handles any scrolling needed after a line down command.
-    /// </summary>
-    /// <param name="caret">Caret position after a line down.</param>
-    /// <returns>This object to allow method chaining.</returns>
-    public ScrollView CheckLineDown(Position caret)
-    {
-      if (caret.Line > LineEnd)
-      {
-        LineEnd = caret.Line;
-      }
-      return this;
-    }
-
-    /// <summary>
-    /// Handles any scrolling needed after a line up command.
-    /// </summary>
-    /// <param name="caret">Caret position after a line up.</param>
-    /// <returns>This object to allow method chaining.</returns>
-    public ScrollView CheckLineUp(Position caret)
-    {
-      if (caret.Line > LineEnd)
-      {
-        LineEnd = caret.Line;
-      }
-      else if (caret.Line < LineStart)
-      {
-        LineStart = caret.Line;
       }
       return this;
     }
@@ -190,7 +160,7 @@ namespace Emme.Models
       return this;
     }
 
-    public Position PositionInView(Position positionInFile)
-      => new Position(positionInFile.Line - LineStart, positionInFile.Column - ColumnStart);
+    public Position PositionInView(Position positionInFile) =>
+      new Position(positionInFile.Line - LineStart, positionInFile.Column - ColumnStart);
   }
 }

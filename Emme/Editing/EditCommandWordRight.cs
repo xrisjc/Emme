@@ -45,7 +45,7 @@ namespace Emme.Editing
         // At the end of the line, and it's not the last line.
         textView.Caret = new Position(textView.Caret.NextLine, column: 0);
       }
-      textView.ScrollView.CheckLineDown(textView.Caret).CheckHorizontalScroll(textView.Caret);
+      textView.ScrollView.CheckVerticalScroll(textView.Caret).CheckHorizontalScroll(textView.Caret);
       return EditCommand.NoOp();
     }
   }

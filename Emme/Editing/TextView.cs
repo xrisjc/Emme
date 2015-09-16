@@ -56,7 +56,7 @@ namespace Emme.Editing
 
     public void ResizeScrollView(int lines, int columns)
     {
-      ScrollView.ResizedTo(lines, columns);
+      ScrollView.Resize(lines, columns);
     }
 
     public void ShiftLines(int delta)

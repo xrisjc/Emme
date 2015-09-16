@@ -59,7 +59,21 @@ namespace Emme.Editing
       ScrollView.Resize(lines, columns);
     }
 
-    public void ShiftLines(int delta)
+    public void GapBufferInsert(char valueToInsert)
+    {
+      GapBuffer.Insert(CaretBufferIndex, valueToInsert);
+      ShiftLines(1);
+    }
+
+    public char GapBufferDelete()
+    {
+      char deletedValue = GapBuffer[CaretBufferIndex];
+      GapBuffer.Delete(CaretBufferIndex);
+      ShiftLines(-1);
+      return deletedValue;
+    }
+
+    private void ShiftLines(int delta)
     {
       int start = Caret.Line;
       Lines[start] = Lines[start].MoveEnd(delta);

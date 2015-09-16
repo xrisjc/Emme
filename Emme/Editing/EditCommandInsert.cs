@@ -32,8 +32,7 @@ namespace Emme.Editing
     public IEditCommand Execute(TextView textView)
     {
       textView.DesiredColumn = null;
-      textView.GapBuffer.Insert(textView.CaretBufferIndex, CharToInsert);
-      textView.ShiftLines(1);
+      textView.GapBufferInsert(CharToInsert);
       textView.Caret += Position.OneColumn;
       textView.ScrollView.CheckHorizontalScroll(textView.Caret);
       return SetCaret(textView.Caret).Then<EditCommandDeleteBackwards>();

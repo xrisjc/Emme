@@ -29,11 +29,7 @@ namespace Emme.Editing
         // In the middle of a line, and not at the start.
         textView.Caret -= Position.OneColumn;
 
-        char deletedChar = textView.GapBuffer[textView.CaretBufferIndex];
-
-        textView.GapBuffer.Delete(textView.CaretBufferIndex);
-
-        textView.ShiftLines(-1);
+        char deletedChar = textView.GapBufferDelete();
 
         textView.ScrollView.CheckHorizontalScroll(textView.Caret);
 

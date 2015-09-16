@@ -26,10 +26,7 @@ namespace Emme.Editing
     {
       if (textView.Caret.Column < textView.Lines[textView.Caret.Line].Length)
       {
-        char charUndo = textView.GapBuffer[textView.CaretBufferIndex];
-        textView.GapBuffer.Delete(textView.CaretBufferIndex);
-        textView.ShiftLines(-1);
-
+        char charUndo = textView.GapBufferDelete();
         return SetCaret(textView.Caret).Then(Insert(charUndo)).Then<EditCommandCharLeft>();
       }
       else if (textView.Caret.NextLine < textView.Lines.Count)

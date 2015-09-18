@@ -92,6 +92,22 @@ namespace Emme.Editing
       }
     }
 
+    public void CheckVerticalScroll()
+    {
+      ScrollView.CheckVerticalScroll(Caret);
+    }
+
+    public void CheckHorizontalScroll()
+    {
+      ScrollView.CheckHorizontalScroll(Caret);
+    }
+
+    public void CheckScroll()
+    {
+      ScrollView.CheckVerticalScroll(Caret);
+      ScrollView.CheckHorizontalScroll(Caret);
+    }
+
     public override string ToString()
     {
       var sb = new StringBuilder();

@@ -25,7 +25,7 @@ namespace Emme.Editing
     {
       textView.DesiredColumn = null;
       textView.Caret = new Position(textView.Caret.Line, column: 0);
-      textView.ScrollView.CheckHorizontalScroll(textView.Caret);
+      textView.CheckHorizontalScroll();
 
       return EditCommand.NoOp();
     }

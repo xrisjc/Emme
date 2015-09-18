@@ -31,9 +31,7 @@ namespace Emme.Editing
     public IEditCommand Execute(TextView textView)
     {
       textView.Caret = Caret;
-      textView.ScrollView
-        .CheckVerticalScroll(textView.Caret)
-        .CheckHorizontalScroll(textView.Caret);
+      textView.CheckScroll();
       return EditCommand.NoOp();
     }
   }

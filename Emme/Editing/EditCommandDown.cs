@@ -22,7 +22,7 @@ namespace Emme.Editing
     public IEditCommand Execute(TextView textView)
     {
       textView.MoveCaretToLine(textView.Caret.NextLine);
-      textView.ScrollView.CheckVerticalScroll(textView.Caret);
+      textView.CheckVerticalScroll();
       return EditCommand.NoOp();
     }
   }

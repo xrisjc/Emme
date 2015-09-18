@@ -34,7 +34,7 @@ namespace Emme.Editing
       textView.DesiredColumn = null;
       textView.GapBufferInsert(CharToInsert);
       textView.Caret += Position.OneColumn;
-      textView.ScrollView.CheckHorizontalScroll(textView.Caret);
+      textView.CheckHorizontalScroll();
       return SetCaret(textView.Caret).Then<EditCommandDeleteBackwards>();
     }
   }

@@ -31,7 +31,7 @@ namespace Emme.Editing
 
         char deletedChar = textView.GapBufferDelete();
 
-        textView.ScrollView.CheckHorizontalScroll(textView.Caret);
+        textView.CheckHorizontalScroll();
 
         return SetCaret(textView.Caret).Then(Insert(deletedChar));
       }
@@ -42,8 +42,7 @@ namespace Emme.Editing
 
         Execute<EditCommandJoinLines>(textView);
 
-        textView.ScrollView.CheckVerticalScroll(textView.Caret)
-                  .CheckHorizontalScroll(textView.Caret);
+        textView.CheckScroll();
 
         return SetCaret(textView.Caret).Then<EditCommandSplitLines>();
       }

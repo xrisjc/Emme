@@ -22,7 +22,6 @@ using System.Collections.Generic;
 using System.Text;
 using Emme.Models;
 using static System.Math;
-using static Emme.Models.Util;
 
 namespace Emme.Editing
 {
@@ -85,7 +84,7 @@ namespace Emme.Editing
 
     public void MoveCaretToLine(int line)
     {
-      if (line.IsInRange(0, Lines.Count))
+      if (0 <= line && line < Lines.Count)
       {
         DesiredColumn = DesiredColumn ?? Caret.Column;
         int nextColumn = Math.Min(Lines[line].Length, DesiredColumn.Value);

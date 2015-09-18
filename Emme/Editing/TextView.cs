@@ -108,6 +108,18 @@ namespace Emme.Editing
       ScrollView.CheckHorizontalScroll(Caret);
     }
 
+    public void PageUpScroll()
+    {
+      ScrollView.CheckPageUp(Caret);
+      CheckHorizontalScroll();
+    }
+
+    public void PageDownScroll()
+    {
+      ScrollView.CheckPageDown(Caret);
+      CheckHorizontalScroll();
+    }
+
     public override string ToString()
     {
       var sb = new StringBuilder();

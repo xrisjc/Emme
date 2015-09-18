@@ -90,7 +90,7 @@ namespace Emme.Models
       Columns = columns;
     }
 
-    public ScrollView CheckHorizontalScroll(Position caret)
+    public void CheckHorizontalScroll(Position caret)
     {
       int horizontalScrollPad = Columns / 5;
       if (caret.Column < ColumnStart)
@@ -103,10 +103,9 @@ namespace Emme.Models
         // Caret is to the right of the view.
         ColumnEnd = caret.Column + horizontalScrollPad;
       }
-      return this;
     }
 
-    public ScrollView CheckVerticalScroll(Position caret)
+    public void CheckVerticalScroll(Position caret)
     {
       if (caret.Line < LineStart)
       {
@@ -116,7 +115,6 @@ namespace Emme.Models
       {
         LineEnd = caret.Line;
       }
-      return this;
     }
 
     /// <summary>

@@ -25,7 +25,7 @@ namespace Emme.Editing
     {
       int deltaTextView = Min(textView.LastLine - textView.Caret.Line, textView.ScrollView.Lines);
       textView.MoveCaretToLine(textView.Caret.Line + deltaTextView);
-      textView.ScrollView.CheckPageDown(textView.Caret).CheckHorizontalScroll(textView.Caret);
+      textView.PageDownScroll();
       return EditCommand.NoOp();
     }
   }

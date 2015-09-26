@@ -48,7 +48,7 @@ namespace Emme.Models
         /// <summary>
         /// Total number of values actually contained in the gap buffer.
         /// </summary>
-        public int Count => Capacity - gap.Length;
+        public int Count => Capacity - gap.Count;
 
         /// <summary>
         /// Returns the value at the given content index. When 
@@ -70,7 +70,7 @@ namespace Emme.Models
         {
             MoveGapTo(index);
 
-            if (gap.Length == 0)
+            if (gap.Count == 0)
                 GrowBuffer(1);
 
             buffer[gap.Start] = value;

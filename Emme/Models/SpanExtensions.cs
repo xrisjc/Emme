@@ -28,5 +28,15 @@
         /// <returns>New Gap object with new Start and End.</returns>
         public static Span Move(this Span gap, int delta)
           => new Span(gap.Start + delta, gap.End + delta);
+
+
+        /// <summary>
+        /// Converts a index into a buffer's content -- which ignores the
+        /// gap -- to index into the buffer.
+        /// </summary>
+        public static int ToBufferIndex(this Span gap, int contentIndex)
+        {
+            return (contentIndex >= gap.Start) ? contentIndex + gap.Count : contentIndex;
+        }
     }
 }

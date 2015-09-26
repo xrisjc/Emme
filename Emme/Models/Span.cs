@@ -1,12 +1,16 @@
 ﻿namespace Emme.Models
 {
+    /// <summary>
+    /// Represents an interval of discreet items. The start is inclusive, and
+    /// the end is exclusive. 
+    /// </summary>
     public struct Span
     {
         /// <summary>
-        /// Constructor.
+        /// Primary constructor.
         /// </summary>
-        /// <param name="start">Index in buffer where the gap starts and content ends.</param>
-        /// <param name="end">Index in buffer where the gap ends and the rest of the content begins.</param>
+        /// <param name="start">Inclusive start of the span.</param>
+        /// <param name="end">Exclusive end of the span.</param>
         public Span(int start, int end)
         {
             Start = start;
@@ -14,28 +18,18 @@
         }
 
         /// <summary>
-        /// Index in buffer where the gap starts and content ends.
+        /// Inclusive start of the span.
         /// </summary>
         public int Start { get; }
 
         /// <summary>
-        /// Index in buffer where the gap ends and the rest of the content
-        /// begins.
+        /// Exclusive end of the span.
         /// </summary>
         public int End { get; }
 
         /// <summary>
-        /// Length of the gap; the total available space left in buffer.
+        /// Count of the number of items in the span.
         /// </summary>
-        public int Length => End - Start;
-
-        /// <summary>
-        /// Converts a index into a buffer's content -- which ignores the
-        /// gap -- to index into the buffer.
-        /// </summary>
-        public int ToBufferIndex(int contentIndex)
-        {
-            return (contentIndex >= Start) ? contentIndex + Length : contentIndex;
-        }
+        public int Count => End - Start;
     }
 }

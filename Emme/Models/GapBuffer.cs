@@ -1,4 +1,5 @@
-﻿using System;
+﻿using static System.Array;
+using static System.Math;
 
 namespace Emme.Models
 {
@@ -6,167 +7,102 @@ namespace Emme.Models
     /// Buffer to allow efficient inserting and deleting of content by keeping
     /// a gap of available space where insertions and deletions happen.
     /// </summary>
-    public class GapBuffer<T> where T : struct
+    public class GapBuffer<T>
     {
-        /// <summary>
-        /// Actual value buffer.
-        /// </summary>
         private T[] buffer;
-
-        /// <summary>
-        /// Gap indices.
-        /// </summary>
         private Span gap;
 
         /// <summary>
-        /// Constructor.
+        /// Primary constructor.
         /// </summary>
-        /// <param name="initialCapacity">Initial capacity of buffer.</param>
+        /// <param name="initialCapacity">Initial buffer capacity.</param>
         public GapBuffer(int initialCapacity = 256)
         {
             buffer = new T[initialCapacity];
-
-            // Gap is initially fills the buffer.
-            gap = new Span(0, buffer.Length);
+            gap = new Span(0, initialCapacity);
         }
 
         /// <summary>
-        /// Length of content before the gap.
+        /// Count of values this GapBuffer contains.
         /// </summary>
-        private int LeftContentLength => gap.Start;
+        public int Count => buffer.Length - gap.Length;
 
         /// <summary>
-        /// Length of content after the gap.
+        /// Indexer into this GapBuffer's content.
         /// </summary>
-        private int RightContentLength => buffer.Length - gap.End;
+        /// <param name="index">Index in the interval [0, Count).</param>
+        /// <returns>Value at index.</returns>
+        public T this[int index] => buffer[ToBufferIndex(index)];
 
         /// <summary>
-        /// Total number of values the internal buffer can hold before resizing.
+        /// Inserts a value into this GapBuffer at an index.
         /// </summary>
-        private int Capacity => buffer.Length;
-
-        /// <summary>
-        /// Total number of values actually contained in the gap buffer.
-        /// </summary>
-        public int Count => Capacity - gap.Count;
-
-        /// <summary>
-        /// Returns the value at the given content index. When 
-        /// index == Count, then null is returned.
-        /// </summary>
-        public T this[int index]
-        {
-            get { return buffer[gap.ToBufferIndex(index)]; }
-            set { buffer[gap.ToBufferIndex(index)] = value; }
-        }
-
-        /// <summary>
-        /// Insert a value at the given index.
-        /// </summary>
-        /// <param name="index">Index in buffer where the value will be inserted.</param>
+        /// <param name="index">Index in the interval [0, Count].</param>
         /// <param name="value">Value to insert.</param>
-        /// <returns>This object to allow method chaining.</returns>
-        public GapBuffer<T> Insert(int index, T value)
+        public void InsertAt(int index, T value)
         {
-            MoveGapTo(index);
-
-            if (gap.Count == 0)
-                GrowBuffer(1);
-
-            buffer[gap.Start] = value;
-            gap = gap.MoveStart(1);
-
-            return this;
+            GrowBuffer(index, 1);
+            MoveContent(index);
+            buffer[index] = value;
+            gap = new Span(index + 1, index + gap.Length);
         }
 
         /// <summary>
-        /// Appends the value at the end of the buffer.
+        /// Deletes character at index.
         /// </summary>
-        /// <param name="value">Value to append.</param>
-        /// <returns>This buffer to enable method chaining.</returns>
-        public GapBuffer<T> Append(T value)
+        /// <param name="index">Index in interval [0, Count)</param>
+        public void DeleteAt(int index)
         {
-            return Insert(Count, value);
+            MoveContent(index);
+            gap = new Span(index, index + gap.Length + 1);
         }
 
         /// <summary>
-        /// Deletes content from the buffer at the current index. CurrentIndex
-        /// remains the same.
+        /// Converts a index into this GapBuffers content -- which ignores the
+        /// gap -- to index into buffer.
         /// </summary>
-        /// <param name="length">How many characters to delete.</param>
-        public void Delete(int index, int length = 1)
-        {
-            MoveGapTo(index);
-            gap = gap.MoveEnd(length);
-        }
+        /// <param name="index">Index in interval [0, Count)</param>
+        private int ToBufferIndex(int index) =>
+            (index >= gap.Start) ? index + gap.Length : index;
 
         /// <summary>
-        /// Grow buffer size. Increases size enough to fit minGapSize new
-        /// elements or grows buffer by 50%, which ever is largest.
+        /// Move content, if needed, such that the gap can start at index.
         /// </summary>
-        /// <param name="minGapSize">Minimum amout of room required.</param>
-        private void GrowBuffer(int minGapSize)
+        /// <param name="index">Index in range [0, Count].</param>
+        private void MoveContent(int index)
         {
-            // Take max of 50% larger buffer or content size + minGapSize
-            int newCapacity = Math.Max(
-                buffer.Length + buffer.Length / 2,
-                Count + minGapSize);
-
-
-            var newBuffer = new T[newCapacity];
-            var newGap = new Span(gap.Start, gap.End + newBuffer.Length - buffer.Length);
-
-            // Copy items before gap.
-            Array.Copy(buffer, newBuffer, LeftContentLength);
-            // Copy items after gap.
-            Array.Copy(buffer, gap.End, newBuffer, newGap.End, RightContentLength);
-
-            gap = newGap;
-            buffer = newBuffer;
-        }
-
-        /// <summary>
-        /// Move gap so that content could be added or deleted at given content
-        /// index.
-        /// </summary>
-        /// <param name="index">Index in content.</param>
-        private void MoveGapTo(int index)
-        {
-            // Index must be in [0, Count].
-            if (index < 0 || index > Count)
-                throw new ArgumentOutOfRangeException("index");
-
-            int delta = index - gap.Start;
-            if (delta == 0) return;
-
-            Span newGap = gap.Move(delta);
-            int length = Math.Abs(delta);
-
-            if (delta < 0)
+            if (index < gap.Start)
             {
-                // newGap.Start < gap.Start < newGap.End < gap.End
-                // Move delta chars before old gap to after old gap
-                Copy(newGap.Start, newGap.End, length);
+                Copy(buffer, index, buffer, index + gap.Length,
+                    gap.Start - index);
             }
-            else if (delta > 0)
+            else if (index > gap.Start)
             {
-                // gap.Start < newGap.Start < gap.End < newGap.End
-                // Move delta chars from end of old gap to before old gap
-                Copy(gap.End, gap.Start, length);
+                Copy(buffer, gap.End, buffer, gap.Start, index - gap.Start);
             }
-
-            gap = newGap;
         }
 
         /// <summary>
-        /// Copies a range of elements in the buffer.
+        /// Grows buffer size, if needed. Increases size enough to fit
+        /// minGapSize new values or grows buffer by 50%, which ever is the
+        /// largest. If resize is done, then the new buffer will have the
+        /// gap starting at index.
         /// </summary>
-        /// <param name="sourceIndex">Buffer index to copy from.</param>
-        /// <param name="destinationIndex">Buffer index to copy to.</param>
-        /// <param name="length">Number of items to copy.</param>
-        private void Copy(int sourceIndex, int destinationIndex, int length)
+        /// <param name="index">Index in the interval [0, Count].</param>
+        /// <param name="minGapSize">Minimum amout of space required.</param>
+        private void GrowBuffer(int index, int minGapSize)
         {
-            Array.Copy(buffer, sourceIndex, buffer, destinationIndex, length);
+            if (gap.Length == 0)
+            {
+                int newGapSize = Max(buffer.Length / 2, minGapSize);
+                var newBuffer = new T[buffer.Length + newGapSize];
+                var newGap = new Span(index, index + newGapSize);
+                Copy(buffer, newBuffer, index);
+                Copy(buffer, index, newBuffer, newGap.End,
+                    buffer.Length - index);
+                buffer = newBuffer;
+                gap = newGap;
+            }
         }
     }
 }

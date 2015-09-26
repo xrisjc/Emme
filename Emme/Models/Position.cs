@@ -34,6 +34,6 @@ namespace Emme.Models
         /// Override ToString for debugging purposes.
         /// </summary>
         /// <returns>A string with this Position's values.</returns>
-        public override string ToString() => $"{{{Line}, {Column}}}";
+        public override string ToString() => $"{Line}, {Column}";
     }
 }

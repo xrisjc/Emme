@@ -28,14 +28,14 @@
         public int End { get; }
 
         /// <summary>
-        /// Count of the number of items in the span.
+        /// The nmber of items in this Span.
         /// </summary>
-        public int Count => End - Start;
+        public int Length => End - Start;
 
         /// <summary>
         /// Override ToString for debugging purposes.
         /// </summary>
         /// <returns>String with this Span's values.</returns>
-        public override string ToString() => $"{{{Start}, {End}}}";
+        public override string ToString() => $"{Start}, {End}";
     }
 }

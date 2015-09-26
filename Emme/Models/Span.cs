@@ -31,5 +31,11 @@
         /// Count of the number of items in the span.
         /// </summary>
         public int Count => End - Start;
+
+        /// <summary>
+        /// Override ToString for debugging purposes.
+        /// </summary>
+        /// <returns>String with this Span's values.</returns>
+        public override string ToString() => $"{{{Start}, {End}}}";
     }
 }

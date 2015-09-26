@@ -21,7 +21,7 @@ namespace Emme.UI
 
             Font = new Font("Consolas", 10f);
             fontMetrics = CreateFontMetrics();
-            caret = new Caret(Position.BufferStart, fontMetrics);
+            caret = new Caret(new Position(0, 0), fontMetrics);
 
             ClientSize =
               new Size(

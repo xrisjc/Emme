@@ -41,10 +41,10 @@ namespace Emme.Models
         /// <param name="value">Value to insert.</param>
         public void InsertAt(int index, T value)
         {
-            GrowBuffer(index, 1);
+            int gapLength = GrowBuffer(index, 1);
             MoveContent(index);
             buffer[index] = value;
-            gap = new Span(index + 1, index + gap.Length);
+            gap = new Span(index + 1, index + gapLength);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace Emme.Models
             if (index < gap.Start)
             {
                 Copy(buffer, index, buffer, index + gap.Length,
-                    gap.Start - index);
+                        gap.Start - index);
             }
             else if (index > gap.Start)
             {
@@ -89,19 +89,23 @@ namespace Emme.Models
         /// gap starting at index.
         /// </summary>
         /// <param name="index">Index in the interval [0, Count].</param>
-        /// <param name="minGapSize">Minimum amout of space required.</param>
-        private void GrowBuffer(int index, int minGapSize)
+        /// <param name="minGapLength">Minimum amout of space required.</param>
+        /// <returns>Gap length for buffer.</returns>
+        private int GrowBuffer(int index, int minGapLength)
         {
             if (gap.Length == 0)
             {
-                int newGapSize = Max(buffer.Length / 2, minGapSize);
-                var newBuffer = new T[buffer.Length + newGapSize];
-                var newGap = new Span(index, index + newGapSize);
+                int newGapLength = Max(buffer.Length / 2, minGapLength);
+                var newBuffer = new T[buffer.Length + newGapLength];
                 Copy(buffer, newBuffer, index);
-                Copy(buffer, index, newBuffer, newGap.End,
+                Copy(buffer, index, newBuffer, index + newGapLength,
                     buffer.Length - index);
                 buffer = newBuffer;
-                gap = newGap;
+                return newGapLength;
+            }
+            else
+            {
+                return gap.Length;
             }
         }
     }

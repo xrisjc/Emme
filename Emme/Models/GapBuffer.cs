@@ -10,7 +10,7 @@ namespace Emme.Models
     public class GapBuffer<T>
     {
         private T[] buffer;
-        private Span gap;
+        private Marker gap;
 
         /// <summary>
         /// Primary constructor.
@@ -19,7 +19,7 @@ namespace Emme.Models
         public GapBuffer(int initialCapacity = 256)
         {
             buffer = new T[initialCapacity];
-            gap = new Span(0, initialCapacity);
+            gap = new Marker(0, initialCapacity);
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Emme.Models
             GrowBuffer(index, 1);
             MoveContent(index);
             buffer[index] = value;
-            gap = new Span(index + 1, index + gap.Length);
+            gap = new Marker(index + 1, index + gap.Length);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Emme.Models
         public void DeleteAt(int index)
         {
             MoveContent(index);
-            gap = new Span(index, index + gap.Length + 1);
+            gap = new Marker(index, index + gap.Length + 1);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Emme.Models
             {
                 int newGapSize = Max(buffer.Length / 2, minGapSize);
                 var newBuffer = new T[buffer.Length + newGapSize];
-                var newGap = new Span(index, index + newGapSize);
+                var newGap = new Marker(index, index + newGapSize);
                 Copy(buffer, newBuffer, index);
                 Copy(buffer, index, newBuffer, newGap.End,
                     buffer.Length - index);

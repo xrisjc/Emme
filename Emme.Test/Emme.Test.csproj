@@ -54,7 +54,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Models\GapBufferTest.cs" />
-    <Compile Include="Models\SpanTest.cs" />
+    <Compile Include="Models\LineMarkerTests.cs" />
+    <Compile Include="Models\MarkerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

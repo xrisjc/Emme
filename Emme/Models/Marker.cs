@@ -4,14 +4,14 @@
     /// Represents an interval of discreet items. The start is inclusive, and
     /// the end is exclusive. 
     /// </summary>
-    public struct Span
+    public struct Marker
     {
         /// <summary>
         /// Primary constructor.
         /// </summary>
         /// <param name="start">Inclusive start of the span.</param>
         /// <param name="end">Exclusive end of the span.</param>
-        public Span(int start, int end)
+        public Marker(int start, int end)
         {
             Start = start;
             End = end;

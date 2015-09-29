@@ -63,8 +63,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Models\Document.cs" />
+    <Compile Include="Models\LineMarkers.cs" />
     <Compile Include="Models\ScrollView.cs" />
-    <Compile Include="Models\Span.cs" />
+    <Compile Include="Models\Marker.cs" />
     <Compile Include="Models\Position.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="UI\Caret.cs" />

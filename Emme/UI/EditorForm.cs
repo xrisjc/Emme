@@ -20,13 +20,10 @@ namespace Emme.UI
             BackColor = SystemColors.Window;
 
             Font = new Font("Consolas", 10f);
-            fontMetrics = CreateFontMetrics();
+            fontMetrics = new FontMetrics(this);
             caret = new Caret(new Position(0, 0), fontMetrics);
 
-            ClientSize =
-              new Size(
-                80 * fontMetrics.Width + 2 * fontMetrics.Padding,
-                24 * fontMetrics.Height);
+            ClientSize = fontMetrics.ClientSize(24, 80);
 
 
             // Flickering be gone. Got the method from here:
@@ -36,32 +33,6 @@ namespace Emme.UI
                 ControlStyles.OptimizedDoubleBuffer |
                 ControlStyles.AllPaintingInWmPaint,
               value: true);
-        }
-
-        /// <summary>
-        /// Creates an appropriate FontMetrics value for the currently set Font.
-        /// </summary>
-        private FontMetrics CreateFontMetrics()
-        {
-            using (Graphics graphics = CreateGraphics())
-            {
-                var purposedSize = new Size(short.MaxValue, short.MaxValue); // Bounding values
-
-                // get a character's width without padding.
-                Size fontSize = TextRenderer.MeasureText(graphics, "a", Font, purposedSize, TextFormatFlags.NoPadding);
-
-                // going to use font.Height instead b/c Petzold says that better for
-                // formatting lines of text.
-                // TODO: I should use font.GetHeight(grfx)
-                fontSize = new Size(fontSize.Width, Font.Height);
-
-
-                // Get how much we're padding the text.
-                Size fontSizeWithPadding = TextRenderer.MeasureText(graphics, "a", Font);
-                int padding = (fontSizeWithPadding.Width - fontSize.Width) / 2;
-
-                return new FontMetrics(fontSize.Width, fontSize.Height, padding);
-            }
         }
 
         protected override void OnResize(EventArgs e)
@@ -193,7 +164,7 @@ namespace Emme.UI
 
             var point = new Point(0, 0);
 
-            foreach (string line in new string[0])
+            foreach (string line in new[] { "Hello", "World" })
             {
                 TextRenderer.DrawText(
                     e.Graphics,

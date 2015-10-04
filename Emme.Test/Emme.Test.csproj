@@ -53,6 +53,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Models\DocumentTest.cs" />
     <Compile Include="Models\GapBufferTest.cs" />
     <Compile Include="Models\LineMarkerTests.cs" />
     <Compile Include="Models\MarkerTest.cs" />

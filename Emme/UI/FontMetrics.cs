@@ -1,67 +1,53 @@
-﻿using System.Drawing;
-using System.Windows.Forms;
+﻿//
+// Copyright (C) 2010  Christopher Cowan
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
 
 namespace Emme.UI
 {
+  /// <summary>
+  /// Computes and stores font metrics for monospaced fonts.
+  /// </summary>
+  struct FontMetrics
+  {
     /// <summary>
-    /// Computes and stores font metrics for monospaced fonts.
+    /// Width in pixels of a character glyph.
     /// </summary>
-    public class FontMetrics
+    public int Width { get; }
+
+    /// <summary>
+    /// Height of pixels of a character glyph.
+    /// </summary>
+    public int Height { get; }
+
+    /// <summary>
+    /// Amount of padding, in pixels, put before or after text when drawn.
+    /// </summary>
+    public int Padding { get; }
+
+    /// <summary>
+    /// Default constructor.
+    /// </summary>
+    /// <param name="width">Width in pixels of a character glyph.</param>
+    /// <param name="height">Height of pixels of a character glyph.</param>
+    /// <param name="padding">Amount of padding, in pixels, put before or after text when drawn.</param>
+    public FontMetrics(int width, int height, int padding)
     {
-        /// <summary>
-        /// Creates an appropriate FontMetrics value for control.
-        /// </summary>
-        /// <param name="control">A WinForms control.</param>
-        public FontMetrics(Control control)
-        {
-            using (Graphics graphics = control.CreateGraphics())
-            {
-                // Bounding values
-                var purposedSize = new Size(short.MaxValue, short.MaxValue);
-
-                // Get a character's width without padding.
-                Size fontSize = TextRenderer.MeasureText(graphics, "a",
-                    control.Font, purposedSize, TextFormatFlags.NoPadding);
-
-                // Using font.Height instead b/c Petzold says that better for
-                // formatting lines of text.
-                fontSize = new Size(fontSize.Width, control.Font.Height);
-
-
-                // Get how much we're padding the text.
-                Size fontSizeWithPadding = TextRenderer.MeasureText(graphics,
-                    "a", control.Font);
-                int padding = (fontSizeWithPadding.Width - fontSize.Width) / 2;
-
-                Width = fontSize.Width;
-                Height = fontSize.Height;
-                Padding = padding;
-            }
-        }
-
-        /// <summary>
-        /// Width in pixels of a character glyph.
-        /// </summary>
-        public int Width { get; }
-
-        /// <summary>
-        /// Height of pixels of a character glyph.
-        /// </summary>
-        public int Height { get; }
-
-        /// <summary>
-        /// Amount of padding, in pixels, put before or after text when drawn.
-        /// </summary>
-        public int Padding { get; }
-
-        /// <summary>
-        /// Calculates a ClientSize that will be large enough for the given
-        /// number of lines and columns.
-        /// </summary>
-        /// <param name="lines">Number of visible lines.</param>
-        /// <param name="columns">Number of visible columns.</param>
-        /// <returns>A ClientSize value.</returns>
-        public Size ClientSize(int lines, int columns) =>
-            new Size(columns * Width + 2 * Padding, lines * Height);
+      Width = width;
+      Height = height;
+      Padding = padding;
     }
+  }
 }

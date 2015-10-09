@@ -7,7 +7,7 @@ is WinForms, but this may change in the future.
 There are no official releases of Emme right now. The only way to get Emme is
 to clone this repository and build with Visual Studio 2015.
 
-Emme free software and is release under the MIT license.
+Emme free software and is release under the GPL 3.0 license.
 
 ## Resources
 * [Data Structures in the Andrew Text Editor](http://www.cs.cmu.edu/~wjh/papers/byte.html) by Wilfred Hansen.

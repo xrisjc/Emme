@@ -20,39 +20,32 @@ using static Emme.Editing.EditCommand;
 
 namespace Emme.Editing
 {
-  public class EditCommandDeleteBackwards : IEditCommand
-  {
-    public IEditCommand Execute(TextView textView)
+    public class EditCommandDeleteBackwards : IEditCommand
     {
-      if (textView.Caret.Column > 0)
-      {
-        // In the middle of a line, and not at the start.
-        textView.Caret -= Position.OneColumn;
-
-        char deletedChar = textView.GapBufferDelete();
-
-        textView.CheckHorizontalScroll();
-
-        return SetCaret(textView.Caret).Then(Insert(deletedChar));
-      }
-      else if (textView.Caret.Line > 0)
-      {
-        // At the beginning of a line but not at first line.
-        textView.Caret = new Position(
-            textView.Caret.Line - 1,
-            textView.LineMarkers.Length(textView.Caret.Line - 1));
-
-        Execute<EditCommandJoinLines>(textView);
-
-        textView.CheckScroll();
-
-        return SetCaret(textView.Caret).Then<EditCommandSplitLines>();
-      }
-      else
-      {
-        return NoOp();
-      }
+        public IEditCommand Execute(TextView textView)
+        {
+            if (textView.Caret.Column > 0)
+            {
+                // In the middle of a line, and not at the start.
+                textView.Caret -= Position.OneColumn;
+                char deletedChar = textView.GapBufferDelete();
+                textView.CheckHorizontalScroll();
+                return SetCaret(textView.Caret).Then(Insert(deletedChar));
+            }
+            else if (textView.Caret.Line > 0)
+            {
+                // At the beginning of a line but not at first line.
+                textView.Caret = new Position(
+                    textView.Caret.Line - 1,
+                    textView.LineMarkers.Length(textView.Caret.Line - 1));
+                textView.CheckScroll();
+                return Execute<EditCommandJoinLines>(textView);
+            }
+            else
+            {
+                return NoOp();
+            }
+        }
     }
-  }
 }
 

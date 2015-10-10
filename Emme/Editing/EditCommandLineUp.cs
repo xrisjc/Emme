@@ -21,7 +21,7 @@ namespace Emme.Editing
     {
         public IEditCommand Execute(TextView textView)
         {
-            if (textView.Caret.Line - 1 > 0)
+            if (textView.Caret.Line > 0)
             {
                 textView.MoveCaretToLine(textView.Caret.Line - 1);
                 textView.CheckVerticalScroll();

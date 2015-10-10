@@ -48,9 +48,15 @@ namespace Emme.Models
 
         public int Start(int line) => Markers[line].Start;
 
+        public int Start(Position position) => Start(position.Line);
+
         public int End(int line) => Markers[line].End;
 
+        public int End(Position position) => End(position.Line);
+
         public int Length(int line) => Markers[line].Length;
+
+        public int Length(Position position) => Length(position.Line);
 
         public int BufferIndex(Position position) =>
             Markers[position.Line].Start + position.Column;

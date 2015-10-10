@@ -20,24 +20,23 @@ using static Emme.Editing.EditCommand;
 
 namespace Emme.Editing
 {
-  public class EditCommandDelete : IEditCommand
-  {
-    public IEditCommand Execute(TextView textView)
+    public class EditCommandDelete : IEditCommand
     {
-      if (textView.Caret.Column < textView.LineMarkers.Length(textView.Caret.Line))
-      {
-        char charUndo = textView.GapBufferDelete();
-        return SetCaret(textView.Caret).Then(Insert(charUndo)).Then<EditCommandCharLeft>();
-      }
-      else if (textView.Caret.NextLine < textView.LineMarkers.LineCount)
-      {
-        Execute<EditCommandJoinLines>(textView);
-        return SetCaret(textView.Caret).Then<EditCommandSplitLines>();
-      }
-      else
-      {
-        return NoOp();
-      }
+        public IEditCommand Execute(TextView textView)
+        {
+            if (textView.Caret.Column < textView.LineMarkers.Length(textView.Caret))
+            {
+                char charUndo = textView.GapBufferDelete();
+                return SetCaret(textView.Caret).Then(Insert(charUndo)).Then<EditCommandCharLeft>();
+            }
+            else if (textView.Caret.NextLine < textView.LineMarkers.LineCount)
+            {
+                return Execute<EditCommandJoinLines>(textView);
+            }
+            else
+            {
+                return NoOp();
+            }
+        }
     }
-  }
 }

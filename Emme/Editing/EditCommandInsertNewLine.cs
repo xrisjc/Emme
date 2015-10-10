@@ -20,17 +20,15 @@ using static Emme.Editing.EditCommand;
 
 namespace Emme.Editing
 {
-  public class EditCommandInsertNewLine : IEditCommand
-  {
-    public IEditCommand Execute(TextView textView)
+    public class EditCommandInsertNewLine : IEditCommand
     {
-      textView.DesiredColumn = null;
-      Execute<EditCommandSplitLines>(textView);
-      Position undoCaret = textView.Caret;
-      textView.Caret = new Position(textView.Caret.NextLine, column: 0);
-      textView.CheckScroll();
-
-      return SetCaret(undoCaret).Then<EditCommandJoinLines>();
+        public IEditCommand Execute(TextView textView)
+        {
+            textView.DesiredColumn = null;
+            IEditCommand undo = Execute<EditCommandSplitLines>(textView);
+            textView.Caret = new Position(textView.Caret.Line + 1, column: 0);
+            textView.CheckScroll();
+            return undo;
+        }
     }
-  }
 }

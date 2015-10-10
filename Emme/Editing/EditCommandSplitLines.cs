@@ -15,6 +15,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using static Emme.Editing.EditCommand;
+
 namespace Emme.Editing
 {
     public class EditCommandSplitLines : IEditCommand
@@ -22,7 +24,7 @@ namespace Emme.Editing
         public IEditCommand Execute(TextView textView)
         {
             textView.LineMarkers.Split(textView.Caret);
-            return EditCommand.NoOp();
+            return SetCaret(textView.Caret).Then<EditCommandSplitLines>();
         }
     }
 }

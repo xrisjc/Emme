@@ -20,22 +20,24 @@ using static Emme.Editing.EditCommand;
 
 namespace Emme.Editing
 {
-  public class EditCommandInsert : IEditCommand
-  {
-    public char CharToInsert { get; }
-
-    public EditCommandInsert(char charToInsert)
+    public class EditCommandInsert : IEditCommand
     {
-      CharToInsert = charToInsert;
-    }
+        public char CharToInsert { get; }
 
-    public IEditCommand Execute(TextView textView)
-    {
-      textView.DesiredColumn = null;
-      textView.GapBufferInsert(CharToInsert);
-      textView.Caret += Position.OneColumn;
-      textView.CheckHorizontalScroll();
-      return SetCaret(textView.Caret).Then<EditCommandDeleteBackwards>();
+        public EditCommandInsert(char charToInsert)
+        {
+            CharToInsert = charToInsert;
+        }
+
+        public IEditCommand Execute(TextView textView)
+        {
+            textView.DesiredColumn = null;
+            textView.GapBufferInsert(CharToInsert);
+            textView.Caret += Position.OneColumn;
+            textView.CheckHorizontalScroll();
+            return SetCaret(textView.Caret).Then<EditCommandDeleteBackwards>();
+        }
+
+        public override string ToString() => $"Insert('{CharToInsert}')";
     }
-  }
 }

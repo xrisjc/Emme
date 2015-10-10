@@ -24,7 +24,9 @@ namespace Emme.Editing
         public IEditCommand Execute(TextView textView)
         {
             textView.LineMarkers.Split(textView.Caret);
-            return SetCaret(textView.Caret).Then<EditCommandSplitLines>();
+            return SetCaret(textView.Caret).Then<EditCommandJoinLines>();
         }
+
+        public override string ToString() => "SplitLines";
     }
 }

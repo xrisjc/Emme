@@ -17,22 +17,25 @@
 
 namespace Emme.Editing
 {
-  public class EditCommandChain : IEditCommand
-  {
-    public IEditCommand FirstEditCommand { get; }
-    public IEditCommand SecondEditCommand { get; }
-
-    public EditCommandChain(IEditCommand firstEditCommand, IEditCommand secondEditCommand)
+    public class EditCommandChain : IEditCommand
     {
-      FirstEditCommand = firstEditCommand;
-      SecondEditCommand = secondEditCommand;
-    }
+        public IEditCommand FirstEditCommand { get; }
+        public IEditCommand SecondEditCommand { get; }
 
-    public IEditCommand Execute(TextView textView)
-    {
-      IEditCommand firstUndoEditCommand = FirstEditCommand.Execute(textView);
-      IEditCommand secondUndoEditCommand = SecondEditCommand.Execute(textView);
-      return secondUndoEditCommand.Then(firstUndoEditCommand);
+        public EditCommandChain(IEditCommand firstEditCommand, IEditCommand secondEditCommand)
+        {
+            FirstEditCommand = firstEditCommand;
+            SecondEditCommand = secondEditCommand;
+        }
+
+        public IEditCommand Execute(TextView textView)
+        {
+            IEditCommand firstUndoEditCommand = FirstEditCommand.Execute(textView);
+            IEditCommand secondUndoEditCommand = SecondEditCommand.Execute(textView);
+            return secondUndoEditCommand.Then(firstUndoEditCommand);
+        }
+
+        public override string ToString() =>
+            $"{FirstEditCommand}; {SecondEditCommand}";
     }
-  }
 }

@@ -19,24 +19,26 @@ using Emme.Models;
 
 namespace Emme.Editing
 {
-  public class EditCommandCharLeft : IEditCommand
-  {
-    public IEditCommand Execute(TextView textView)
+    public class EditCommandCharLeft : IEditCommand
     {
-      textView.DesiredColumn = null;
-      if (textView.Caret.Column > 0)
-      {
-        textView.Caret -= Position.OneColumn;
-      }
-      else if (textView.Caret.Line > 0)
-      {
-        textView.Caret = new Position(
-            line: textView.Caret.Line - 1,
-            column: textView.LineMarkers.Length(textView.Caret.Line - 1));
-      }
-      textView.CheckScroll();
+        public IEditCommand Execute(TextView textView)
+        {
+            textView.DesiredColumn = null;
+            if (textView.Caret.Column > 0)
+            {
+                textView.Caret -= Position.OneColumn;
+            }
+            else if (textView.Caret.Line > 0)
+            {
+                textView.Caret = new Position(
+                    line: textView.Caret.Line - 1,
+                    column: textView.LineMarkers.Length(textView.Caret.Line - 1));
+            }
+            textView.CheckScroll();
 
-      return EditCommand.NoOp();
+            return EditCommand.NoOp();
+        }
+
+        public override string ToString() => "CharLeft";
     }
-  }
 }

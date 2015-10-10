@@ -19,14 +19,16 @@ using static System.Math;
 
 namespace Emme.Editing
 {
-  public class EditCommandPageDown : IEditCommand
-  {
-    public IEditCommand Execute(TextView textView)
+    public class EditCommandPageDown : IEditCommand
     {
-      int deltaTextView = Min(textView.LastLine - textView.Caret.Line, textView.ScrollView.Lines);
-      textView.MoveCaretToLine(textView.Caret.Line + deltaTextView);
-      textView.PageDownScroll();
-      return EditCommand.NoOp();
+        public IEditCommand Execute(TextView textView)
+        {
+            int deltaTextView = Min(textView.LastLine - textView.Caret.Line, textView.ScrollView.Lines);
+            textView.MoveCaretToLine(textView.Caret.Line + deltaTextView);
+            textView.PageDownScroll();
+            return EditCommand.NoOp();
+        }
+
+        public override string ToString() => "PageDown";
     }
-  }
 }

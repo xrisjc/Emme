@@ -24,11 +24,12 @@ namespace Emme.Editing
     {
         public IEditCommand Execute(TextView textView)
         {
-            var lineEnd = new Position(
+            var splitAt = new Position(
                 textView.Caret.Line,
                 textView.LineMarkers.Length(textView.Caret));
+            var afterSplit = new Position(splitAt.Line + 1, 0);
             textView.LineMarkers.Join(textView.Caret);
-            return SetCaret(lineEnd).Then<EditCommandSplitLines>();
+            return SetCaret(splitAt).Then<EditCommandSplitLines>().Then(SetCaret(afterSplit));
         }
     }
 }

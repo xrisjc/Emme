@@ -19,13 +19,15 @@ using static System.Math;
 
 namespace Emme.Editing
 {
-  public class EditCommandPageUp : IEditCommand
-  {
-    public IEditCommand Execute(TextView textView)
+    public class EditCommandPageUp : IEditCommand
     {
-      textView.MoveCaretToLine(textView.Caret.Line - Min(textView.Caret.Line, textView.ScrollView.Lines));
-      textView.PageUpScroll();
-      return EditCommand.NoOp();
+        public IEditCommand Execute(TextView textView)
+        {
+            textView.MoveCaretToLine(textView.Caret.Line - Min(textView.Caret.Line, textView.ScrollView.Lines));
+            textView.PageUpScroll();
+            return EditCommand.NoOp();
+        }
+
+        public override string ToString() => "PageUp";
     }
-  }
 }

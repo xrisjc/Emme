@@ -28,5 +28,7 @@ namespace Emme.Editing
             }
             return EditCommand.NoOp();
         }
+
+        public override string ToString() => "Down";
     }
 }

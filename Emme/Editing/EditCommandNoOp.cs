@@ -17,11 +17,13 @@
 
 namespace Emme.Editing
 {
-  public class EditCommandNoOp : IEditCommand
-  {
-    public IEditCommand Execute(TextView textView)
+    public class EditCommandNoOp : IEditCommand
     {
-      return this;
+        public IEditCommand Execute(TextView textView)
+        {
+            return this;
+        }
+
+        public override string ToString() => "NoOp";
     }
-  }
 }

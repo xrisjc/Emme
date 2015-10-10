@@ -19,15 +19,17 @@ using Emme.Models;
 
 namespace Emme.Editing
 {
-  public class EditCommandLineStart : IEditCommand
-  {
-    public IEditCommand Execute(TextView textView)
+    public class EditCommandLineStart : IEditCommand
     {
-      textView.DesiredColumn = null;
-      textView.Caret = new Position(textView.Caret.Line, column: 0);
-      textView.CheckHorizontalScroll();
+        public IEditCommand Execute(TextView textView)
+        {
+            textView.DesiredColumn = null;
+            textView.Caret = new Position(textView.Caret.Line, column: 0);
+            textView.CheckHorizontalScroll();
 
-      return EditCommand.NoOp();
+            return EditCommand.NoOp();
+        }
+
+        public override string ToString() => "LineStart";
     }
-  }
 }

@@ -17,17 +17,11 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Emme.Models
 {
     public class LineMarkers
     {
-        public GapBuffer<Span> Markers { get; }
+        private GapBuffer<Span> Markers { get; }
 
         public LineMarkers(GapBuffer<Span> markers)
         {

@@ -30,5 +30,7 @@ namespace Emme.Editing
             textView.CheckScroll();
             return undo;
         }
+
+        public override string ToString() => "InsertNewLine";
     }
 }

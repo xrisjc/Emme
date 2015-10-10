@@ -15,7 +15,6 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using Emme.Models;
 using static Emme.Editing.EditCommand;
 
 namespace Emme.Editing
@@ -38,5 +37,7 @@ namespace Emme.Editing
                 return NoOp();
             }
         }
+
+        public override string ToString() => "Delete";
     }
 }

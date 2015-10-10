@@ -46,6 +46,8 @@ namespace Emme.Editing
                 return NoOp();
             }
         }
+
+        public override string ToString() => "DeleteBackwards";
     }
 }
 

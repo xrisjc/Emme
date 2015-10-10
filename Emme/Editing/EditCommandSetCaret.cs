@@ -19,20 +19,22 @@ using Emme.Models;
 
 namespace Emme.Editing
 {
-  public class EditCommandSetCaret : IEditCommand
-  {
-    public Position Caret { get; }
-
-    public EditCommandSetCaret(Position caret)
+    public class EditCommandSetCaret : IEditCommand
     {
-      Caret = caret;
-    }
+        public Position Caret { get; }
 
-    public IEditCommand Execute(TextView textView)
-    {
-      textView.Caret = Caret;
-      textView.CheckScroll();
-      return EditCommand.NoOp();
+        public EditCommandSetCaret(Position caret)
+        {
+            Caret = caret;
+        }
+
+        public IEditCommand Execute(TextView textView)
+        {
+            textView.Caret = Caret;
+            textView.CheckScroll();
+            return EditCommand.NoOp();
+        }
+
+        public override string ToString() => $"SetCaret({Caret})";
     }
-  }
 }

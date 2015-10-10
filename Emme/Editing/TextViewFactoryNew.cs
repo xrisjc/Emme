@@ -19,13 +19,14 @@ using Emme.Models;
 
 namespace Emme.Editing
 {
-  public class TextViewFactoryNew : ITextViewFactory
-  {
-    public TextView Create()
+    public class TextViewFactoryNew : ITextViewFactory
     {
-      var content = new GapBuffer<char>();
-      var lines = new GapBuffer<Span>().Insert(0, new Span(0, 0));
-      return new TextView(content, lines);
+        public TextView Create()
+        {
+            var content = new GapBuffer<char>();
+            var lines = new GapBuffer<Span>().Insert(0, new Span(0, 0));
+            var lineMarkers = new LineMarkers(lines);
+            return new TextView(content, lineMarkers);
+        }
     }
-  }
 }

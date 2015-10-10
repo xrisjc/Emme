@@ -36,10 +36,10 @@ namespace Emme.Editing
         /// <summary>
         /// Primary constructor
         /// </summary>
-        public TextView(GapBuffer<char> gapBuffer, GapBuffer<Span> lines)
+        public TextView(GapBuffer<char> gapBuffer, LineMarkers lineMarkers)
         {
             GapBuffer = gapBuffer;
-            LineMarkers = new LineMarkers(lines);
+            LineMarkers = lineMarkers;
         }
 
         /// <summary>

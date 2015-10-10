@@ -24,39 +24,40 @@ using System.Threading.Tasks;
 
 namespace Emme.Editing
 {
-  public class TextViewFactoryFile : ITextViewFactory
-  {
-    public string InitialContent { get; }
-
-    public TextViewFactoryFile(string initialContent)
+    public class TextViewFactoryFile : ITextViewFactory
     {
-      InitialContent = initialContent;
+        public string InitialContent { get; }
+
+        public TextViewFactoryFile(string initialContent)
+        {
+            InitialContent = initialContent;
+        }
+
+        public TextView Create()
+        {
+            // Note that new lines are not stored in the content buffer.
+
+            var content = new GapBuffer<char>(initialCapacity: InitialContent.Length);
+            var lines = new GapBuffer<Span>();
+
+            IIndexable<char> initialContentIndexable = new StringIndexable(InitialContent);
+            string newLine = Environment.NewLine;
+            int lineStartIndex = 0;
+            int bufferIndex = 0;
+            int newLineIndex;
+            do
+            {
+                newLineIndex = InitialContent.IndexOf(newLine, startIndex: lineStartIndex);
+                var lineSlice = new Span(lineStartIndex, (newLineIndex >= 0) ? newLineIndex : InitialContent.Length);
+                content.Insert(bufferIndex, initialContentIndexable, lineSlice);
+                lines.Append(new Span(bufferIndex, bufferIndex + lineSlice.Length));
+                lineStartIndex += lineSlice.Length + newLine.Length;
+                bufferIndex += lineSlice.Length;
+            }
+            while (newLineIndex >= 0);
+
+            var lineMarkers = new LineMarkers(lines);
+            return new TextView(content, lineMarkers);
+        }
     }
-
-    public TextView Create()
-    {
-      // Note that new lines are not stored in the content buffer.
-
-      var content = new GapBuffer<char>(initialCapacity: InitialContent.Length);
-      var lines = new GapBuffer<Span>();
-
-      IIndexable<char> initialContentIndexable = new StringIndexable(InitialContent);
-      string newLine = Environment.NewLine;
-      int lineStartIndex = 0;
-      int bufferIndex = 0;
-      int newLineIndex;
-      do
-      {
-        newLineIndex = InitialContent.IndexOf(newLine, startIndex: lineStartIndex);
-        var lineSlice = new Span(lineStartIndex, (newLineIndex >= 0) ? newLineIndex : InitialContent.Length);
-        content.Insert(bufferIndex, initialContentIndexable, lineSlice);
-        lines.Append(new Span(bufferIndex, bufferIndex + lineSlice.Length));
-        lineStartIndex += lineSlice.Length + newLine.Length;
-        bufferIndex += lineSlice.Length;
-      }
-      while (newLineIndex >= 0);
-
-      return new TextView(content, lines);
-    }
-  }
 }

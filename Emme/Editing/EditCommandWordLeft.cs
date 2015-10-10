@@ -27,7 +27,7 @@ namespace Emme.Editing
       if (textView.Caret.Column > 0)
       {
         int iStart = textView.CaretBufferIndex;
-        int iMin = textView.Lines[textView.Caret.Line].Start;
+        int iMin = textView.LineMarkers.Start(textView.Caret.Line);
         int i = iStart;
         while (i > iMin && char.IsWhiteSpace(textView.GapBuffer[i - 1]))
         {
@@ -39,9 +39,11 @@ namespace Emme.Editing
         }
         textView.Caret -= new Position(0, iStart - i);
       }
-      else if (textView.Caret.PreviousLine >= 0)
+      else if (textView.Caret.Line > 0)
       {
-        textView.Caret = new Position(textView.Caret.PreviousLine, column: textView.Lines[textView.Caret.PreviousLine].Length);
+        textView.Caret = new Position(
+            textView.Caret.Line - 1,
+            textView.LineMarkers.Length(textView.Caret.Line - 1));
       }
       textView.CheckScroll();
       return EditCommand.NoOp();

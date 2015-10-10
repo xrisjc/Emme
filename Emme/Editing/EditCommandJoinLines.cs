@@ -15,23 +15,14 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using Emme.Models;
-using static Emme.Editing.EditCommand;
-
 namespace Emme.Editing
 {
-  public class EditCommandJoinLines : IEditCommand
-  {
-    public IEditCommand Execute(TextView textView)
+    public class EditCommandJoinLines : IEditCommand
     {
-      var newLine = new Span(
-        textView.Lines[textView.Caret.Line].Start,
-        textView.Lines[textView.Caret.NextLine].End);
-
-      textView.Lines[textView.Caret.Line] = newLine;
-      textView.Lines.Delete(textView.Caret.NextLine);
-
-      return NoOp();
+        public IEditCommand Execute(TextView textView)
+        {
+            textView.LineMarkers.Join(textView.Caret);
+            return EditCommand.NoOp();
+        }
     }
-  }
 }

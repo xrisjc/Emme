@@ -24,11 +24,11 @@ namespace Emme.Editing
     public IEditCommand Execute(TextView textView)
     {
       textView.DesiredColumn = null;
-      if (textView.Caret.Column < textView.Lines[textView.Caret.Line].Length)
+      if (textView.Caret.Column < textView.LineMarkers.Length(textView.Caret.Line))
       {
         textView.Caret += Position.OneColumn;
       }
-      else if (textView.Caret.NextLine < textView.Lines.Count)
+      else if (textView.Caret.NextLine < textView.LineMarkers.LineCount)
       {
         textView.Caret = new Position(textView.Caret.NextLine, column: 0);
       }

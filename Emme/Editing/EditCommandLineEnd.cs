@@ -24,7 +24,9 @@ namespace Emme.Editing
     public IEditCommand Execute(TextView textView)
     {
       textView.DesiredColumn = null;
-      textView.Caret = new Position(textView.Caret.Line, column: textView.Lines[textView.Caret.Line].Length);
+      textView.Caret = new Position(
+          textView.Caret.Line,
+          textView.LineMarkers.Length(textView.Caret.Line));
       textView.CheckScroll();
 
       return EditCommand.NoOp();

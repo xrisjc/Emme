@@ -17,13 +17,16 @@
 
 namespace Emme.Editing
 {
-  public class EditCommandDown : IEditCommand
-  {
-    public IEditCommand Execute(TextView textView)
+    public class EditCommandDown : IEditCommand
     {
-      textView.MoveCaretToLine(textView.Caret.NextLine);
-      textView.CheckVerticalScroll();
-      return EditCommand.NoOp();
+        public IEditCommand Execute(TextView textView)
+        {
+            if (textView.Caret.Line + 1 < textView.LineMarkers.LineCount)
+            {
+                textView.MoveCaretToLine(textView.Caret.Line + 1);
+                textView.CheckVerticalScroll();
+            }
+            return EditCommand.NoOp();
+        }
     }
-  }
 }

@@ -30,7 +30,9 @@ namespace Emme.Editing
       }
       else if (textView.Caret.Line > 0)
       {
-        textView.Caret = new Position(textView.Caret.PreviousLine, column: textView.Lines[textView.Caret.PreviousLine].Length);
+        textView.Caret = new Position(
+            line: textView.Caret.Line - 1,
+            column: textView.LineMarkers.Length(textView.Caret.Line - 1));
       }
       textView.CheckScroll();
 

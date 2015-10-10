@@ -38,7 +38,9 @@ namespace Emme.Editing
       else if (textView.Caret.Line > 0)
       {
         // At the beginning of a line but not at first line.
-        textView.Caret = new Position(textView.Caret.PreviousLine, textView.Lines[textView.Caret.PreviousLine].Length);
+        textView.Caret = new Position(
+            textView.Caret.Line - 1,
+            textView.LineMarkers.Length(textView.Caret.Line - 1));
 
         Execute<EditCommandJoinLines>(textView);
 

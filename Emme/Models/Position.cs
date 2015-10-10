@@ -45,8 +45,6 @@ namespace Emme.Models
       Column = column;
     }
 
-    public int PreviousLine => Line - 1;
-
     public int NextLine => Line + 1;
 
     public int PreviousColumn => Column - 1;

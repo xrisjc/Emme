@@ -24,11 +24,11 @@ namespace Emme.Editing
     public IEditCommand Execute(TextView textView)
     {
       textView.DesiredColumn = null;
-      if (textView.Caret.Column < textView.Lines[textView.Caret.Line].Length)
+      if (textView.Caret.Column < textView.LineMarkers.Length(textView.Caret.Line))
       {
         // Caret is not at the end of the line.
         int iStart = textView.CaretBufferIndex;
-        int iMax = textView.Lines[textView.Caret.Line].End;
+        int iMax = textView.LineMarkers.End(textView.Caret.Line);
         int i = iStart;
         while (i < iMax && !char.IsWhiteSpace(textView.GapBuffer[i]))
         {

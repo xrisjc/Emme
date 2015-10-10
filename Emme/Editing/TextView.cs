@@ -25,134 +25,120 @@ using static System.Math;
 
 namespace Emme.Editing
 {
-  public class TextView
-  {
-    public GapBuffer<char> GapBuffer { get; }
-    public GapBuffer<Span> Lines { get; }
-    public Position Caret { get; set; } = Position.BufferStart;
-    public ScrollView ScrollView { get; set; } = new ScrollView(lineStart: 0, columnStart: 0, lines: 24, columns: 80);
-    public int? DesiredColumn { get; set; } = null;
-
-    /// <summary>
-    /// Primary constructor
-    /// </summary>
-    public TextView(GapBuffer<char> gapBuffer, GapBuffer<Span> lines)
+    public class TextView
     {
-      GapBuffer = gapBuffer;
-      Lines = lines;
-    }
+        public GapBuffer<char> GapBuffer { get; }
+        public LineMarkers LineMarkers { get; }
+        public Position Caret { get; set; } = Position.BufferStart;
+        public ScrollView ScrollView { get; set; } = new ScrollView(lineStart: 0, columnStart: 0, lines: 24, columns: 80);
+        public int? DesiredColumn { get; set; } = null;
 
-    /// <summary>
-    /// The number of lines this TextView contains.
-    /// </summary>
-    public int LastLine => Lines.Count - 1;
-
-    /// <summary>
-    /// The index of the caret in the text buffer.
-    /// </summary>
-    public int CaretBufferIndex
-      => Lines[Caret.Line].Start + Caret.Column;
-
-    public void ResizeScrollView(int lines, int columns)
-    {
-      ScrollView.Resize(lines, columns);
-    }
-
-    public void GapBufferInsert(char valueToInsert)
-    {
-      GapBuffer.Insert(CaretBufferIndex, valueToInsert);
-      ShiftLines(1);
-    }
-
-    public char GapBufferDelete()
-    {
-      char deletedValue = GapBuffer[CaretBufferIndex];
-      GapBuffer.Delete(CaretBufferIndex);
-      ShiftLines(-1);
-      return deletedValue;
-    }
-
-    private void ShiftLines(int delta)
-    {
-      int start = Caret.Line;
-      Lines[start] = Lines[start].MoveEnd(delta);
-      for (int i = start + 1; i < Lines.Count; i++)
-      {
-        Lines[i] = Lines[i].Move(delta);
-      }
-    }
-
-    public void MoveCaretToLine(int line)
-    {
-      if (0 <= line && line < Lines.Count)
-      {
-        DesiredColumn = DesiredColumn ?? Caret.Column;
-        int nextColumn = Math.Min(Lines[line].Length, DesiredColumn.Value);
-        Caret = new Position(line, nextColumn);
-      }
-    }
-
-    public void CheckVerticalScroll()
-    {
-      ScrollView.CheckVerticalScroll(Caret);
-    }
-
-    public void CheckHorizontalScroll()
-    {
-      ScrollView.CheckHorizontalScroll(Caret);
-    }
-
-    public void CheckScroll()
-    {
-      ScrollView.CheckVerticalScroll(Caret);
-      ScrollView.CheckHorizontalScroll(Caret);
-    }
-
-    public void PageUpScroll()
-    {
-      ScrollView.CheckPageUp(Caret);
-      CheckHorizontalScroll();
-    }
-
-    public void PageDownScroll()
-    {
-      ScrollView.CheckPageDown(Caret);
-      CheckHorizontalScroll();
-    }
-
-    public override string ToString()
-    {
-      var sb = new StringBuilder();
-      for (var line = 0; line < Lines.Count; line++)
-      {
-        for (int i = Lines[line].Start; i < Lines[line].End; i++)
+        /// <summary>
+        /// Primary constructor
+        /// </summary>
+        public TextView(GapBuffer<char> gapBuffer, GapBuffer<Span> lines)
         {
-          sb.Append(GapBuffer[i]);
+            GapBuffer = gapBuffer;
+            LineMarkers = new LineMarkers(lines);
         }
-        if (line + 1 < Lines.Count)
-        {
-          sb.Append(Environment.NewLine);
-        }
-      }
-      return sb.ToString();
-    }
 
-    public IEnumerable<string> EnumerateLines()
-    {
-      var sb = new StringBuilder();
-      int lineStart = ScrollView.LineStart;
-      int lineEnd = Min(lineStart + ScrollView.Lines, Lines.Count);
-      for (var line = lineStart; line < lineEnd; line++)
-      {
-        sb.Clear();
-        int iStart = Lines[line].Start + ScrollView.ColumnStart;
-        int iEnd = Min(iStart + ScrollView.Columns, Lines[line].End);
-        for (int i = iStart; i < iEnd; i++)
+        /// <summary>
+        /// The number of lines this TextView contains.
+        /// </summary>
+        public int LastLine => LineMarkers.LineCount - 1;
+
+        /// <summary>
+        /// The index of the caret in the text buffer.
+        /// </summary>
+        public int CaretBufferIndex => LineMarkers.BufferIndex(Caret);
+
+        public void ResizeScrollView(int lines, int columns)
         {
-          sb.Append(GapBuffer[i]);
+            ScrollView.Resize(lines, columns);
         }
-        yield return sb.ToString();
-      }
+
+        public void GapBufferInsert(char valueToInsert)
+        {
+            GapBuffer.Insert(CaretBufferIndex, valueToInsert);
+            LineMarkers.Insert(Caret);
+        }
+
+        public char GapBufferDelete()
+        {
+            char deletedValue = GapBuffer[CaretBufferIndex];
+            GapBuffer.Delete(CaretBufferIndex);
+            LineMarkers.Delete(Caret);
+            return deletedValue;
+        }
+
+        public void MoveCaretToLine(int line)
+        {
+            DesiredColumn = DesiredColumn ?? Caret.Column;
+            int nextColumn = Min(LineMarkers.Length(line), DesiredColumn.Value);
+            Caret = new Position(line, nextColumn);
+        }
+
+        public void CheckVerticalScroll()
+        {
+            ScrollView.CheckVerticalScroll(Caret);
+        }
+
+        public void CheckHorizontalScroll()
+        {
+            ScrollView.CheckHorizontalScroll(Caret);
+        }
+
+        public void CheckScroll()
+        {
+            ScrollView.CheckVerticalScroll(Caret);
+            ScrollView.CheckHorizontalScroll(Caret);
+        }
+
+        public void PageUpScroll()
+        {
+            ScrollView.CheckPageUp(Caret);
+            CheckHorizontalScroll();
+        }
+
+        public void PageDownScroll()
+        {
+            ScrollView.CheckPageDown(Caret);
+            CheckHorizontalScroll();
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            for (var line = 0; line < LineMarkers.LineCount; line++)
+            {
+                for (int i = LineMarkers.Start(line); i < LineMarkers.End(line); i++)
+                {
+                    sb.Append(GapBuffer[i]);
+                }
+                if (line + 1 < LineMarkers.LineCount)
+                {
+                    sb.Append(Environment.NewLine);
+                }
+            }
+            return sb.ToString();
+        }
+
+        public IEnumerable<string> EnumerateLines()
+        {
+            var sb = new StringBuilder();
+            int lineStart = ScrollView.LineStart;
+            int lineEnd = Min(lineStart + ScrollView.Lines, LineMarkers.LineCount);
+            for (var line = lineStart; line < lineEnd; line++)
+            {
+                sb.Clear();
+                int iStart = LineMarkers.Start(line) + ScrollView.ColumnStart;
+                int iEnd = Min(iStart + ScrollView.Columns, LineMarkers.End(line));
+                for (int i = iStart; i < iEnd; i++)
+                {
+                    sb.Append(GapBuffer[i]);
+                }
+                yield return sb.ToString();
+            }
+        }
     }
-  }
 }

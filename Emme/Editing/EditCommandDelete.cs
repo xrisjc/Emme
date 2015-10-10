@@ -24,12 +24,12 @@ namespace Emme.Editing
   {
     public IEditCommand Execute(TextView textView)
     {
-      if (textView.Caret.Column < textView.Lines[textView.Caret.Line].Length)
+      if (textView.Caret.Column < textView.LineMarkers.Length(textView.Caret.Line))
       {
         char charUndo = textView.GapBufferDelete();
         return SetCaret(textView.Caret).Then(Insert(charUndo)).Then<EditCommandCharLeft>();
       }
-      else if (textView.Caret.NextLine < textView.Lines.Count)
+      else if (textView.Caret.NextLine < textView.LineMarkers.LineCount)
       {
         Execute<EditCommandJoinLines>(textView);
         return SetCaret(textView.Caret).Then<EditCommandSplitLines>();

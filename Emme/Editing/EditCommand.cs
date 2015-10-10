@@ -20,69 +20,73 @@ using System.Collections.Generic;
 
 namespace Emme.Editing
 {
-  public static class EditCommand
-  {
-    public static IEditCommand Execute<T>(TextView textView)
-      where T : IEditCommand, new()
+    public static class EditCommand
     {
-      return new T().Execute(textView);
-    }
+        public static IEditCommand Execute<T>(TextView textView)
+          where T : IEditCommand, new()
+        {
+            return new T().Execute(textView);
+        }
 
-    public static void Execute(this IEditCommand editCommand, TextView textView, Stack<IEditCommand> undo)
-    {
-      IEditCommand undoCommand = editCommand.Execute(textView);
-      if (undoCommand is EditCommandNoOp == false)
-      {
-        undo.Push(undoCommand);
-      }
-    }
+        public static void Execute(this IEditCommand editCommand, TextView textView, Stack<IEditCommand> undo)
+        {
+            IEditCommand undoCommand = editCommand.Execute(textView);
+            if (undoCommand is EditCommandNoOp == false)
+            {
+                undo.Push(undoCommand);
+            }
+        }
 
-    public static void Execute(this IEditCommand editCommand, TextView textView,
-      Stack<IEditCommand> undo, Stack<IEditCommand> redo)
-    {
-      editCommand.Execute(textView, undo);
-      redo.Clear();
-    }
+        public static void Execute(this IEditCommand editCommand, TextView textView,
+          Stack<IEditCommand> undo, Stack<IEditCommand> redo)
+        {
+            editCommand.Execute(textView, undo);
+            redo.Clear();
+        }
 
-    public static void Undo(this Stack<IEditCommand> undo, TextView textView, Stack<IEditCommand> redo)
-    {
-      if (undo.Count > 0)
-      {
-        undo.Pop().Execute(textView, redo);
-      }
-    }
+        public static void Undo(this Stack<IEditCommand> undo, TextView textView, Stack<IEditCommand> redo)
+        {
+            if (undo.Count > 0)
+            {
+                undo.Pop().Execute(textView, redo);
+            }
+        }
 
-    public static IEditCommand Then(this IEditCommand firstEditCommand, IEditCommand secondEditCommand)
-    {
-      if (firstEditCommand is EditCommandNoOp)
-      {
-        return secondEditCommand;
-      }
-      else
-      {
-        return new EditCommandChain(firstEditCommand, secondEditCommand);
-      }
-    }
+        public static IEditCommand Then(this IEditCommand firstEditCommand, IEditCommand secondEditCommand)
+        {
+            if (firstEditCommand is EditCommandNoOp)
+            {
+                return secondEditCommand;
+            }
+            else if (secondEditCommand is EditCommandNoOp)
+            {
+                return firstEditCommand;
+            }
+            else
+            {
+                return new EditCommandChain(firstEditCommand, secondEditCommand);
+            }
+        }
 
-    public static IEditCommand Then<T>(this IEditCommand firstEditCommand)
-      where T : IEditCommand, new()
-    {
-      return firstEditCommand.Then(new T());
-    }
+        public static IEditCommand Then<T>(this IEditCommand firstEditCommand)
+          where T : IEditCommand, new()
+        {
+            return firstEditCommand.Then(new T());
+        }
 
-    public static IEditCommand Insert(char value)
-    {
-      return new EditCommandInsert(value);
-    }
+        public static IEditCommand Insert(char value)
+        {
+            return new EditCommandInsert(value);
+        }
 
-    public static IEditCommand SetCaret(Position caret)
-    {
-      return new EditCommandSetCaret(caret);
-    }
+        public static IEditCommand SetCaret(Position caret)
+        {
+            return new EditCommandSetCaret(caret);
+        }
 
-    public static IEditCommand NoOp()
-    {
-      return new EditCommandNoOp();
+        public static IEditCommand NoOp()
+        {
+            return new EditCommandNoOp();
+        }
     }
-  }
 }

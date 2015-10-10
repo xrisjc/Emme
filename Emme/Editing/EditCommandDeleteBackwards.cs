@@ -39,7 +39,7 @@ namespace Emme.Editing
                     textView.Caret.Line - 1,
                     textView.LineMarkers.Length(textView.Caret.Line - 1));
                 textView.CheckScroll();
-                return Execute<EditCommandJoinLines>(textView);
+                return Do<EditCommandJoinLines>().Execute(textView);
             }
             else
             {

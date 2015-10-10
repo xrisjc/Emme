@@ -30,7 +30,7 @@ namespace Emme.Editing
             }
             else if (textView.Caret.NextLine < textView.LineMarkers.LineCount)
             {
-                return Execute<EditCommandJoinLines>(textView);
+                return Do<EditCommandJoinLines>().Execute(textView);
             }
             else
             {

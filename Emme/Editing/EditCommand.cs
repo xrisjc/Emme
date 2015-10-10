@@ -22,12 +22,6 @@ namespace Emme.Editing
 {
     public static class EditCommand
     {
-        public static IEditCommand Execute<T>(TextView textView)
-          where T : IEditCommand, new()
-        {
-            return new T().Execute(textView);
-        }
-
         public static void Execute(this IEditCommand editCommand, TextView textView, Stack<IEditCommand> undo)
         {
             IEditCommand undoCommand = editCommand.Execute(textView);
@@ -50,6 +44,12 @@ namespace Emme.Editing
             {
                 undo.Pop().Execute(textView, redo);
             }
+        }
+
+        public static IEditCommand Do<T>()
+          where T : IEditCommand, new()
+        {
+            return new T();
         }
 
         public static IEditCommand Then(this IEditCommand firstEditCommand, IEditCommand secondEditCommand)

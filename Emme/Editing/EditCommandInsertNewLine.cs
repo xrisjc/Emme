@@ -25,7 +25,7 @@ namespace Emme.Editing
         public IEditCommand Execute(TextView textView)
         {
             textView.DesiredColumn = null;
-            IEditCommand undo = Execute<EditCommandSplitLines>(textView);
+            IEditCommand undo = Do<EditCommandSplitLines>().Execute(textView);
             textView.Caret = new Position(textView.Caret.Line + 1, column: 0);
             textView.CheckScroll();
             return undo;

@@ -92,7 +92,6 @@
     <Compile Include="Models\LineMarkers.cs" />
     <Compile Include="Models\ScrollView.cs" />
     <Compile Include="Models\Span.cs" />
-    <Compile Include="Models\SpanExtensions.cs" />
     <Compile Include="Models\Position.cs" />
     <Compile Include="Models\StringIndexable.cs" />
     <Compile Include="Program.cs" />

@@ -29,7 +29,7 @@ namespace Emme.Editing
     {
         public GapBuffer<char> GapBuffer { get; }
         public LineMarkers LineMarkers { get; }
-        public Position Caret { get; set; } = Position.BufferStart;
+        public Position Caret { get; set; }
         public ScrollView ScrollView { get; set; } = new ScrollView(lineStart: 0, columnStart: 0, lines: 24, columns: 80);
         public int? DesiredColumn { get; set; } = null;
 
@@ -43,7 +43,7 @@ namespace Emme.Editing
         }
 
         /// <summary>
-        /// The number of lines this TextView contains.
+        /// Number, zero-indexed, of the last line.
         /// </summary>
         public int LastLine => LineMarkers.LineCount - 1;
 

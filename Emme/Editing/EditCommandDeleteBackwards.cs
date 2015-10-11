@@ -27,7 +27,7 @@ namespace Emme.Editing
             if (textView.Caret.Column > 0)
             {
                 // In the middle of a line, and not at the start.
-                textView.Caret -= Position.OneColumn;
+                textView.Caret = new Position(textView.Caret.Line, textView.Caret.Column - 1);
                 char deletedChar = textView.GapBufferDelete();
                 textView.CheckHorizontalScroll();
                 return SetCaret(textView.Caret).Then(Insert(deletedChar));

@@ -28,7 +28,7 @@ namespace Emme.Editing
                 char charUndo = textView.GapBufferDelete();
                 return SetCaret(textView.Caret).Then(Insert(charUndo)).Then<EditCommandCharLeft>();
             }
-            else if (textView.Caret.NextLine < textView.LineMarkers.LineCount)
+            else if (textView.Caret.Line < textView.LastLine)
             {
                 return Do<EditCommandJoinLines>().Execute(textView);
             }

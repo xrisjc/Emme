@@ -37,7 +37,9 @@ namespace Emme.Editing
                 {
                     i--;
                 }
-                textView.Caret -= new Position(0, iStart - i);
+                textView.Caret = new Position(
+                    textView.Caret.Line,
+                    textView.Caret.Column - (iStart - i));
             }
             else if (textView.Caret.Line > 0)
             {

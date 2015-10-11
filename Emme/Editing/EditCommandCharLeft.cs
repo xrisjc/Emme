@@ -26,13 +26,15 @@ namespace Emme.Editing
             textView.DesiredColumn = null;
             if (textView.Caret.Column > 0)
             {
-                textView.Caret -= Position.OneColumn;
+                textView.Caret = new Position(
+                    textView.Caret.Line,
+                    textView.Caret.Column - 1);
             }
             else if (textView.Caret.Line > 0)
             {
                 textView.Caret = new Position(
-                    line: textView.Caret.Line - 1,
-                    column: textView.LineMarkers.Length(textView.Caret.Line - 1));
+                    textView.Caret.Line - 1,
+                    textView.LineMarkers.Length(textView.Caret.Line - 1));
             }
             textView.CheckScroll();
 

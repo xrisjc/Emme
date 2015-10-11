@@ -26,9 +26,9 @@ namespace Emme.Editing
             textView.DesiredColumn = null;
             if (textView.Caret.Column < textView.LineMarkers.Length(textView.Caret))
             {
-                textView.Caret += Position.OneColumn;
+                textView.Caret = new Position(textView.Caret.Line, textView.Caret.Column + 1);
             }
-            else if (textView.Caret.Line + 1 < textView.LineMarkers.LineCount)
+            else if (textView.Caret.Line < textView.LastLine)
             {
                 textView.Caret = new Position(textView.Caret.Line + 1, column: 0);
             }

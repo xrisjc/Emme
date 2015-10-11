@@ -38,12 +38,14 @@ namespace Emme.Editing
                 {
                     i++;
                 }
-                textView.Caret += new Position(0, i - iStart);
+                textView.Caret = new Position(
+                    textView.Caret.Line,
+                    textView.Caret.Column + i - iStart);
             }
-            else if (textView.Caret.NextLine <= textView.LastLine)
+            else if (textView.Caret.Line < textView.LastLine)
             {
                 // At the end of the line, and it's not the last line.
-                textView.Caret = new Position(textView.Caret.NextLine, column: 0);
+                textView.Caret = new Position(textView.Caret.Line + 1, column: 0);
             }
             textView.CheckScroll();
             return EditCommand.NoOp();

@@ -49,7 +49,7 @@ namespace Emme.UI
 
       Font = new Font("Consolas", 10f);
       fontMetrics = CreateFontMetrics();
-      caret = new Caret(Position.BufferStart, fontMetrics);
+      caret = new Caret(textView.Caret, fontMetrics);
 
       ClientSize =
         new Size(

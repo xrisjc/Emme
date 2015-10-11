@@ -24,6 +24,7 @@ using System.IO;
 using System.Windows.Forms;
 using static Emme.Editing.EditCommand;
 using static Emme.UI.NativeMethods;
+using static System.Math;
 
 namespace Emme.UI
 {
@@ -54,7 +55,7 @@ namespace Emme.UI
             ClientSize =
               new Size(
                 textView.ScrollView.Columns * fontMetrics.Width + 2 * fontMetrics.Padding,
-                textView.ScrollView.Lines * fontMetrics.Height);
+                (textView.ScrollView.Lines + 1) * fontMetrics.Height);
 
 
             // Flickering be gone. Got the method from here:
@@ -96,7 +97,7 @@ namespace Emme.UI
         {
             base.OnResize(e);
 
-            int lines = ClientSize.Height / fontMetrics.Height;
+            int lines = ClientSize.Height / fontMetrics.Height - 1;
             int columns = (ClientSize.Width - 2 * fontMetrics.Padding) / fontMetrics.Width;
 
             textView.ResizeScrollView(lines, columns);
@@ -271,8 +272,8 @@ namespace Emme.UI
         {
             base.OnPaint(e);
 
+            // Draw Content
             var point = new Point(0, 0);
-
             foreach (string line in textView.EnumerateLines())
             {
                 TextRenderer.DrawText(
@@ -282,9 +283,26 @@ namespace Emme.UI
                     point,
                     ForeColor,
                     TextFormatFlags.NoPrefix); // No prefix, or ampersands won't show up.
-
                 point.Y += fontMetrics.Height;
             }
+
+            // Draw Command Line
+            var start = new Point(0, ClientSize.Height - fontMetrics.Height);
+            var end = new Point(ClientSize.Width, start.Y);
+            using (Pen p = new Pen(ForeColor))
+            {
+                e.Graphics.DrawLine(p, start, end);
+            }
+            string commandLine = $"Ln {textView.Caret.Line} Col {textView.Caret.Column}";
+            int padding = Max(textView.ScrollView.Columns - commandLine.Length, 0);
+            commandLine = new string(' ', padding) + commandLine;
+            TextRenderer.DrawText(
+                e.Graphics,
+                commandLine,
+                Font,
+                start,
+                ForeColor,
+                TextFormatFlags.NoPrefix);
         }
     }
 }

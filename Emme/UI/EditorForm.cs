@@ -27,258 +27,264 @@ using static Emme.UI.NativeMethods;
 
 namespace Emme.UI
 {
-  class EditorForm : Form
-  {
-
-    TextView textView;
-    Stack<IEditCommand> undos = new Stack<IEditCommand>();
-    Stack<IEditCommand> redos = new Stack<IEditCommand>();
-
-    readonly FontMetrics fontMetrics;
-    Caret caret;
-
-
-    public EditorForm()
+    class EditorForm : Form
     {
-      textView = new TextViewFactoryNew().Create();
 
-      Text = "Emme";
+        TextView textView;
+        Stack<IEditCommand> undos = new Stack<IEditCommand>();
+        Stack<IEditCommand> redos = new Stack<IEditCommand>();
 
-      ForeColor = SystemColors.WindowText;
-      BackColor = SystemColors.Window;
-
-      Font = new Font("Consolas", 10f);
-      fontMetrics = CreateFontMetrics();
-      caret = new Caret(textView.Caret, fontMetrics);
-
-      ClientSize =
-        new Size(
-          textView.ScrollView.Columns * fontMetrics.Width + 2 * fontMetrics.Padding,
-          textView.ScrollView.Lines * fontMetrics.Height);
+        readonly FontMetrics fontMetrics;
+        Caret caret;
 
 
-      // Flickering be gone. Got the method from here:
-      // http://stackoverflow.com/questions/8046560/how-to-stop-flickering-c-sharp-winforms
-      SetStyle(
-        flag: ControlStyles.UserPaint | 
-          ControlStyles.OptimizedDoubleBuffer |
-          ControlStyles.AllPaintingInWmPaint,
-        value: true);
-    }
-
-    /// <summary>
-    /// Creates an appropriate FontMetrics value for the currently set Font.
-    /// </summary>
-    private FontMetrics CreateFontMetrics()
-    {
-      using (Graphics graphics = CreateGraphics())
-      {
-        var purposedSize = new Size(short.MaxValue, short.MaxValue); // Bounding values
-
-        // get a character's width without padding.
-        Size fontSize = TextRenderer.MeasureText(graphics, "a", Font, purposedSize, TextFormatFlags.NoPadding);
-
-        // going to use font.Height instead b/c Petzold says that better for
-        // formatting lines of text.
-        // TODO: I should use font.GetHeight(grfx)
-        fontSize = new Size(fontSize.Width, Font.Height);
-
-
-        // Get how much we're padding the text.
-        Size fontSizeWithPadding = TextRenderer.MeasureText(graphics, "a", Font);
-        int padding = (fontSizeWithPadding.Width - fontSize.Width) / 2;
-
-        return new FontMetrics(fontSize.Width, fontSize.Height, padding);
-      }
-    }
-
-    protected override void OnResize(EventArgs e)
-    {
-      base.OnResize(e);
-
-      int lines = ClientSize.Height / fontMetrics.Height;
-      int columns = (ClientSize.Width - 2 * fontMetrics.Padding) / fontMetrics.Width;
-
-      textView.ResizeScrollView(lines, columns);
-
-      Invalidate();
-    }
-
-    protected override void OnGotFocus(EventArgs e)
-    {
-      base.OnGotFocus(e);
-      CreateCaret(Handle, SOLID_BITMAP_HANDLE, caret.Width, caret.Height);
-      SetCaretPos(caret.X, caret.Y);
-      ShowCaret(Handle);
-    }
-
-    protected override void OnLostFocus(EventArgs e)
-    {
-      base.OnLostFocus(e);
-      DestroyCaret();
-    }
-
-    private void UpdateCaretPosition(Position position)
-    {
-      caret = new Caret(textView.ScrollView.PositionInView(position), fontMetrics);
-      SetCaretPos(caret.X, caret.Y);
-    }
-
-    protected override void OnKeyDown(KeyEventArgs e)
-    {
-      base.OnKeyDown(e);
-
-      if (e.Control && (e.KeyCode == Keys.S))
-      {
-        using (var dialog = new SaveFileDialog())
+        public EditorForm()
         {
-          if (dialog.ShowDialog() == DialogResult.OK)
-          {
-            using (var stream = dialog.OpenFile())
-            {
-              using (var writer = new StreamWriter(stream))
-              {
-                writer.Write(textView.ToString());
-              }
-            }
-            undos.Clear();
-            redos.Clear();
-          }
+            textView = new TextViewFactoryNew().Create();
+
+            Text = "Emme";
+
+            ForeColor = SystemColors.WindowText;
+            BackColor = SystemColors.Window;
+
+            Font = new Font("Consolas", 10f);
+            fontMetrics = CreateFontMetrics();
+            caret = new Caret(textView.Caret, fontMetrics);
+
+            ClientSize =
+              new Size(
+                textView.ScrollView.Columns * fontMetrics.Width + 2 * fontMetrics.Padding,
+                textView.ScrollView.Lines * fontMetrics.Height);
+
+
+            // Flickering be gone. Got the method from here:
+            // http://stackoverflow.com/questions/8046560/how-to-stop-flickering-c-sharp-winforms
+            SetStyle(
+              flag: ControlStyles.UserPaint |
+                ControlStyles.OptimizedDoubleBuffer |
+                ControlStyles.AllPaintingInWmPaint,
+              value: true);
         }
-      }
-      else if (e.Control && (e.KeyCode == Keys.O))
-      {
-        using (var dialog = new OpenFileDialog())
+
+        /// <summary>
+        /// Creates an appropriate FontMetrics value for the currently set Font.
+        /// </summary>
+        private FontMetrics CreateFontMetrics()
         {
-          if (dialog.ShowDialog() == DialogResult.OK)
-          {
-            using (var stream = dialog.OpenFile())
+            using (Graphics graphics = CreateGraphics())
             {
-              using (var reader = new StreamReader(stream))
-              {
-                string fileContent = reader.ReadToEnd();
-                textView = new TextViewFactoryFile(fileContent).Create();
+                var purposedSize = new Size(short.MaxValue, short.MaxValue); // Bounding values
+
+                // get a character's width without padding.
+                Size fontSize = TextRenderer.MeasureText(graphics, "a", Font, purposedSize, TextFormatFlags.NoPadding);
+
+                // going to use font.Height instead b/c Petzold says that better for
+                // formatting lines of text.
+                // TODO: I should use font.GetHeight(grfx)
+                fontSize = new Size(fontSize.Width, Font.Height);
+
+
+                // Get how much we're padding the text.
+                Size fontSizeWithPadding = TextRenderer.MeasureText(graphics, "a", Font);
+                int padding = (fontSizeWithPadding.Width - fontSize.Width) / 2;
+
+                return new FontMetrics(fontSize.Width, fontSize.Height, padding);
+            }
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+
+            int lines = ClientSize.Height / fontMetrics.Height;
+            int columns = (ClientSize.Width - 2 * fontMetrics.Padding) / fontMetrics.Width;
+
+            textView.ResizeScrollView(lines, columns);
+
+            Invalidate();
+        }
+
+        protected override void OnGotFocus(EventArgs e)
+        {
+            base.OnGotFocus(e);
+            CreateCaret(Handle, SOLID_BITMAP_HANDLE, caret.Width, caret.Height);
+            SetCaretPos(caret.X, caret.Y);
+            ShowCaret(Handle);
+        }
+
+        protected override void OnLostFocus(EventArgs e)
+        {
+            base.OnLostFocus(e);
+            DestroyCaret();
+        }
+
+        private void UpdateCaretPosition(Position position)
+        {
+            caret = new Caret(textView.ScrollView.PositionInView(position), fontMetrics);
+            SetCaretPos(caret.X, caret.Y);
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+
+            if (e.Control && (e.KeyCode == Keys.S))
+            {
+                using (var dialog = new SaveFileDialog())
+                {
+                    if (dialog.ShowDialog() == DialogResult.OK)
+                    {
+                        using (var stream = dialog.OpenFile())
+                        {
+                            using (var writer = new StreamWriter(stream))
+                            {
+                                writer.Write(textView.ToString());
+                            }
+                        }
+                        undos.Clear();
+                        redos.Clear();
+                    }
+                }
+            }
+            else if (e.Control && (e.KeyCode == Keys.O))
+            {
+                using (var dialog = new OpenFileDialog())
+                {
+                    if (dialog.ShowDialog() == DialogResult.OK)
+                    {
+                        using (var stream = dialog.OpenFile())
+                        {
+                            using (var reader = new StreamReader(stream))
+                            {
+                                string fileContent = reader.ReadToEnd();
+                                textView = new TextViewFactoryFile(fileContent).Create();
+                                UpdateCaretPosition(textView.Caret);
+                            }
+                        }
+                        undos.Clear();
+                        redos.Clear();
+                    }
+                }
+            }
+            else if (e.Control && (e.KeyCode == Keys.Z))
+            {
+                undos.Undo(textView, redos);
                 UpdateCaretPosition(textView.Caret);
-              }
             }
-            undos.Clear();
-            redos.Clear();
-          }
+            else if (e.Control && (e.KeyCode == Keys.Y))
+            {
+                redos.Undo(textView, undos);
+                UpdateCaretPosition(textView.Caret);
+            }
+            else
+            {
+                IEditCommand editCommand = null;
+                switch (e.KeyCode)
+                {
+                    case Keys.J:
+                        if (e.Control)
+                        {
+                            editCommand = new EditCommandJoinLines();
+                        }
+                        break;
+                    case Keys.Enter:
+                        editCommand = new EditCommandInsertNewLine();
+                        break;
+
+                    case Keys.Back:
+                        editCommand = new EditCommandDeleteBackwards();
+                        break;
+
+                    case Keys.Delete:
+                        editCommand = new EditCommandDelete();
+                        break;
+
+                    case Keys.Left:
+                        if (e.Control)
+                        {
+                            editCommand = new EditCommandWordLeft();
+                        }
+                        else
+                        {
+                            editCommand = new EditCommandCharLeft();
+                        }
+                        break;
+
+                    case Keys.Right:
+                        if (e.Control)
+                        {
+                            editCommand = new EditCommandWordRight();
+                        }
+                        else
+                        {
+                            editCommand = new EditCommandCharRight();
+                        }
+                        break;
+
+                    case Keys.Up:
+                        editCommand = new EditCommandLineUp();
+                        break;
+
+                    case Keys.Down:
+                        editCommand = new EditCommandDown();
+                        break;
+
+                    case Keys.Home:
+                        editCommand = new EditCommandLineStart();
+                        break;
+
+                    case Keys.End:
+                        editCommand = new EditCommandLineEnd();
+                        break;
+
+                    case Keys.PageDown:
+                        editCommand = new EditCommandPageDown();
+                        break;
+
+                    case Keys.PageUp:
+                        editCommand = new EditCommandPageUp();
+                        break;
+                }
+                editCommand?.Execute(textView, undos, redos);
+                UpdateCaretPosition(textView.Caret);
+            }
+
+            Invalidate();
         }
-      }
-      else if (e.Control && (e.KeyCode == Keys.Z))
-      {
-        undos.Undo(textView, redos);
-        UpdateCaretPosition(textView.Caret);
-      }
-      else if (e.Control && (e.KeyCode == Keys.Y))
-      {
-        redos.Undo(textView, undos);
-        UpdateCaretPosition(textView.Caret);
-      }
-      else
-      {
-        IEditCommand editCommand = null;
-        switch (e.KeyCode)
+
+        protected override void OnKeyPress(KeyPressEventArgs e)
         {
-          case Keys.Enter:
-            editCommand = new EditCommandInsertNewLine();
-            break;
+            base.OnKeyPress(e);
 
-          case Keys.Back:
-            editCommand = new EditCommandDeleteBackwards();
-            break;
-
-          case Keys.Delete:
-            editCommand = new EditCommandDelete();
-            break;
-
-          case Keys.Left:
-            if (e.Control)
+            if (char.IsControl(e.KeyChar))
             {
-              editCommand = new EditCommandWordLeft();
+                return;
             }
-            else
-            {
-              editCommand = new EditCommandCharLeft();
-            }
-            break;
 
-          case Keys.Right:
-            if (e.Control)
-            {
-              editCommand = new EditCommandWordRight();
-            }
-            else
-            {
-              editCommand = new EditCommandCharRight();
-            }
-            break;
+            Insert(e.KeyChar).Execute(textView, undos, redos);
 
-          case Keys.Up:
-            editCommand = new EditCommandLineUp();
-            break;
-
-          case Keys.Down:
-            editCommand = new EditCommandDown();
-            break;
-
-          case Keys.Home:
-            editCommand = new EditCommandLineStart();
-            break;
-
-          case Keys.End:
-            editCommand = new EditCommandLineEnd();
-            break;
-
-          case Keys.PageDown:
-            editCommand = new EditCommandPageDown();
-            break;
-
-          case Keys.PageUp:
-            editCommand = new EditCommandPageUp();
-            break;
+            UpdateCaretPosition(textView.Caret);
+            Invalidate();
         }
-        editCommand?.Execute(textView, undos, redos);
-        UpdateCaretPosition(textView.Caret);
-      }
 
-      Invalidate();
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            base.OnPaint(e);
+
+            var point = new Point(0, 0);
+
+            foreach (string line in textView.EnumerateLines())
+            {
+                TextRenderer.DrawText(
+                    e.Graphics,
+                    line,
+                    Font,
+                    point,
+                    ForeColor,
+                    TextFormatFlags.NoPrefix); // No prefix, or ampersands won't show up.
+
+                point.Y += fontMetrics.Height;
+            }
+        }
     }
-
-    protected override void OnKeyPress(KeyPressEventArgs e)
-    {
-      base.OnKeyPress(e);
-
-      if (char.IsControl(e.KeyChar))
-      {
-        return;
-      }
-
-      Insert(e.KeyChar).Execute(textView, undos, redos);
-
-      UpdateCaretPosition(textView.Caret);
-      Invalidate();
-    }
-
-    protected override void OnPaint(PaintEventArgs e)
-    {
-      base.OnPaint(e);
-
-      var point = new Point(0, 0);
-
-      foreach (string line in textView.EnumerateLines())
-      {
-        TextRenderer.DrawText(
-            e.Graphics,
-            line,
-            Font,
-            point,
-            ForeColor,
-            TextFormatFlags.NoPrefix); // No prefix, or ampersands won't show up.
-
-        point.Y += fontMetrics.Height;
-      }
-    }
-  }
 }

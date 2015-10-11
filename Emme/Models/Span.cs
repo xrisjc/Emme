@@ -70,5 +70,10 @@ namespace Emme.Models
         /// <param name="delta">Amount to move. May be negative.</param>
         /// <returns>Span with new Start and End.</returns>
         public Span Move(int delta) => new Span(Start + delta, End + delta);
+
+        /// <summary>
+        /// Override ToString for debugging purposes.
+        /// </summary>
+        public override string ToString() => $"Start = {Start}, End = {End}";
     }
 }

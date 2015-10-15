@@ -209,6 +209,10 @@ namespace Emme.UI
                         {
                             editCommand = new EditCommandCharLeft();
                         }
+                        if (e.Shift)
+                        {
+                            editCommand = new EditCommandExtendMark(editCommand);
+                        }
                         break;
 
                     case Keys.Right:
@@ -219,6 +223,10 @@ namespace Emme.UI
                         else
                         {
                             editCommand = new EditCommandCharRight();
+                        }
+                        if (e.Shift)
+                        {
+                            editCommand = new EditCommandExtendMark(editCommand);
                         }
                         break;
 
@@ -273,17 +281,17 @@ namespace Emme.UI
             base.OnPaint(e);
 
             // Draw Content
-            var point = new Point(0, 0);
-            foreach (string line in textView.EnumerateLines())
+            foreach (Text text in textView.EnumerateText())
             {
+                int x = text.Position.Column * fontMetrics.Width;
+                int y = text.Position.Line * fontMetrics.Height;
                 TextRenderer.DrawText(
                     e.Graphics,
-                    line,
+                    text.Content,
                     Font,
-                    point,
+                    new Point(x, y),
                     ForeColor,
                     TextFormatFlags.NoPrefix); // No prefix, or ampersands won't show up.
-                point.Y += fontMetrics.Height;
             }
 
             // Draw Command Line

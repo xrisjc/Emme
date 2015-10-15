@@ -70,6 +70,7 @@
     <Compile Include="Editing\EditCommandDeleteBackwards.cs" />
     <Compile Include="Editing\EditCommandDown.cs" />
     <Compile Include="Editing\EditCommand.cs" />
+    <Compile Include="Editing\EditCommandExtendMark.cs" />
     <Compile Include="Editing\EditCommandJoinLines.cs" />
     <Compile Include="Editing\EditCommandLineEnd.cs" />
     <Compile Include="Editing\EditCommandLineStart.cs" />
@@ -94,6 +95,7 @@
     <Compile Include="Models\Span.cs" />
     <Compile Include="Models\Position.cs" />
     <Compile Include="Models\StringIndexable.cs" />
+    <Compile Include="Models\Text.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="UI\Caret.cs" />
     <Compile Include="UI\EditorForm.cs">

@@ -32,6 +32,7 @@ namespace Emme.Editing
         public Position Caret { get; set; }
         public ScrollView ScrollView { get; set; } = new ScrollView(lineStart: 0, columnStart: 0, lines: 24, columns: 80);
         public int? DesiredColumn { get; set; } = null;
+        public Position? Mark { get; set; } = null;
 
         /// <summary>
         /// Primary constructor
@@ -123,13 +124,16 @@ namespace Emme.Editing
             return sb.ToString();
         }
 
-        public IEnumerable<string> EnumerateLines()
+        // Need a state machine
+
+        public IEnumerable<Text> EnumerateText()
         {
             var sb = new StringBuilder();
             int lineStart = ScrollView.LineStart;
             int lineEnd = Min(lineStart + ScrollView.Lines, LineMarkers.LineCount);
             for (var line = lineStart; line < lineEnd; line++)
             {
+                var position = new Position(line, ScrollView.ColumnStart);
                 sb.Clear();
                 int iStart = LineMarkers.Start(line) + ScrollView.ColumnStart;
                 int iEnd = Min(iStart + ScrollView.Columns, LineMarkers.End(line));
@@ -137,7 +141,7 @@ namespace Emme.Editing
                 {
                     sb.Append(GapBuffer[i]);
                 }
-                yield return sb.ToString();
+                yield return new Text(position, sb.ToString(), false);
             }
         }
     }

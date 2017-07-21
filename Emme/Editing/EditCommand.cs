@@ -20,6 +20,9 @@ using System.Collections.Generic;
 
 namespace Emme.Editing
 {
+    /// <summary>
+    /// Static methods for handling IEditCommand functionality.
+    /// </summary>
     public static class EditCommand
     {
         public static void Execute(this IEditCommand editCommand, TextView textView, Stack<IEditCommand> undo)

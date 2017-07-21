@@ -22,6 +22,11 @@ namespace Emme.Models
     /// </summary>
     public struct Position
     {
+        /// <summary>
+        /// Primary constructor.
+        /// </summary>
+        /// <param name="line">Initial line number, zero-indexed.</param>
+        /// <param name="column">Initial colum number, zero-indexed.</param>
         public Position(int line, int column)
         {
             Line = line;

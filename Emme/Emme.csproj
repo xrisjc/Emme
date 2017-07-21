@@ -70,7 +70,6 @@
     <Compile Include="Editing\EditCommandDeleteBackwards.cs" />
     <Compile Include="Editing\EditCommandDown.cs" />
     <Compile Include="Editing\EditCommand.cs" />
-    <Compile Include="Editing\EditCommandExtendMark.cs" />
     <Compile Include="Editing\EditCommandJoinLines.cs" />
     <Compile Include="Editing\EditCommandLineEnd.cs" />
     <Compile Include="Editing\EditCommandLineStart.cs" />

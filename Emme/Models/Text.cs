@@ -8,15 +8,12 @@ namespace Emme.Models
 {
     public class Text
     {
-        public Position Position { get; }
-
         public string Content { get; }
 
         public bool IsHighlighted { get; }
 
-        public Text(Position position, string content, bool isHighlighted)
+        public Text(string content, bool isHighlighted)
         {
-            Position = position;
             Content = content;
             IsHighlighted = isHighlighted;
         }

@@ -209,10 +209,6 @@ namespace Emme.UI
                         {
                             editCommand = new EditCommandCharLeft();
                         }
-                        if (e.Shift)
-                        {
-                            editCommand = new EditCommandExtendMark(editCommand);
-                        }
                         break;
 
                     case Keys.Right:
@@ -223,10 +219,6 @@ namespace Emme.UI
                         else
                         {
                             editCommand = new EditCommandCharRight();
-                        }
-                        if (e.Shift)
-                        {
-                            editCommand = new EditCommandExtendMark(editCommand);
                         }
                         break;
 
@@ -281,10 +273,12 @@ namespace Emme.UI
             base.OnPaint(e);
 
             // Draw Content
+            int i = 0;
+            int j = 0;
             foreach (Text text in textView.EnumerateText())
             {
-                int x = text.Position.Column * fontMetrics.Width;
-                int y = text.Position.Line * fontMetrics.Height;
+                int x = i * fontMetrics.Width;
+                int y = j++ * fontMetrics.Height;
                 TextRenderer.DrawText(
                     e.Graphics,
                     text.Content,
@@ -301,7 +295,7 @@ namespace Emme.UI
             {
                 e.Graphics.DrawLine(p, start, end);
             }
-            string commandLine = $"Ln {textView.Caret.Line} Col {textView.Caret.Column}";
+            string commandLine = $"View {textView.ScrollView} Ln {textView.Caret.Line} Col {textView.Caret.Column}";
             int padding = Max(textView.ScrollView.Columns - commandLine.Length, 0);
             commandLine = new string(' ', padding) + commandLine;
             TextRenderer.DrawText(

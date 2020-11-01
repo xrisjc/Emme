@@ -179,7 +179,7 @@ namespace Emme.UI
             }
             else
             {
-                IEditCommand editCommand = null;
+                IEditCommand? editCommand = null;
                 switch (e.KeyCode)
                 {
                     case Keys.J:

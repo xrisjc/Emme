@@ -49,7 +49,9 @@ namespace Emme
     [STAThread]
     public static void Main()
     {
+      Application.SetHighDpiMode(HighDpiMode.SystemAware);
       Application.EnableVisualStyles();
+      Application.SetCompatibleTextRenderingDefault(false);
       using (var editor = new EditorForm())
       {
         Application.Run(editor);

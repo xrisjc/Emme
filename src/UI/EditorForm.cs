@@ -179,73 +179,24 @@ namespace Emme.UI
             }
             else
             {
-                IEditCommand? editCommand = null;
-                switch (e.KeyCode)
+                IEditCommand? editCommand = e.KeyCode switch
                 {
-                    case Keys.J:
-                        if (e.Control)
-                        {
-                            editCommand = new EditCommandJoinLines();
-                        }
-                        break;
-                    case Keys.Enter:
-                        editCommand = new EditCommandInsertNewLine();
-                        break;
-
-                    case Keys.Back:
-                        editCommand = new EditCommandDeleteBackwards();
-                        break;
-
-                    case Keys.Delete:
-                        editCommand = new EditCommandDelete();
-                        break;
-
-                    case Keys.Left:
-                        if (e.Control)
-                        {
-                            editCommand = new EditCommandWordLeft();
-                        }
-                        else
-                        {
-                            editCommand = new EditCommandCharLeft();
-                        }
-                        break;
-
-                    case Keys.Right:
-                        if (e.Control)
-                        {
-                            editCommand = new EditCommandWordRight();
-                        }
-                        else
-                        {
-                            editCommand = new EditCommandCharRight();
-                        }
-                        break;
-
-                    case Keys.Up:
-                        editCommand = new EditCommandLineUp();
-                        break;
-
-                    case Keys.Down:
-                        editCommand = new EditCommandDown();
-                        break;
-
-                    case Keys.Home:
-                        editCommand = new EditCommandLineStart();
-                        break;
-
-                    case Keys.End:
-                        editCommand = new EditCommandLineEnd();
-                        break;
-
-                    case Keys.PageDown:
-                        editCommand = new EditCommandPageDown();
-                        break;
-
-                    case Keys.PageUp:
-                        editCommand = new EditCommandPageUp();
-                        break;
-                }
+                    Keys.J when e.Control => new EditCommandJoinLines(),
+                    Keys.Enter => new EditCommandInsertNewLine(),
+                    Keys.Back => new EditCommandDeleteBackwards(),
+                    Keys.Delete => new EditCommandDelete(),
+                    Keys.Left when e.Control => new EditCommandWordLeft(),
+                    Keys.Left => new EditCommandCharLeft(),
+                    Keys.Right when e.Control => new EditCommandWordRight(),
+                    Keys.Right => new EditCommandCharRight(),
+                    Keys.Up => new EditCommandLineUp(),
+                    Keys.Down => new EditCommandDown(),
+                    Keys.Home => new EditCommandLineStart(),
+                    Keys.End => new EditCommandLineEnd(),
+                    Keys.PageDown => new EditCommandPageDown(),
+                    Keys.PageUp => new EditCommandPageUp(),
+                    _ => null,
+                };
                 editCommand?.Execute(textView, undos, redos);
                 UpdateCaretPosition(textView.Caret);
             }
